@@ -5,6 +5,7 @@ import { NewsFeed } from '@/components/dashboard/NewsFeed';
 import { EconomicCalendar } from '@/components/dashboard/EconomicCalendar';
 import { AlertsPanel } from '@/components/dashboard/AlertsPanel';
 import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
+import { CurrencyRates } from '@/components/dashboard/CurrencyRates';
 
 const Index = () => {
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
@@ -32,6 +33,11 @@ const Index = () => {
             <CorrelationsPanel selectedAsset={selectedAsset} onAssetSelect={setSelectedAsset} />
           </div>
         </div>
+
+        {/* Currency Rates */}
+        <section>
+          <CurrencyRates />
+        </section>
 
         {/* Economic Calendar - Full Width */}
         <section>
