@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,55 +22,6 @@ const INDICES: IndexConfig[] = [
   { symbol: 'HK50', name: 'Hang Seng', googleSymbol: 'HSI:INDEXHANGSENG' },
 ];
 
-async function fetchQuoteFromGoogle(config: IndexConfig): Promise<any> {
-  try {
-    // Try Google Finance page scraping approach
-    const url = `https://www.google.com/finance/quote/${config.googleSymbol}`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-      },
-    });
-
-    if (!response.ok) {
-      console.log(`Failed to fetch ${config.symbol}: ${response.status}`);
-      return null;
-    }
-
-    const html = await response.text();
-    
-    // Extract price using regex patterns from Google Finance HTML
-    const priceMatch = html.match(/data-last-price="([^"]+)"/);
-    const changeMatch = html.match(/data-last-normal-market-change="([^"]+)"/);
-    const changePercentMatch = html.match(/data-last-normal-market-change-percent="([^"]+)"/);
-    
-    if (priceMatch) {
-      const price = parseFloat(priceMatch[1]);
-      const change = changeMatch ? parseFloat(changeMatch[1]) : 0;
-      const changePercent = changePercentMatch ? parseFloat(changePercentMatch[1]) : 0;
-      
-      return {
-        symbol: config.symbol,
-        name: config.name,
-        price: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-        change: change >= 0 ? `+${change.toFixed(2)}` : change.toFixed(2),
-        changePercent: changePercent >= 0 ? `+${changePercent.toFixed(2)}%` : `${changePercent.toFixed(2)}%`,
-        isPositive: change > 0,
-        isNegative: change < 0,
-      };
-    }
-    
-    console.log(`Could not parse price for ${config.symbol}`);
-    return null;
-  } catch (error) {
-    console.error(`Error fetching ${config.symbol}:`, error);
-    return null;
-  }
-}
-
 // Fallback: Use Yahoo Finance API (more reliable)
 async function fetchQuoteFromYahoo(config: IndexConfig): Promise<any> {
   const yahooSymbols: Record<string, string> = {
@@ -86,7 +38,7 @@ async function fetchQuoteFromYahoo(config: IndexConfig): Promise<any> {
   if (!yahooSymbol) return null;
   
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=1d`;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=5d`;
     
     const response = await fetch(url, {
       headers: {
@@ -113,15 +65,46 @@ async function fetchQuoteFromYahoo(config: IndexConfig): Promise<any> {
     return {
       symbol: config.symbol,
       name: config.name,
-      price: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      price: price,
+      priceFormatted: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       change: change >= 0 ? `+${change.toFixed(2)}` : change.toFixed(2),
+      changeValue: change,
       changePercent: changePercent >= 0 ? `+${changePercent.toFixed(2)}%` : `${changePercent.toFixed(2)}%`,
+      changePercentValue: changePercent,
+      previousClose: previousClose,
       isPositive: change > 0,
       isNegative: change < 0,
     };
   } catch (error) {
     console.error(`Yahoo error for ${config.symbol}:`, error);
     return null;
+  }
+}
+
+async function saveQuoteToDatabase(supabase: any, quote: any): Promise<void> {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    
+    const { error } = await supabase
+      .from('global_indices_quotes')
+      .upsert({
+        symbol: quote.symbol,
+        name: quote.name,
+        price: quote.price,
+        change_value: quote.changeValue,
+        change_percent: quote.changePercentValue,
+        quote_date: today,
+      }, {
+        onConflict: 'symbol,quote_date'
+      });
+    
+    if (error) {
+      console.error(`Error saving quote for ${quote.symbol}:`, error);
+    } else {
+      console.log(`Saved quote for ${quote.symbol}`);
+    }
+  } catch (error) {
+    console.error(`Error saving quote for ${quote.symbol}:`, error);
   }
 }
 
@@ -133,26 +116,31 @@ serve(async (req) => {
   try {
     console.log('Fetching global indices quotes...');
     
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
     const quotes = [];
     
     for (const config of INDICES) {
-      // Try Yahoo first (more reliable), then Google as fallback
-      let quote = await fetchQuoteFromYahoo(config);
-      
-      if (!quote) {
-        quote = await fetchQuoteFromGoogle(config);
-      }
+      const quote = await fetchQuoteFromYahoo(config);
       
       if (quote) {
         quotes.push(quote);
+        // Save to database
+        await saveQuoteToDatabase(supabase, quote);
       } else {
-        // Add placeholder if both fail
+        // Add placeholder if fetch fails
         quotes.push({
           symbol: config.symbol,
           name: config.name,
-          price: '--',
+          price: 0,
+          priceFormatted: '--',
           change: '--',
+          changeValue: 0,
           changePercent: '--',
+          changePercentValue: 0,
+          previousClose: 0,
           isPositive: false,
           isNegative: false,
         });

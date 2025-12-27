@@ -225,6 +225,39 @@ export type Database = {
           },
         ]
       }
+      global_indices_quotes: {
+        Row: {
+          change_percent: number | null
+          change_value: number | null
+          created_at: string
+          id: string
+          name: string
+          price: number
+          quote_date: string
+          symbol: string
+        }
+        Insert: {
+          change_percent?: number | null
+          change_value?: number | null
+          created_at?: string
+          id?: string
+          name: string
+          price: number
+          quote_date?: string
+          symbol: string
+        }
+        Update: {
+          change_percent?: number | null
+          change_value?: number | null
+          created_at?: string
+          id?: string
+          name?: string
+          price?: number
+          quote_date?: string
+          symbol?: string
+        }
+        Relationships: []
+      }
       indicators: {
         Row: {
           category: string
