@@ -20,6 +20,9 @@ const INDICES: IndexConfig[] = [
   { symbol: 'DOW', name: 'Dow Jones', googleSymbol: '.DJI:INDEXDJX' },
   { symbol: 'NIKKEI', name: 'Nikkei 225', googleSymbol: 'NI225:INDEXNIKKEI' },
   { symbol: 'HK50', name: 'Hang Seng', googleSymbol: 'HSI:INDEXHANGSENG' },
+  { symbol: 'US2Y', name: 'Treasury 2 Anos', googleSymbol: '^IRX' },
+  { symbol: 'US10Y', name: 'Treasury 10 Anos', googleSymbol: '^TNX' },
+  { symbol: 'US30Y', name: 'Treasury 30 Anos', googleSymbol: '^TYX' },
 ];
 
 // Fallback: Use Yahoo Finance API (more reliable)
@@ -32,6 +35,9 @@ async function fetchQuoteFromYahoo(config: IndexConfig): Promise<any> {
     'DOW': '^DJI',
     'NIKKEI': '^N225',
     'HK50': '^HSI',
+    'US2Y': '^IRX',
+    'US10Y': '^TNX',
+    'US30Y': '^TYX',
   };
   
   const yahooSymbol = yahooSymbols[config.symbol];
