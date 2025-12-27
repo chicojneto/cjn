@@ -1,10 +1,26 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Alert } from '@/types/database';
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+
+const READ_ALERTS_KEY = 'read_alerts';
+
+function getReadAlerts(): Set<string> {
+  try {
+    const stored = localStorage.getItem(READ_ALERTS_KEY);
+    return new Set(stored ? JSON.parse(stored) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveReadAlerts(alerts: Set<string>) {
+  localStorage.setItem(READ_ALERTS_KEY, JSON.stringify([...alerts]));
+}
 
 export function useAlerts(unreadOnly = false) {
   const queryClient = useQueryClient();
+  const [readAlerts, setReadAlerts] = useState<Set<string>>(getReadAlerts);
   
   const query = useQuery({
     queryKey: ['alerts', unreadOnly],
@@ -18,13 +34,20 @@ export function useAlerts(unreadOnly = false) {
         .order('created_at', { ascending: false })
         .limit(50);
       
-      if (unreadOnly) {
-        q = q.eq('is_read', false);
-      }
-      
       const { data, error } = await q;
       if (error) throw error;
-      return data as (Alert & { assets: { symbol: string; name: string } | null })[];
+      
+      // Apply client-side read status
+      const alertsWithReadStatus = (data || []).map(alert => ({
+        ...alert,
+        is_read: readAlerts.has(alert.id)
+      }));
+      
+      if (unreadOnly) {
+        return alertsWithReadStatus.filter(a => !a.is_read) as (Alert & { assets: { symbol: string; name: string } | null })[];
+      }
+      
+      return alertsWithReadStatus as (Alert & { assets: { symbol: string; name: string } | null })[];
     },
   });
 
@@ -50,23 +73,16 @@ export function useAlerts(unreadOnly = false) {
     };
   }, [queryClient]);
 
-  return query;
-}
+  const markAsRead = useCallback((alertId: string) => {
+    const newReadAlerts = new Set(readAlerts);
+    newReadAlerts.add(alertId);
+    setReadAlerts(newReadAlerts);
+    saveReadAlerts(newReadAlerts);
+    queryClient.invalidateQueries({ queryKey: ['alerts'] });
+  }, [readAlerts, queryClient]);
 
-export function useMarkAlertRead() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (alertId: string) => {
-      const { error } = await supabase
-        .from('alerts')
-        .update({ is_read: true })
-        .eq('id', alertId);
-      
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['alerts'] });
-    },
-  });
+  return {
+    ...query,
+    markAsRead
+  };
 }
