@@ -7,10 +7,17 @@ const corsHeaders = {
 
 // RSS feeds from financial news sites
 const RSS_FEEDS = [
+  // Google News - Business/Finance
+  { url: 'https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FuQjBHZ0pDVWlnQVAB?hl=pt-BR&gl=BR&ceid=BR:pt-419', source: 'Google News' },
+  { url: 'https://news.google.com/rss/search?q=mercado+financeiro+OR+bolsa+OR+bitcoin+OR+dolar&hl=pt-BR&gl=BR&ceid=BR:pt-419', source: 'Google News' },
+  // Yahoo Finance
+  { url: 'https://finance.yahoo.com/news/rssindex', source: 'Yahoo Finance' },
+  { url: 'https://finance.yahoo.com/rss/topstories', source: 'Yahoo Finance' },
+  // Investing.com BR
+  { url: 'https://br.investing.com/rss/news.rss', source: 'Investing.com BR' },
+  { url: 'https://br.investing.com/rss/news_301.rss', source: 'Investing.com BR' },
+  // Fallback international sources
   { url: 'https://www.investing.com/rss/news.rss', source: 'Investing.com' },
-  { url: 'https://feeds.bloomberg.com/markets/news.rss', source: 'Bloomberg' },
-  { url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html', source: 'CNBC' },
-  { url: 'https://feeds.reuters.com/reuters/businessNews', source: 'Reuters' },
 ]
 
 // Keywords to detect sentiment
