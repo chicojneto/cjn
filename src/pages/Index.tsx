@@ -6,6 +6,7 @@ import { EconomicCalendar } from '@/components/dashboard/EconomicCalendar';
 import { TradingStrategies } from '@/components/dashboard/TradingStrategies';
 import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
 import { MacroFundamentals } from '@/components/dashboard/MacroFundamentals';
+import { LongShortTips } from '@/components/dashboard/LongShortTips';
 import { useAutoFetchNews } from '@/hooks/useAutoFetchNews';
 
 const Index = () => {
@@ -35,6 +36,7 @@ const Index = () => {
           {/* Right Sidebar */}
           <div className="space-y-6">
             <TradingStrategies />
+            <LongShortTips />
             <CorrelationsPanel selectedAsset={selectedAsset} onAssetSelect={setSelectedAsset} />
           </div>
         </div>
