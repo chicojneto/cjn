@@ -24,7 +24,7 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* News Feed - Takes 2 columns */}
           <div className="lg:col-span-2">
-            <NewsFeed limit={15} />
+            <NewsFeed limit={15} selectedAssetId={selectedAsset} />
           </div>
 
           {/* Right Sidebar */}
