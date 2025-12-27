@@ -5,7 +5,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, TrendingDown, Minus, RefreshCw, Activity, DollarSign, BarChart3, Wheat, Briefcase } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAssets } from '@/hooks/useAssets';
 import { cn } from '@/lib/utils';
 
 interface Quote {
@@ -37,6 +36,13 @@ async function fetchGlobalIndices(): Promise<Quote[]> {
 // Fetch currency rates
 async function fetchCurrencyRates(): Promise<Quote[]> {
   const { data, error } = await supabase.functions.invoke('fetch-currency-rates');
+  if (error) throw error;
+  return data?.quotes || [];
+}
+
+// Fetch asset quotes
+async function fetchAssetQuotes(): Promise<Quote[]> {
+  const { data, error } = await supabase.functions.invoke('fetch-asset-quotes');
   if (error) throw error;
   return data?.quotes || [];
 }
@@ -101,7 +107,12 @@ interface UnifiedMarketPanelProps {
 }
 
 export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMarketPanelProps) {
-  const { data: assets, isLoading: assetsLoading } = useAssets();
+  const { data: assetQuotes, isLoading: assetsLoading, refetch: refetchAssets, isFetching: assetsFetching } = useQuery({
+    queryKey: ['asset-quotes'],
+    queryFn: fetchAssetQuotes,
+    refetchInterval: 60000,
+    staleTime: 30000,
+  });
   
   const { data: globalIndices, isLoading: indicesLoading, refetch: refetchIndices, isFetching: indicesFetching } = useQuery({
     queryKey: ['global-indices'],
@@ -124,9 +135,10 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
   });
 
   const isLoading = assetsLoading || indicesLoading || currencyLoading;
-  const isFetching = indicesFetching || currencyFetching;
+  const isFetching = assetsFetching || indicesFetching || currencyFetching;
 
   const refetchAll = () => {
+    refetchAssets();
     refetchIndices();
     refetchCurrency();
   };
@@ -214,23 +226,16 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
     );
   };
 
-  const assetIcons: Record<string, string> = {
-    'XAU/USD': '🥇',
-    'EUR/USD': '🇪🇺',
-    'GBP/USD': '🇬🇧',
-    'USD/JPY': '🇯🇵',
-    'USD/CAD': '🇨🇦',
-    'WIN1!': '🇧🇷',
-    'WDO1!': '💵',
-  };
 
-  const renderAssetItem = (asset: any) => {
-    const isSelected = selectedAsset === asset.id;
+  const renderAssetItem = (asset: Quote) => {
+    const isSelected = selectedAsset === asset.symbol;
+    const historical = getHistoricalData(asset.symbol);
+    const trend = calculateTrend(asset.changePercentValue, historical?.change_percent ?? null);
     
     return (
       <div 
-        key={asset.id}
-        onClick={() => onAssetSelect?.(isSelected ? null : asset.id)}
+        key={asset.symbol}
+        onClick={() => onAssetSelect?.(isSelected ? null : asset.symbol)}
         className={cn(
           "flex items-center justify-between py-2 px-3 rounded-lg transition-all cursor-pointer",
           isSelected 
@@ -239,24 +244,38 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
         )}
       >
         <div className="flex items-center gap-3 min-w-0">
-          <span className="text-lg">{assetIcons[asset.symbol] || '📈'}</span>
+          <div className="flex items-center gap-1.5">
+            {getTrendIcon(trend, asset.isPositive, asset.isNegative)}
+            {getTrendBadge(trend)}
+          </div>
           <div className="min-w-0">
             <p className="font-mono font-medium text-sm truncate">{asset.symbol}</p>
             <p className="text-[10px] text-muted-foreground truncate">{asset.name}</p>
           </div>
         </div>
         
-        <Badge 
-          variant="outline" 
-          className={cn(
-            'text-[10px] px-1.5',
-            asset.category === 'Commodity' && 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-            asset.category === 'Forex' && 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-            asset.category === 'Índice' && 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-          )}
-        >
-          {asset.category}
-        </Badge>
+        <div className="flex items-center gap-4 text-right">
+          <div>
+            <p className="font-mono font-bold text-sm">{asset.priceFormatted}</p>
+            <p className={cn(
+              "font-mono text-xs",
+              asset.isPositive ? "text-primary" : asset.isNegative ? "text-destructive" : "text-muted-foreground"
+            )}>
+              {asset.changePercent}
+            </p>
+          </div>
+          <Badge 
+            variant="outline" 
+            className={cn(
+              'text-[10px] px-1.5',
+              asset.category === 'Commodity' && 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+              asset.category === 'Forex' && 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+              asset.category === 'Índice' && 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+            )}
+          >
+            {asset.category}
+          </Badge>
+        </div>
       </div>
     );
   };
@@ -311,17 +330,17 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* My Assets */}
-          {assets && assets.length > 0 && (
+          {assetQuotes && assetQuotes.length > 0 && (
             <div className="space-y-1">
               <div className="flex items-center gap-2 pb-2 mb-1 border-b border-border/30">
                 <Briefcase className={cn("h-4 w-4", CATEGORIES.myAssets.color)} />
                 <h3 className="text-sm font-medium">{CATEGORIES.myAssets.title}</h3>
                 <Badge variant="secondary" className="text-[10px] ml-auto">
-                  {assets.length}
+                  {assetQuotes.length}
                 </Badge>
               </div>
               <div className="space-y-0.5 max-h-[280px] overflow-y-auto pr-1">
-                {assets.map((asset) => renderAssetItem(asset))}
+                {assetQuotes.map((asset) => renderAssetItem(asset))}
               </div>
             </div>
           )}
