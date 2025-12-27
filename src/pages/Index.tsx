@@ -3,7 +3,7 @@ import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { UnifiedMarketPanel } from '@/components/dashboard/UnifiedMarketPanel';
 import { NewsFeed } from '@/components/dashboard/NewsFeed';
 import { EconomicCalendar } from '@/components/dashboard/EconomicCalendar';
-import { AlertsPanel } from '@/components/dashboard/AlertsPanel';
+import { TradingStrategies } from '@/components/dashboard/TradingStrategies';
 import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
 import { useAutoFetchNews } from '@/hooks/useAutoFetchNews';
 
@@ -33,7 +33,7 @@ const Index = () => {
 
           {/* Right Sidebar */}
           <div className="space-y-6">
-            <AlertsPanel />
+            <TradingStrategies />
             <CorrelationsPanel selectedAsset={selectedAsset} onAssetSelect={setSelectedAsset} />
           </div>
         </div>
