@@ -5,6 +5,7 @@ import { NewsFeed } from '@/components/dashboard/NewsFeed';
 import { EconomicCalendar } from '@/components/dashboard/EconomicCalendar';
 import { TradingStrategies } from '@/components/dashboard/TradingStrategies';
 import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
+import { MacroFundamentals } from '@/components/dashboard/MacroFundamentals';
 import { useAutoFetchNews } from '@/hooks/useAutoFetchNews';
 
 const Index = () => {
@@ -41,6 +42,11 @@ const Index = () => {
         {/* Economic Calendar - Full Width */}
         <section>
           <EconomicCalendar />
+        </section>
+
+        {/* Macro Fundamentals - Full Width */}
+        <section>
+          <MacroFundamentals />
         </section>
       </main>
     </div>
