@@ -11,6 +11,7 @@ import { ptBR } from 'date-fns/locale';
 interface NewsFeedProps {
   limit?: number;
   compact?: boolean;
+  selectedAssetId?: string | null;
 }
 
 const sentimentIcons = {
@@ -31,8 +32,15 @@ const impactColors = {
   low: 'bg-muted text-muted-foreground',
 };
 
-export function NewsFeed({ limit = 20, compact = false }: NewsFeedProps) {
+export function NewsFeed({ limit = 20, compact = false, selectedAssetId }: NewsFeedProps) {
   const { data: news, isLoading } = useNewsWithAssets(limit);
+
+  // Filter news by selected asset if one is selected
+  const filteredNews = selectedAssetId 
+    ? news?.filter(item => 
+        item.news_assets?.some((na: any) => na.asset_id === selectedAssetId)
+      )
+    : news;
 
   if (isLoading) {
     return (
@@ -55,7 +63,7 @@ export function NewsFeed({ limit = 20, compact = false }: NewsFeedProps) {
     );
   }
 
-  if (!news?.length) {
+  if (!filteredNews?.length) {
     return (
       <Card className="glass-card">
         <CardHeader>
@@ -63,8 +71,12 @@ export function NewsFeed({ limit = 20, compact = false }: NewsFeedProps) {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
-            <p>Nenhuma notícia disponível</p>
-            <p className="text-sm mt-1">As notícias aparecerão aqui quando forem capturadas</p>
+            <p>{selectedAssetId ? 'Nenhuma notícia para este ativo' : 'Nenhuma notícia disponível'}</p>
+            <p className="text-sm mt-1">
+              {selectedAssetId 
+                ? 'Clique em outro ativo ou desselecione para ver todas' 
+                : 'As notícias aparecerão aqui quando forem capturadas'}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -76,15 +88,20 @@ export function NewsFeed({ limit = 20, compact = false }: NewsFeedProps) {
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <span>Notícias</span>
+          {selectedAssetId && (
+            <Badge variant="outline" className="text-xs font-mono border-primary/50 text-primary">
+              Filtrado
+            </Badge>
+          )}
           <Badge variant="secondary" className="text-xs font-mono">
-            {news.length}
+            {filteredNews.length}
           </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <ScrollArea className={compact ? 'h-[400px]' : 'h-[600px]'}>
           <div className="space-y-4 pr-4">
-            {news.map((item) => {
+            {filteredNews.map((item) => {
               const SentimentIcon = item.sentiment ? sentimentIcons[item.sentiment] : Minus;
               
               return (
