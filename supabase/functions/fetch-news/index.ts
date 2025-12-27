@@ -37,6 +37,54 @@ const ASSET_KEYWORDS: Record<string, string[]> = {
   'OIL': ['oil', 'crude', 'petróleo', 'wti', 'brent'],
 }
 
+// Input sanitization and validation functions
+function sanitizeText(text: string, maxLength: number): string {
+  if (!text || typeof text !== 'string') return ''
+  
+  // Remove HTML tags more thoroughly - handle nested tags and encoded entities
+  let cleaned = text
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '') // Remove script tags and content
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '') // Remove style tags and content
+    .replace(/<[^>]*>/g, '') // Remove all remaining HTML tags
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+  
+  // Remove potential XSS patterns
+  cleaned = cleaned
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+\s*=/gi, '')
+    .replace(/data:/gi, '')
+  
+  // Normalize whitespace and trim
+  cleaned = cleaned.replace(/\s+/g, ' ').trim()
+  
+  // Limit length
+  return cleaned.slice(0, maxLength)
+}
+
+function validateUrl(url: string): string | null {
+  if (!url || typeof url !== 'string') return null
+  
+  try {
+    const parsed = new URL(url.trim())
+    // Only allow http and https protocols
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return null
+    }
+    // Basic check for suspicious patterns
+    if (parsed.href.includes('javascript:') || parsed.href.includes('data:')) {
+      return null
+    }
+    return parsed.href.slice(0, 2000) // Limit URL length
+  } catch {
+    return null
+  }
+}
+
 function detectSentiment(text: string): 'bullish' | 'bearish' | 'neutral' {
   const lowerText = text.toLowerCase()
   let bullishScore = 0
@@ -115,17 +163,25 @@ async function parseRSSFeed(feedUrl: string, source: string): Promise<any[]> {
       const pubDate = pubDateMatch ? new Date(pubDateMatch[1]) : new Date()
 
       if (title) {
-        const fullText = `${title} ${description}`
-        items.push({
-          title: title.trim(),
-          summary: description.trim().slice(0, 500),
-          source_url: link.trim(),
-          source,
-          published_at: pubDate.toISOString(),
-          sentiment: detectSentiment(fullText),
-          impact: detectImpact(fullText),
-          assets: detectAssets(fullText),
-        })
+        // Sanitize all extracted content
+        const sanitizedTitle = sanitizeText(title, 500)
+        const sanitizedDescription = sanitizeText(description, 1000)
+        const validatedUrl = validateUrl(link)
+        
+        // Only include if we have valid essential data
+        if (sanitizedTitle && sanitizedTitle.length > 3) {
+          const fullText = `${sanitizedTitle} ${sanitizedDescription}`
+          items.push({
+            title: sanitizedTitle,
+            summary: sanitizedDescription.slice(0, 500),
+            source_url: validatedUrl,
+            source: sanitizeText(source, 100),
+            published_at: pubDate.toISOString(),
+            sentiment: detectSentiment(fullText),
+            impact: detectImpact(fullText),
+            assets: detectAssets(fullText),
+          })
+        }
       }
     }
 
