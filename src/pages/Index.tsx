@@ -6,9 +6,13 @@ import { EconomicCalendar } from '@/components/dashboard/EconomicCalendar';
 import { AlertsPanel } from '@/components/dashboard/AlertsPanel';
 import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
 import { CurrencyRates } from '@/components/dashboard/CurrencyRates';
+import { useAutoFetchNews } from '@/hooks/useAutoFetchNews';
 
 const Index = () => {
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
+  
+  // Auto-fetch news on page load and every 5 minutes
+  useAutoFetchNews();
 
   return (
     <div className="min-h-screen bg-background">
