@@ -7,39 +7,17 @@ const corsHeaders = {
 
 // RSS feeds from financial news sites
 const RSS_FEEDS = [
-  // Google News - Business/Finance (Brazil)
+  // Google News - Business/Finance
   { url: 'https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FuQjBHZ0pDVWlnQVAB?hl=pt-BR&gl=BR&ceid=BR:pt-419', source: 'Google News' },
   { url: 'https://news.google.com/rss/search?q=mercado+financeiro+OR+bolsa+OR+bitcoin+OR+dolar&hl=pt-BR&gl=BR&ceid=BR:pt-419', source: 'Google News' },
-  
   // Yahoo Finance
   { url: 'https://finance.yahoo.com/news/rssindex', source: 'Yahoo Finance' },
   { url: 'https://finance.yahoo.com/rss/topstories', source: 'Yahoo Finance' },
-  
   // Investing.com BR
   { url: 'https://br.investing.com/rss/news.rss', source: 'Investing.com BR' },
   { url: 'https://br.investing.com/rss/news_301.rss', source: 'Investing.com BR' },
-  
-  // Investing.com International
+  // Fallback international sources
   { url: 'https://www.investing.com/rss/news.rss', source: 'Investing.com' },
-  
-  // Seeking Alpha
-  { url: 'https://seekingalpha.com/market_currents.xml', source: 'Seeking Alpha' },
-  { url: 'https://seekingalpha.com/tag/forex.xml', source: 'Seeking Alpha' },
-  { url: 'https://seekingalpha.com/feed.xml', source: 'Seeking Alpha' },
-  
-  // Bloomberg (Markets RSS)
-  { url: 'https://feeds.bloomberg.com/markets/news.rss', source: 'Bloomberg' },
-  
-  // CNBC
-  { url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html', source: 'CNBC' },
-  { url: 'https://www.cnbc.com/id/10001147/device/rss/rss.html', source: 'CNBC' },
-  
-  // Reuters
-  { url: 'https://www.reutersagency.com/feed/?best-topics=business-finance&post_type=best', source: 'Reuters' },
-  
-  // MarketWatch
-  { url: 'https://feeds.marketwatch.com/marketwatch/topstories/', source: 'MarketWatch' },
-  { url: 'https://feeds.marketwatch.com/marketwatch/marketpulse/', source: 'MarketWatch' },
 ]
 
 // Keywords to detect sentiment
