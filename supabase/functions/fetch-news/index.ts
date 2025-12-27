@@ -329,14 +329,23 @@ Deno.serve(async (req) => {
       }
 
       // Link news to assets
+      if (newsItem.assets.length > 0) {
+        console.log(`Linking news "${newsItem.title.slice(0, 50)}" to assets: ${newsItem.assets.join(', ')}`)
+      }
+      
       for (const assetSymbol of newsItem.assets) {
         const assetId = assetMap.get(assetSymbol)
         if (assetId) {
-          await supabase.from('news_assets').insert({
+          const { error: linkError } = await supabase.from('news_assets').insert({
             news_id: insertedNews.id,
             asset_id: assetId,
             expected_impact: newsItem.sentiment,
           })
+          if (linkError) {
+            console.error(`Error linking news to ${assetSymbol}:`, linkError)
+          }
+        } else {
+          console.log(`Asset not found in DB: ${assetSymbol}`)
         }
       }
 
