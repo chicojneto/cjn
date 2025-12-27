@@ -24,17 +24,37 @@ const RSS_FEEDS = [
 const BULLISH_KEYWORDS = ['surge', 'rally', 'gain', 'rise', 'jump', 'soar', 'high', 'growth', 'bullish', 'positive', 'up', 'record', 'profit', 'beat']
 const BEARISH_KEYWORDS = ['fall', 'drop', 'crash', 'decline', 'plunge', 'low', 'loss', 'bearish', 'negative', 'down', 'slump', 'miss', 'fear', 'concern']
 
-// Asset keywords for matching
+// Asset keywords for matching - aligned with database assets
 const ASSET_KEYWORDS: Record<string, string[]> = {
-  'BTC': ['bitcoin', 'btc', 'crypto'],
-  'ETH': ['ethereum', 'eth'],
-  'GOLD': ['gold', 'ouro', 'xau'],
-  'SILVER': ['silver', 'prata', 'xag'],
-  'USD': ['dollar', 'dólar', 'usd', 'dxy'],
-  'EUR': ['euro', 'eur'],
-  'SP500': ['s&p 500', 's&p500', 'sp500', 'spx'],
-  'NASDAQ': ['nasdaq', 'ndx', 'tech stocks'],
-  'OIL': ['oil', 'crude', 'petróleo', 'wti', 'brent'],
+  // Forex pairs
+  'EUR/USD': ['euro', 'eur/usd', 'eurusd', 'ecb', 'europa', 'zona do euro', 'eurozone', 'lagarde', 'banco central europeu'],
+  'GBP/USD': ['libra', 'gbp/usd', 'gbpusd', 'pound', 'sterling', 'bank of england', 'boe', 'reino unido', 'uk economy'],
+  'USD/CAD': ['dólar canadense', 'usd/cad', 'usdcad', 'loonie', 'bank of canada', 'boc', 'canada', 'canadá', 'petróleo canadense'],
+  'USD/JPY': ['iene', 'yen', 'usd/jpy', 'usdjpy', 'japão', 'japan', 'boj', 'bank of japan', 'nikkei'],
+  // Brazilian indices
+  'WDO1!': ['dólar futuro', 'mini dólar', 'wdo', 'dólar comercial', 'dollar', 'dólar', 'usd', 'dxy', 'fed', 'fomc', 'powell', 'treasury', 'tesouro americano'],
+  'WIN1!': ['ibovespa', 'bovespa', 'b3', 'bolsa brasileira', 'mini índice', 'win', 'brasil', 'brazil', 'selic', 'bacen', 'copom', 'lula', 'haddad'],
+  // Commodities
+  'XAU/USD': ['ouro', 'gold', 'xau', 'precious metal', 'metal precioso', 'safe haven', 'refúgio'],
+}
+
+// Indicator keywords for correlation-based linking
+const INDICATOR_KEYWORDS: Record<string, string[]> = {
+  'Fed Rate': ['fed', 'fomc', 'powell', 'federal reserve', 'fed rate', 'taxa de juros eua'],
+  'ECB Rate': ['ecb', 'lagarde', 'banco central europeu', 'european central bank', 'taxa europa'],
+  'BOJ Rate': ['boj', 'bank of japan', 'banco do japão', 'kuroda', 'ueda'],
+  'BOC Rate': ['boc', 'bank of canada', 'banco do canadá'],
+  'Selic': ['selic', 'copom', 'bacen', 'banco central do brasil', 'roberto campos neto'],
+  'CPI': ['cpi', 'inflação', 'inflation', 'consumer price', 'índice de preços'],
+  'PCE': ['pce', 'personal consumption', 'consumo pessoal'],
+  'NFP': ['nfp', 'non-farm', 'payrolls', 'emprego eua', 'desemprego eua', 'jobs report'],
+  'GDP': ['gdp', 'pib', 'gross domestic', 'produto interno bruto', 'crescimento econômico'],
+  'PMI': ['pmi', 'purchasing managers', 'índice gerente de compras', 'ism'],
+  'S&P 500': ['s&p 500', 's&p500', 'sp500', 'spx', 'wall street'],
+  'VIX': ['vix', 'volatilidade', 'volatility', 'medo', 'fear index'],
+  'DXY': ['dxy', 'dollar index', 'índice do dólar'],
+  'US 10Y Yield': ['treasury yield', 'rendimento tesouro', 'us 10y', 'bond yield', 'títulos americanos'],
+  'Petróleo': ['oil', 'crude', 'petróleo', 'wti', 'brent', 'opec', 'opep'],
 }
 
 // Input sanitization and validation functions
@@ -129,6 +149,47 @@ function detectAssets(text: string): string[] {
   return detectedAssets
 }
 
+function detectIndicators(text: string): string[] {
+  const lowerText = text.toLowerCase()
+  const detectedIndicators: string[] = []
+
+  for (const [name, keywords] of Object.entries(INDICATOR_KEYWORDS)) {
+    if (keywords.some(keyword => lowerText.includes(keyword))) {
+      detectedIndicators.push(name)
+    }
+  }
+
+  return detectedIndicators
+}
+
+// Map indicators to related assets based on correlations
+function getCorrelatedAssets(indicators: string[]): string[] {
+  const correlations: Record<string, string[]> = {
+    'Fed Rate': ['WDO1!', 'USD/JPY', 'EUR/USD', 'GBP/USD', 'XAU/USD'],
+    'ECB Rate': ['EUR/USD'],
+    'BOJ Rate': ['USD/JPY'],
+    'BOC Rate': ['USD/CAD'],
+    'Selic': ['WIN1!', 'WDO1!'],
+    'CPI': ['WDO1!', 'XAU/USD', 'WIN1!'],
+    'PCE': ['WDO1!', 'XAU/USD'],
+    'NFP': ['WDO1!', 'EUR/USD', 'XAU/USD'],
+    'GDP': ['WIN1!', 'WDO1!'],
+    'PMI': ['WIN1!', 'EUR/USD'],
+    'S&P 500': ['WIN1!', 'WDO1!'],
+    'VIX': ['WIN1!', 'XAU/USD'],
+    'DXY': ['WDO1!', 'EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CAD'],
+    'US 10Y Yield': ['WDO1!', 'XAU/USD', 'USD/JPY'],
+    'Petróleo': ['USD/CAD', 'WDO1!'],
+  }
+
+  const assets = new Set<string>()
+  for (const indicator of indicators) {
+    const related = correlations[indicator] || []
+    related.forEach(asset => assets.add(asset))
+  }
+  return Array.from(assets)
+}
+
 async function parseRSSFeed(feedUrl: string, source: string): Promise<any[]> {
   try {
     const response = await fetch(feedUrl, {
@@ -171,6 +232,17 @@ async function parseRSSFeed(feedUrl: string, source: string): Promise<any[]> {
         // Only include if we have valid essential data
         if (sanitizedTitle && sanitizedTitle.length > 3) {
           const fullText = `${sanitizedTitle} ${sanitizedDescription}`
+          
+          // Detect direct asset mentions
+          const directAssets = detectAssets(fullText)
+          
+          // Detect indicators and get correlated assets
+          const indicators = detectIndicators(fullText)
+          const correlatedAssets = getCorrelatedAssets(indicators)
+          
+          // Combine and deduplicate assets
+          const allAssets = [...new Set([...directAssets, ...correlatedAssets])]
+          
           items.push({
             title: sanitizedTitle,
             summary: sanitizedDescription.slice(0, 500),
@@ -179,7 +251,8 @@ async function parseRSSFeed(feedUrl: string, source: string): Promise<any[]> {
             published_at: pubDate.toISOString(),
             sentiment: detectSentiment(fullText),
             impact: detectImpact(fullText),
-            assets: detectAssets(fullText),
+            assets: allAssets,
+            indicators: indicators, // Store detected indicators
           })
         }
       }
