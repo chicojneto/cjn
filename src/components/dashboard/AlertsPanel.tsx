@@ -1,4 +1,4 @@
-import { useAlerts, useMarkAlertRead } from '@/hooks/useAlerts';
+import { useAlerts } from '@/hooks/useAlerts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -44,8 +44,7 @@ const typeIcons = {
 };
 
 export function AlertsPanel({ compact = false }: AlertsPanelProps) {
-  const { data: alerts, isLoading } = useAlerts();
-  const markAsRead = useMarkAlertRead();
+  const { data: alerts, isLoading, markAsRead } = useAlerts();
 
   if (isLoading) {
     return (
@@ -149,7 +148,7 @@ export function AlertsPanel({ compact = false }: AlertsPanelProps) {
                               variant="ghost"
                               size="sm"
                               className="h-6 px-2 text-xs"
-                              onClick={() => markAsRead.mutate(alert.id)}
+                              onClick={() => markAsRead(alert.id)}
                             >
                               <Check className="h-3 w-3 mr-1" />
                               Marcar lido
