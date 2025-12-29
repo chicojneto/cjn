@@ -5,3 +5,12 @@ verify_jwt = false
 
 [functions.fetch-news]
 verify_jwt = false
+
+[functions.fetch-global-indices]
+verify_jwt = false
+
+[functions.fetch-asset-quotes]
+verify_jwt = false
+
+[functions.fetch-stocks]
+verify_jwt = false

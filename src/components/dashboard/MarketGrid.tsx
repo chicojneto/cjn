@@ -16,6 +16,7 @@ interface Quote {
   isPositive: boolean;
   isNegative: boolean;
   category?: string;
+  market?: 'B3' | 'DOW';
 }
 
 // Fetch global indices
@@ -37,6 +38,13 @@ async function fetchAssetQuotes(): Promise<Quote[]> {
   const { data, error } = await supabase.functions.invoke('fetch-asset-quotes');
   if (error) throw error;
   return data?.quotes || [];
+}
+
+// Fetch stocks (B3 and DOW)
+async function fetchStocks(): Promise<{ b3Quotes: Quote[], dowQuotes: Quote[] }> {
+  const { data, error } = await supabase.functions.invoke('fetch-stocks');
+  if (error) throw error;
+  return { b3Quotes: data?.b3Quotes || [], dowQuotes: data?.dowQuotes || [] };
 }
 
 // Mappings for categories
@@ -76,9 +84,14 @@ const FLAG_MAP: Record<string, string> = {
   'HK50': '🇭🇰',
   'VIX': '📊',
   'DXY': '💵',
+  'BRL': '🇧🇷',
 };
 
-function getFlag(symbol: string): string {
+function getFlag(symbol: string, market?: 'B3' | 'DOW'): string {
+  // If market is specified, use appropriate flag
+  if (market === 'B3') return '🇧🇷';
+  if (market === 'DOW') return '🇺🇸';
+  
   // Check direct match
   if (FLAG_MAP[symbol]) return FLAG_MAP[symbol];
   
@@ -119,13 +132,21 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     staleTime: 30000,
   });
 
-  const isLoading = assetsLoading || indicesLoading || currencyLoading;
-  const isFetching = assetsFetching || indicesFetching || currencyFetching;
+  const { data: stocksData, isLoading: stocksLoading, refetch: refetchStocks, isFetching: stocksFetching } = useQuery({
+    queryKey: ['stocks'],
+    queryFn: fetchStocks,
+    refetchInterval: 60000,
+    staleTime: 30000,
+  });
+
+  const isLoading = assetsLoading || indicesLoading || currencyLoading || stocksLoading;
+  const isFetching = assetsFetching || indicesFetching || currencyFetching || stocksFetching;
 
   const refetchAll = () => {
     refetchAssets();
     refetchIndices();
     refetchCurrency();
+    refetchStocks();
   };
 
   // Organize quotes by category
@@ -136,6 +157,8 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     volatility: [],
     currencies: [],
     commodities: [],
+    b3Stocks: [],
+    dowStocks: [],
   };
 
   // Add assets
@@ -170,10 +193,26 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     }
   });
 
+  // Add B3 stocks
+  stocksData?.b3Quotes?.forEach(quote => {
+    organizedQuotes.b3Stocks.push({
+      ...quote,
+      flag: getFlag(quote.symbol, 'B3'),
+    } as any);
+  });
+
+  // Add DOW stocks
+  stocksData?.dowQuotes?.forEach(quote => {
+    organizedQuotes.dowStocks.push({
+      ...quote,
+      flag: getFlag(quote.symbol, 'DOW'),
+    } as any);
+  });
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {[...Array(4)].map((_, i) => (
+        {[...Array(6)].map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="h-8 w-full" />
             {[...Array(5)].map((_, j) => (
@@ -221,6 +260,32 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
           <MarketTable
             title="Índices Globais"
             quotes={organizedQuotes.indices.map(q => ({
+              ...q,
+              flag: (q as any).flag,
+            }))}
+            showTime={true}
+            compact
+          />
+        )}
+
+        {/* B3 Stocks */}
+        {organizedQuotes.b3Stocks.length > 0 && (
+          <MarketTable
+            title="Ações B3"
+            quotes={organizedQuotes.b3Stocks.map(q => ({
+              ...q,
+              flag: (q as any).flag,
+            }))}
+            showTime={true}
+            compact
+          />
+        )}
+
+        {/* DOW Stocks */}
+        {organizedQuotes.dowStocks.length > 0 && (
+          <MarketTable
+            title="Ações EUA"
+            quotes={organizedQuotes.dowStocks.map(q => ({
               ...q,
               flag: (q as any).flag,
             }))}
