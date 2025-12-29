@@ -3,8 +3,8 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 
 export function EconomicCalendar() {
   return (
-    <Card className="glass-card">
-      <CardHeader>
+    <Card className="border-border/30 bg-card/50">
+      <CardHeader className="py-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <CalendarIcon className="h-5 w-5" />
           Calendário Econômico
