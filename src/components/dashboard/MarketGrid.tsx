@@ -240,7 +240,7 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {/* My Assets */}
+        {/* 1. Meus Ativos */}
         {organizedQuotes.myAssets.length > 0 && (
           <MarketTable
             title="Meus Ativos"
@@ -255,7 +255,20 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
           />
         )}
 
-        {/* Indices */}
+        {/* 2. Moedas DXY */}
+        {organizedQuotes.currencies.length > 0 && (
+          <MarketTable
+            title="Moedas DXY"
+            quotes={organizedQuotes.currencies.map(q => ({
+              ...q,
+              flag: (q as any).flag,
+            }))}
+            showTime={true}
+            compact
+          />
+        )}
+
+        {/* 3. Índices Globais */}
         {organizedQuotes.indices.length > 0 && (
           <MarketTable
             title="Índices Globais"
@@ -268,11 +281,11 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
           />
         )}
 
-        {/* B3 Stocks */}
-        {organizedQuotes.b3Stocks.length > 0 && (
+        {/* 4. Commodities */}
+        {organizedQuotes.commodities.length > 0 && (
           <MarketTable
-            title="Ações B3"
-            quotes={organizedQuotes.b3Stocks.map(q => ({
+            title="Commodities"
+            quotes={organizedQuotes.commodities.map(q => ({
               ...q,
               flag: (q as any).flag,
             }))}
@@ -281,20 +294,7 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
           />
         )}
 
-        {/* DOW Stocks */}
-        {organizedQuotes.dowStocks.length > 0 && (
-          <MarketTable
-            title="Ações EUA"
-            quotes={organizedQuotes.dowStocks.map(q => ({
-              ...q,
-              flag: (q as any).flag,
-            }))}
-            showTime={true}
-            compact
-          />
-        )}
-
-        {/* Yields */}
+        {/* 5. Juros EUA */}
         {organizedQuotes.yields.length > 0 && (
           <MarketTable
             title="Juros EUA"
@@ -308,7 +308,7 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
           />
         )}
 
-        {/* Volatility */}
+        {/* 6. Volatilidade */}
         {organizedQuotes.volatility.length > 0 && (
           <MarketTable
             title="Volatilidade"
@@ -321,11 +321,11 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
           />
         )}
 
-        {/* Currencies */}
-        {organizedQuotes.currencies.length > 0 && (
+        {/* 7. Ações EUA */}
+        {organizedQuotes.dowStocks.length > 0 && (
           <MarketTable
-            title="Moedas (DXY)"
-            quotes={organizedQuotes.currencies.map(q => ({
+            title="Ações EUA"
+            quotes={organizedQuotes.dowStocks.map(q => ({
               ...q,
               flag: (q as any).flag,
             }))}
@@ -334,11 +334,11 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
           />
         )}
 
-        {/* Commodities */}
-        {organizedQuotes.commodities.length > 0 && (
+        {/* 8. Ações B3 */}
+        {organizedQuotes.b3Stocks.length > 0 && (
           <MarketTable
-            title="Commodities"
-            quotes={organizedQuotes.commodities.map(q => ({
+            title="Ações B3"
+            quotes={organizedQuotes.b3Stocks.map(q => ({
               ...q,
               flag: (q as any).flag,
             }))}

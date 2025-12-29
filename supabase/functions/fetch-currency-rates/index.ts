@@ -25,6 +25,9 @@ const CURRENCIES: CurrencyConfig[] = [
   { symbol: 'XAU/USD', name: 'Ouro', yahooSymbol: 'GC=F', category: 'commodity' },
   { symbol: 'OIL', name: 'Petróleo WTI', yahooSymbol: 'CL=F', category: 'commodity' },
   { symbol: 'COFFEE', name: 'Café', yahooSymbol: 'KC=F', category: 'commodity' },
+  { symbol: 'COCOA', name: 'Cacau', yahooSymbol: 'CC=F', category: 'commodity' },
+  { symbol: 'COPPER', name: 'Cobre', yahooSymbol: 'HG=F', category: 'commodity' },
+  { symbol: 'IRON', name: 'Minério de Ferro', yahooSymbol: 'TIO=F', category: 'commodity' },
 ];
 
 async function fetchQuoteFromYahoo(config: CurrencyConfig): Promise<any> {
