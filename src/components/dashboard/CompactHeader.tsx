@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Coffee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CompactHeaderProps {
@@ -18,6 +18,19 @@ export function CompactHeader({ onRefresh, isRefreshing }: CompactHeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/30">
+      {/* Brand Banner */}
+      <div className="bg-gradient-to-r from-amber-900/20 via-amber-800/10 to-transparent border-b border-amber-900/20">
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex items-center gap-2">
+            <Coffee className="h-4 w-4 text-amber-500" />
+            <span className="text-sm font-semibold tracking-wide text-amber-500/90">
+              PullBack<span className="text-amber-400">Com</span>Café
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Time and Status */}
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
