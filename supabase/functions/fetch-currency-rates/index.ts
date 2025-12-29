@@ -9,7 +9,7 @@ interface CurrencyConfig {
   symbol: string;
   name: string;
   yahooSymbol: string;
-  category: 'currency' | 'commodity';
+  category: 'currency' | 'commodity' | 'crypto';
 }
 
 const CURRENCIES: CurrencyConfig[] = [
@@ -28,6 +28,13 @@ const CURRENCIES: CurrencyConfig[] = [
   { symbol: 'COCOA', name: 'Cacau', yahooSymbol: 'CC=F', category: 'commodity' },
   { symbol: 'COPPER', name: 'Cobre', yahooSymbol: 'HG=F', category: 'commodity' },
   { symbol: 'IRON', name: 'Minério de Ferro', yahooSymbol: 'TIO=F', category: 'commodity' },
+  // Criptomoedas
+  { symbol: 'BTC', name: 'Bitcoin', yahooSymbol: 'BTC-USD', category: 'crypto' },
+  { symbol: 'ETH', name: 'Ethereum', yahooSymbol: 'ETH-USD', category: 'crypto' },
+  { symbol: 'XRP', name: 'XRP', yahooSymbol: 'XRP-USD', category: 'crypto' },
+  { symbol: 'SOL', name: 'Solana', yahooSymbol: 'SOL-USD', category: 'crypto' },
+  { symbol: 'LINK', name: 'Chainlink', yahooSymbol: 'LINK-USD', category: 'crypto' },
+  { symbol: 'BNB', name: 'BNB', yahooSymbol: 'BNB-USD', category: 'crypto' },
 ];
 
 async function fetchQuoteFromYahoo(config: CurrencyConfig): Promise<any> {

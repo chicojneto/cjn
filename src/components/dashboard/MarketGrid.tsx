@@ -50,7 +50,7 @@ async function fetchStocks(): Promise<{ b3Quotes: Quote[], dowQuotes: Quote[] }>
 // Mappings for categories
 const INDICES_MAPPING: Record<string, string> = {
   'DXY': 'currencies',
-  'VIX': 'volatility',
+  'VIX': 'yields', // VIX now goes to yields panel (Juros EUA / VIX)
   'NASDAQ': 'indices',
   'S&P 500': 'indices',
   'DOW': 'indices',
@@ -154,7 +154,7 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     myAssets: [],
     indices: [],
     yields: [],
-    volatility: [],
+    crypto: [],
     currencies: [],
     commodities: [],
     b3Stocks: [],
@@ -182,6 +182,11 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
   currencyRates?.forEach(quote => {
     if (quote.category === 'commodity') {
       organizedQuotes.commodities.push({
+        ...quote,
+        flag: getFlag(quote.symbol),
+      } as any);
+    } else if (quote.category === 'crypto') {
+      organizedQuotes.crypto.push({
         ...quote,
         flag: getFlag(quote.symbol),
       } as any);
@@ -294,13 +299,13 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
           />
         )}
 
-        {/* 5. Juros EUA */}
+        {/* 5. Juros EUA / VIX */}
         {organizedQuotes.yields.length > 0 && (
           <MarketTable
-            title="Juros EUA"
+            title="Juros EUA / VIX"
             quotes={organizedQuotes.yields.map(q => ({
               ...q,
-              priceFormatted: `${q.priceFormatted}%`,
+              priceFormatted: q.symbol === 'VIX' ? q.priceFormatted : `${q.priceFormatted}%`,
               flag: (q as any).flag,
             }))}
             showTime={true}
@@ -308,11 +313,11 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
           />
         )}
 
-        {/* 6. Volatilidade */}
-        {organizedQuotes.volatility.length > 0 && (
+        {/* 6. Cripto */}
+        {organizedQuotes.crypto.length > 0 && (
           <MarketTable
-            title="Volatilidade"
-            quotes={organizedQuotes.volatility.map(q => ({
+            title="Cripto"
+            quotes={organizedQuotes.crypto.map(q => ({
               ...q,
               flag: (q as any).flag,
             }))}
