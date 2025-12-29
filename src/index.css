@@ -115,7 +115,7 @@
 
 @layer components {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-lg;
+    @apply bg-card/80 backdrop-blur-xl border border-border/30 rounded-lg;
     box-shadow: var(--gradient-glow);
   }
 
@@ -168,5 +168,15 @@
 
   .neutral {
     @apply text-muted-foreground;
+  }
+
+  /* Hide scrollbar but allow scrolling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

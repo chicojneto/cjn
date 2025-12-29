@@ -106,7 +106,7 @@ export function TradingStrategies() {
   const SelectedIcon = selectedStrategy.icon;
 
   return (
-    <Card className="glass-card">
+    <Card className="border-border/30 bg-card/50">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">

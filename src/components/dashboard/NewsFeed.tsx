@@ -44,12 +44,12 @@ export function NewsFeed({ limit = 20, compact = false, selectedAssetId }: NewsF
 
   if (isLoading) {
     return (
-      <Card className="glass-card">
-        <CardHeader>
+      <Card className="border-border/30 bg-card/50">
+        <CardHeader className="py-3">
           <CardTitle className="text-lg">Notícias</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-4 w-3/4" />
@@ -65,8 +65,8 @@ export function NewsFeed({ limit = 20, compact = false, selectedAssetId }: NewsF
 
   if (!filteredNews?.length) {
     return (
-      <Card className="glass-card">
-        <CardHeader>
+      <Card className="border-border/30 bg-card/50">
+        <CardHeader className="py-3">
           <CardTitle className="text-lg">Notícias</CardTitle>
         </CardHeader>
         <CardContent>
@@ -84,8 +84,8 @@ export function NewsFeed({ limit = 20, compact = false, selectedAssetId }: NewsF
   }
 
   return (
-    <Card className="glass-card">
-      <CardHeader className="pb-3">
+    <Card className="border-border/30 bg-card/50">
+      <CardHeader className="pb-3 py-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <span>Notícias</span>
           {selectedAssetId && (
@@ -99,8 +99,8 @@ export function NewsFeed({ limit = 20, compact = false, selectedAssetId }: NewsF
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className={compact ? 'h-[400px]' : 'h-[600px]'}>
-          <div className="space-y-4 pr-4">
+        <ScrollArea className={compact ? 'h-[400px]' : 'h-[500px]'}>
+          <div className="space-y-3 pr-4">
             {filteredNews.map((item) => {
               const SentimentIcon = item.sentiment ? sentimentIcons[item.sentiment] : Minus;
               

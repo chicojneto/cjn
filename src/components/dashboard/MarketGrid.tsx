@@ -1,0 +1,287 @@
+import { useQuery } from '@tanstack/react-query';
+import { MarketTable } from './MarketTable';
+import { Skeleton } from '@/components/ui/skeleton';
+import { supabase } from '@/integrations/supabase/client';
+import { RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+interface Quote {
+  symbol: string;
+  name: string;
+  price: number;
+  priceFormatted: string;
+  changeValue: number;
+  changePercent: string;
+  changePercentValue: number;
+  isPositive: boolean;
+  isNegative: boolean;
+  category?: string;
+}
+
+// Fetch global indices
+async function fetchGlobalIndices(): Promise<Quote[]> {
+  const { data, error } = await supabase.functions.invoke('fetch-global-indices');
+  if (error) throw error;
+  return data?.quotes || [];
+}
+
+// Fetch currency rates
+async function fetchCurrencyRates(): Promise<Quote[]> {
+  const { data, error } = await supabase.functions.invoke('fetch-currency-rates');
+  if (error) throw error;
+  return data?.quotes || [];
+}
+
+// Fetch asset quotes
+async function fetchAssetQuotes(): Promise<Quote[]> {
+  const { data, error } = await supabase.functions.invoke('fetch-asset-quotes');
+  if (error) throw error;
+  return data?.quotes || [];
+}
+
+// Mappings for categories
+const INDICES_MAPPING: Record<string, string> = {
+  'DXY': 'currencies',
+  'VIX': 'volatility',
+  'NASDAQ': 'indices',
+  'S&P 500': 'indices',
+  'DOW': 'indices',
+  'NIKKEI': 'indices',
+  'HK50': 'indices',
+  'US2Y': 'yields',
+  'US10Y': 'yields',
+  'US30Y': 'yields',
+};
+
+// Flag mappings
+const FLAG_MAP: Record<string, string> = {
+  'USD': '🇺🇸',
+  'EUR': '🇪🇺',
+  'GBP': '🇬🇧',
+  'JPY': '🇯🇵',
+  'CAD': '🇨🇦',
+  'AUD': '🇦🇺',
+  'NZD': '🇳🇿',
+  'CHF': '🇨🇭',
+  'XAU': '🥇',
+  'WTI': '🛢️',
+  'BRENT': '🛢️',
+  'BTC': '₿',
+  'WIN': '🇧🇷',
+  'WDO': '🇧🇷',
+  'DOW': '🇺🇸',
+  'NASDAQ': '🇺🇸',
+  'S&P': '🇺🇸',
+  'NIKKEI': '🇯🇵',
+  'HK50': '🇭🇰',
+  'VIX': '📊',
+  'DXY': '💵',
+};
+
+function getFlag(symbol: string): string {
+  // Check direct match
+  if (FLAG_MAP[symbol]) return FLAG_MAP[symbol];
+  
+  // Check if symbol starts with known currency
+  for (const [key, flag] of Object.entries(FLAG_MAP)) {
+    if (symbol.startsWith(key) || symbol.includes(key)) {
+      return flag;
+    }
+  }
+  
+  return '📈';
+}
+
+interface MarketGridProps {
+  onAssetSelect?: (symbol: string | null) => void;
+  selectedAsset?: string | null;
+}
+
+export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
+  const { data: assetQuotes, isLoading: assetsLoading, refetch: refetchAssets, isFetching: assetsFetching } = useQuery({
+    queryKey: ['asset-quotes'],
+    queryFn: fetchAssetQuotes,
+    refetchInterval: 60000,
+    staleTime: 30000,
+  });
+  
+  const { data: globalIndices, isLoading: indicesLoading, refetch: refetchIndices, isFetching: indicesFetching } = useQuery({
+    queryKey: ['global-indices'],
+    queryFn: fetchGlobalIndices,
+    refetchInterval: 60000,
+    staleTime: 30000,
+  });
+
+  const { data: currencyRates, isLoading: currencyLoading, refetch: refetchCurrency, isFetching: currencyFetching } = useQuery({
+    queryKey: ['currency-rates'],
+    queryFn: fetchCurrencyRates,
+    refetchInterval: 60000,
+    staleTime: 30000,
+  });
+
+  const isLoading = assetsLoading || indicesLoading || currencyLoading;
+  const isFetching = assetsFetching || indicesFetching || currencyFetching;
+
+  const refetchAll = () => {
+    refetchAssets();
+    refetchIndices();
+    refetchCurrency();
+  };
+
+  // Organize quotes by category
+  const organizedQuotes: Record<string, Quote[]> = {
+    myAssets: [],
+    indices: [],
+    yields: [],
+    volatility: [],
+    currencies: [],
+    commodities: [],
+  };
+
+  // Add assets
+  assetQuotes?.forEach(quote => {
+    organizedQuotes.myAssets.push({
+      ...quote,
+      flag: getFlag(quote.symbol),
+    } as any);
+  });
+
+  // Distribute global indices
+  globalIndices?.forEach(quote => {
+    const category = INDICES_MAPPING[quote.symbol] || 'indices';
+    organizedQuotes[category].push({
+      ...quote,
+      flag: getFlag(quote.symbol),
+    } as any);
+  });
+
+  // Distribute currency rates
+  currencyRates?.forEach(quote => {
+    if (quote.category === 'commodity') {
+      organizedQuotes.commodities.push({
+        ...quote,
+        flag: getFlag(quote.symbol),
+      } as any);
+    } else {
+      organizedQuotes.currencies.push({
+        ...quote,
+        flag: getFlag(quote.symbol),
+      } as any);
+    }
+  });
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="space-y-2">
+            <Skeleton className="h-8 w-full" />
+            {[...Array(5)].map((_, j) => (
+              <Skeleton key={j} className="h-10 w-full" />
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-end">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={refetchAll}
+          disabled={isFetching}
+          className="h-8 gap-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+          <span className="text-xs">Atualizar</span>
+        </Button>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {/* My Assets */}
+        {organizedQuotes.myAssets.length > 0 && (
+          <MarketTable
+            title="Meus Ativos"
+            quotes={organizedQuotes.myAssets.map(q => ({
+              ...q,
+              flag: (q as any).flag,
+            }))}
+            onSelect={(symbol) => onAssetSelect?.(selectedAsset === symbol ? null : symbol)}
+            selectedSymbol={selectedAsset}
+            showTime={true}
+            compact
+          />
+        )}
+
+        {/* Indices */}
+        {organizedQuotes.indices.length > 0 && (
+          <MarketTable
+            title="Índices Globais"
+            quotes={organizedQuotes.indices.map(q => ({
+              ...q,
+              flag: (q as any).flag,
+            }))}
+            showTime={true}
+            compact
+          />
+        )}
+
+        {/* Yields */}
+        {organizedQuotes.yields.length > 0 && (
+          <MarketTable
+            title="Juros EUA"
+            quotes={organizedQuotes.yields.map(q => ({
+              ...q,
+              priceFormatted: `${q.priceFormatted}%`,
+              flag: (q as any).flag,
+            }))}
+            showTime={true}
+            compact
+          />
+        )}
+
+        {/* Volatility */}
+        {organizedQuotes.volatility.length > 0 && (
+          <MarketTable
+            title="Volatilidade"
+            quotes={organizedQuotes.volatility.map(q => ({
+              ...q,
+              flag: (q as any).flag,
+            }))}
+            showTime={true}
+            compact
+          />
+        )}
+
+        {/* Currencies */}
+        {organizedQuotes.currencies.length > 0 && (
+          <MarketTable
+            title="Moedas (DXY)"
+            quotes={organizedQuotes.currencies.map(q => ({
+              ...q,
+              flag: (q as any).flag,
+            }))}
+            showTime={true}
+            compact
+          />
+        )}
+
+        {/* Commodities */}
+        {organizedQuotes.commodities.length > 0 && (
+          <MarketTable
+            title="Commodities"
+            quotes={organizedQuotes.commodities.map(q => ({
+              ...q,
+              flag: (q as any).flag,
+            }))}
+            showTime={true}
+            compact
+          />
+        )}
+      </div>
+    </div>
+  );
+}
