@@ -3,13 +3,14 @@ import { CompactHeader } from '@/components/dashboard/CompactHeader';
 import { MarketGrid } from '@/components/dashboard/MarketGrid';
 import { NewsFeed } from '@/components/dashboard/NewsFeed';
 import { EconomicCalendar } from '@/components/dashboard/EconomicCalendar';
+import { DailyChecklist } from '@/components/dashboard/DailyChecklist';
 import { TradingStrategies } from '@/components/dashboard/TradingStrategies';
 import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
 import { MacroFundamentals } from '@/components/dashboard/MacroFundamentals';
 import { LongShortTips } from '@/components/dashboard/LongShortTips';
 import { useAutoFetchNews } from '@/hooks/useAutoFetchNews';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Newspaper, BookOpen, Calendar, Activity, TrendingUp } from 'lucide-react';
+import { Newspaper, BookOpen, Calendar, Activity, TrendingUp, ClipboardCheck } from 'lucide-react';
 
 const Index = () => {
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
@@ -37,7 +38,7 @@ const Index = () => {
         {/* Tabbed Content for iPad readability */}
         <section>
           <Tabs defaultValue="news" className="w-full">
-            <TabsList className="w-full grid grid-cols-5 h-auto bg-card/50 border border-border/30 rounded-lg p-1">
+            <TabsList className="w-full grid grid-cols-6 h-auto bg-card/50 border border-border/30 rounded-lg p-1">
               <TabsTrigger 
                 value="news" 
                 className="flex items-center gap-2 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -73,6 +74,13 @@ const Index = () => {
                 <Calendar className="h-4 w-4" />
                 <span className="hidden sm:inline">Calendário</span>
               </TabsTrigger>
+              <TabsTrigger 
+                value="checklist" 
+                className="flex items-center gap-2 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <ClipboardCheck className="h-4 w-4" />
+                <span className="hidden sm:inline">Check List</span>
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="news" className="mt-4">
@@ -99,6 +107,10 @@ const Index = () => {
             
             <TabsContent value="calendar" className="mt-4">
               <EconomicCalendar />
+            </TabsContent>
+            
+            <TabsContent value="checklist" className="mt-4">
+              <DailyChecklist />
             </TabsContent>
           </Tabs>
         </section>
