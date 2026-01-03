@@ -40,36 +40,36 @@ export function MarketTable({
   }
 
   return (
-    <div className="bg-card/50 rounded-lg border border-border/30 overflow-hidden">
-      <div className="px-3 py-2 border-b border-border/30 bg-muted/20">
-        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+    <div className="bg-card/50 rounded-md border border-border/30 overflow-hidden">
+      <div className="px-2 py-1 border-b border-border/30 bg-muted/20">
+        <h3 className="text-xs font-semibold text-foreground">{title}</h3>
       </div>
-      <div className={cn("divide-y divide-border/20", compact ? "max-h-[320px]" : "max-h-[400px]", "overflow-y-auto")}>
+      <div className={cn("divide-y divide-border/10", compact ? "max-h-[280px]" : "max-h-[350px]", "overflow-y-auto")}>
         {quotes.map((quote, idx) => (
           <div
             key={`${quote.symbol}-${idx}`}
             onClick={() => onSelect?.(quote.symbol)}
             className={cn(
-              "flex items-center justify-between px-3 py-2 transition-colors",
+              "flex items-center justify-between px-2 py-0.5 transition-colors",
               onSelect && "cursor-pointer hover:bg-muted/30",
               selectedSymbol === quote.symbol && "bg-primary/10"
             )}
           >
-            <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 min-w-0 flex-1">
               {quote.flag && (
-                <span className="text-sm shrink-0">{quote.flag}</span>
+                <span className="text-xs shrink-0">{quote.flag}</span>
               )}
-              <span className="text-sm font-medium text-foreground truncate">
+              <span className="text-xs font-medium text-foreground truncate">
                 {quote.name || quote.symbol}
               </span>
             </div>
             
-            <div className="flex items-center gap-3 text-right shrink-0">
-              <span className="font-mono text-sm text-foreground tabular-nums min-w-[70px] text-right">
+            <div className="flex items-center gap-2 text-right shrink-0">
+              <span className="font-mono text-xs text-foreground tabular-nums min-w-[60px] text-right">
                 {quote.priceFormatted}
               </span>
               <span className={cn(
-                "font-mono text-xs tabular-nums min-w-[55px] text-right",
+                "font-mono text-[10px] tabular-nums min-w-[48px] text-right",
                 quote.isPositive && "text-primary",
                 quote.isNegative && "text-destructive",
                 !quote.isPositive && !quote.isNegative && "text-muted-foreground"
@@ -77,7 +77,7 @@ export function MarketTable({
                 {quote.changePercent}
               </span>
               {showTime && (
-                <span className="font-mono text-xs text-muted-foreground tabular-nums min-w-[60px]">
+                <span className="font-mono text-[10px] text-muted-foreground tabular-nums min-w-[50px]">
                   {quote.time || formatTime()}
                 </span>
               )}
