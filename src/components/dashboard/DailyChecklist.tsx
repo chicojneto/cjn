@@ -1,133 +1,255 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ClipboardCheck } from 'lucide-react';
+import { ClipboardCheck, TrendingUp, TrendingDown, Minus, RefreshCw, Loader2 } from 'lucide-react';
+import { useMarketCorrelations, CorrelationAnalysis } from '@/hooks/useMarketCorrelations';
+import { Button } from '@/components/ui/button';
 
-interface ChecklistItem {
-  text: string;
-  color?: 'default' | 'green' | 'red' | 'yellow' | 'orange';
+interface MarketIndicator {
+  label: string;
+  value: string;
+  change: string;
+  isPositive: boolean | null;
 }
 
-interface ChecklistSection {
-  title?: string;
-  items: ChecklistItem[];
+function formatIndicator(data: CorrelationAnalysis['dxy'], decimals = 2): MarketIndicator | null {
+  if (!data) return null;
+  return {
+    label: data.name,
+    value: data.price.toFixed(decimals),
+    change: `${data.isPositive ? '+' : ''}${data.changePercent.toFixed(2)}%`,
+    isPositive: data.isPositive,
+  };
 }
 
-const checklistData: ChecklistSection[] = [
-  {
-    items: [
-      { text: 'New York: Futuros Americanos: S&P 500 (ES), Nasdaq (NQ), Dow Jones (YM).', color: 'default' },
-      { text: 'ASIA: Nikkei, Hang Seng, Shanghai Composite. Relevante para commodites', color: 'default' },
-      { text: 'Europa: DAX, FTSE Euro Stoxx 50 (indica humor global antes de NY abrir)', color: 'default' },
-    ]
-  },
-  {
-    items: [
-      { text: 'DXY subindo → pressão de alta no dólar/real (WDO para cima e WIN baixo)', color: 'green' },
-      { text: 'DXY caindo → alívio no câmbio, WDO tende a cair e WIN subir', color: 'green' },
-      { text: 'EUR/USD e USD/JPY: Termômetros do apetite a risco global', color: 'yellow' },
-    ]
-  },
-  {
-    items: [
-      { text: 'Minério de Ferro (Dalian/Singapura): Subindo forte → WIN tende a abrir positivo', color: 'orange' },
-      { text: 'Brent e WTI: Petrobras pesa muito no índice. Olhe: o crack spread e estoques da API/EIA', color: 'orange' },
-      { text: 'Cobre: Indicador de atividade industrial global. Antecipa movimentos de risk-on/risk-off', color: 'orange' },
-      { text: 'Ouro disparando = medo no mercado = emergentes sofrem', color: 'orange' },
-    ]
-  },
-  {
-    items: [
-      { text: 'DI Futuro (B3): DI1F mais curto (3-6 meses) para expectativa de Selic. Curva abrindo (juros subindo) = pressão no Ibovespa', color: 'yellow' },
-      { text: 'Treasuries (EUA): Yield 10 anos (US10Y) acima de 4.5% = estresse. Yield caindo = apetite por risco, bom para emergentes', color: 'yellow' },
-    ]
-  },
-  {
-    items: [
-      { text: 'CDS Brasil 5 anos: Risco país subindo = fuga de capital = dólar sobe, bolsa cai', color: 'red' },
-    ]
-  },
-  {
-    items: [
-      { text: 'Futuros EUA: Define o humor de abertura', color: 'default' },
-      { text: 'DXY: Direção do dólar global', color: 'default' },
-      { text: 'Minério + Petróleo: Peso das blue chips', color: 'default' },
-      { text: 'DI e Treasuries: Custo de capital', color: 'default' },
-      { text: 'Agenda: Eventos movem mercado', color: 'default' },
-      { text: 'Fluxo gringo: Quem está comprando/vendendo', color: 'default' },
-    ]
-  },
-  {
-    title: 'CORRELAÇÕES PRÁTICAS',
-    items: []
-  },
-  {
-    title: 'PARA WIN',
-    items: [
-      { text: 'Minério sobe + Petróleo sobe + Futuros EUA positivos = viés comprador', color: 'green' },
-      { text: 'DI abrindo + CDS subindo + Gringo vendendo = viés vendedor', color: 'red' },
-    ]
-  },
-  {
-    title: 'PARA WDO',
-    items: [
-      { text: 'DXY forte + Treasuries subindo + CDS aumentando = dólar para cima', color: 'green' },
-      { text: 'DXY fraco + Commodities fortes + Fluxo entrando = dólar para baixo', color: 'red' },
-    ]
-  },
-  {
-    title: 'PARA XAU/USD',
-    items: [
-      { text: 'DXY caindo + VIX subindo + Yields caindo + Inflação Forte = LONG', color: 'green' },
-      { text: 'DXY subindo + VIX baixo + Yields subindo = Short', color: 'red' },
-    ]
-  },
-];
+function BiasIndicator({ bias, label }: { bias: 'bullish' | 'bearish' | 'neutral'; label: string }) {
+  const biasConfig = {
+    bullish: { icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10', text: 'COMPRADOR' },
+    bearish: { icon: TrendingDown, color: 'text-red-500', bg: 'bg-red-500/10', text: 'VENDEDOR' },
+    neutral: { icon: Minus, color: 'text-yellow-500', bg: 'bg-yellow-500/10', text: 'NEUTRO' },
+  };
+  
+  const config = biasConfig[bias];
+  const Icon = config.icon;
+  
+  return (
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md ${config.bg}`}>
+      <Icon className={`h-4 w-4 ${config.color}`} />
+      <span className={`text-xs font-bold ${config.color}`}>{label}: {config.text}</span>
+    </div>
+  );
+}
 
-const colorClasses: Record<string, string> = {
-  default: 'text-foreground',
-  green: 'text-emerald-500',
-  red: 'text-red-500',
-  yellow: 'text-yellow-500',
-  orange: 'text-orange-500',
-};
+function IndicatorRow({ indicator }: { indicator: MarketIndicator }) {
+  return (
+    <div className="flex items-center justify-between py-1 border-b border-border/10 last:border-0">
+      <span className="text-xs text-muted-foreground">{indicator.label}</span>
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-medium">{indicator.value}</span>
+        <span className={`text-[10px] font-medium ${
+          indicator.isPositive === null ? 'text-muted-foreground' :
+          indicator.isPositive ? 'text-emerald-500' : 'text-red-500'
+        }`}>
+          {indicator.change}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function SignalsList({ signals, color }: { signals: string[]; color: 'green' | 'red' | 'yellow' }) {
+  const colorClasses = {
+    green: 'text-emerald-500',
+    red: 'text-red-500',
+    yellow: 'text-yellow-500',
+  };
+  
+  return (
+    <div className="space-y-0.5">
+      {signals.map((signal, idx) => (
+        <p key={idx} className={`text-[11px] leading-relaxed ${colorClasses[color]}`}>
+          • {signal}
+        </p>
+      ))}
+    </div>
+  );
+}
 
 export function DailyChecklist() {
+  const { data, isLoading, error, refetch, isFetching } = useMarketCorrelations();
+
+  if (isLoading) {
+    return (
+      <Card className="border-border/30 bg-card/50">
+        <CardHeader className="py-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <ClipboardCheck className="h-5 w-5" />
+            Check List Diário
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <span className="ml-2 text-sm text-muted-foreground">Carregando dados de mercado...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <Card className="border-border/30 bg-card/50">
+        <CardHeader className="py-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <ClipboardCheck className="h-5 w-5" />
+            Check List Diário
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <div className="text-center py-4">
+            <p className="text-sm text-muted-foreground mb-2">Erro ao carregar dados</p>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Tentar novamente
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Format indicators
+  const indicators = {
+    futures: [
+      formatIndicator(data.sp500Futures),
+      formatIndicator(data.nasdaqFutures),
+      formatIndicator(data.dowFutures),
+    ].filter(Boolean) as MarketIndicator[],
+    currencies: [
+      formatIndicator(data.dxy),
+      formatIndicator(data.eurUsd, 4),
+      formatIndicator(data.usdJpy, 2),
+      formatIndicator(data.usdBrl, 4),
+    ].filter(Boolean) as MarketIndicator[],
+    commodities: [
+      formatIndicator(data.gold),
+      formatIndicator(data.oil),
+      formatIndicator(data.copper),
+    ].filter(Boolean) as MarketIndicator[],
+    rates: [
+      formatIndicator(data.us10y),
+      formatIndicator(data.vix),
+    ].filter(Boolean) as MarketIndicator[],
+  };
+
   return (
     <Card className="border-border/30 bg-card/50">
-      <CardHeader className="py-3">
+      <CardHeader className="py-3 flex flex-row items-center justify-between">
         <CardTitle className="text-lg flex items-center gap-2">
           <ClipboardCheck className="h-5 w-5" />
           Check List Diário
         </CardTitle>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => refetch()}
+          disabled={isFetching}
+          className="h-8 px-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+        </Button>
       </CardHeader>
       <CardContent className="p-4 pt-0">
-        <div className="space-y-3">
-          {checklistData.map((section, sectionIdx) => (
-            <div key={sectionIdx}>
-              {section.title && (
-                <h3 className={`font-bold text-sm mb-1 ${
-                  section.title === 'CORRELAÇÕES PRÁTICAS' 
-                    ? 'text-yellow-500 mt-4' 
-                    : section.title.startsWith('PARA') 
-                      ? 'text-red-500 mt-2' 
-                      : 'text-foreground'
-                }`}>
-                  {section.title}
-                </h3>
-              )}
-              {section.items.length > 0 && (
-                <div className="space-y-0.5">
-                  {section.items.map((item, itemIdx) => (
-                    <p 
-                      key={itemIdx} 
-                      className={`text-xs leading-relaxed ${colorClasses[item.color || 'default']}`}
-                    >
-                      {item.text}
-                    </p>
-                  ))}
-                </div>
-              )}
+        <div className="space-y-4">
+          {/* Bias Summary */}
+          <div className="flex flex-wrap gap-2">
+            <BiasIndicator bias={data.winBias} label="WIN" />
+            <BiasIndicator bias={data.wdoBias} label="WDO" />
+            <BiasIndicator bias={data.goldBias} label="OURO" />
+          </div>
+
+          {/* Market Indicators Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Futures */}
+            <div className="space-y-1">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Futuros EUA</h4>
+              {indicators.futures.map((ind, idx) => (
+                <IndicatorRow key={idx} indicator={ind} />
+              ))}
             </div>
-          ))}
+
+            {/* Currencies */}
+            <div className="space-y-1">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Moedas</h4>
+              {indicators.currencies.map((ind, idx) => (
+                <IndicatorRow key={idx} indicator={ind} />
+              ))}
+            </div>
+
+            {/* Commodities */}
+            <div className="space-y-1">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Commodities</h4>
+              {indicators.commodities.map((ind, idx) => (
+                <IndicatorRow key={idx} indicator={ind} />
+              ))}
+            </div>
+
+            {/* Rates & Volatility */}
+            <div className="space-y-1">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Juros & Volatilidade</h4>
+              {indicators.rates.map((ind, idx) => (
+                <IndicatorRow key={idx} indicator={ind} />
+              ))}
+            </div>
+          </div>
+
+          {/* Correlation Signals */}
+          <div className="border-t border-border/20 pt-3 space-y-3">
+            <h3 className="text-sm font-bold text-yellow-500">ANÁLISE DE CORRELAÇÕES</h3>
+            
+            {/* WIN Signals */}
+            {data.winSignals.length > 0 && (
+              <div>
+                <h4 className="text-xs font-bold text-red-500 mb-1">PARA WIN:</h4>
+                <SignalsList 
+                  signals={data.winSignals} 
+                  color={data.winBias === 'bullish' ? 'green' : data.winBias === 'bearish' ? 'red' : 'yellow'} 
+                />
+              </div>
+            )}
+            
+            {/* WDO Signals */}
+            {data.wdoSignals.length > 0 && (
+              <div>
+                <h4 className="text-xs font-bold text-red-500 mb-1">PARA WDO:</h4>
+                <SignalsList 
+                  signals={data.wdoSignals} 
+                  color={data.wdoBias === 'bullish' ? 'green' : data.wdoBias === 'bearish' ? 'red' : 'yellow'} 
+                />
+              </div>
+            )}
+            
+            {/* Gold Signals */}
+            {data.goldSignals.length > 0 && (
+              <div>
+                <h4 className="text-xs font-bold text-red-500 mb-1">PARA XAU/USD:</h4>
+                <SignalsList 
+                  signals={data.goldSignals} 
+                  color={data.goldBias === 'bullish' ? 'green' : data.goldBias === 'bearish' ? 'red' : 'yellow'} 
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Static Tips */}
+          <div className="border-t border-border/20 pt-3 space-y-2">
+            <h3 className="text-xs font-bold text-muted-foreground">DICAS RÁPIDAS</h3>
+            <div className="space-y-0.5 text-[10px] text-muted-foreground">
+              <p>• DXY subindo → pressão de alta no dólar/real (WDO ↑, WIN ↓)</p>
+              <p>• VIX &gt; 20 = medo no mercado = cautela com posições</p>
+              <p>• Treasury 10Y &gt; 4.5% = estresse, emergentes sofrem</p>
+              <p>• Ouro disparando = busca por proteção = risco global</p>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

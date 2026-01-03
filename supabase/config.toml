@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.fetch-stocks]
 verify_jwt = false
+
+[functions.fetch-market-correlations]
+verify_jwt = false
