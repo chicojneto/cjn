@@ -11,6 +11,12 @@ interface MarketData {
   timestamp: string | null;
 }
 
+export interface BrazilRatesData {
+  cdi: { value: number; date: string } | null;
+  cdsBrazil: { value: number; change: number; changePercent: number } | null;
+  diFutures: { contract: string; rate: number; change: number }[] | null;
+}
+
 export interface CorrelationAnalysis {
   dxy: MarketData | null;
   vix: MarketData | null;
@@ -27,6 +33,7 @@ export interface CorrelationAnalysis {
   usdJpy: MarketData | null;
   usdBrl: MarketData | null;
   ibovFutures: MarketData | null;
+  brazilRates: BrazilRatesData;
   winBias: 'bullish' | 'bearish' | 'neutral';
   wdoBias: 'bullish' | 'bearish' | 'neutral';
   goldBias: 'bullish' | 'bearish' | 'neutral';
@@ -59,7 +66,7 @@ export function useMarketCorrelations() {
       
       return data.data;
     },
-    refetchInterval: 60000, // Refetch every minute
-    staleTime: 30000, // Consider data stale after 30 seconds
+    refetchInterval: 60000,
+    staleTime: 30000,
   });
 }

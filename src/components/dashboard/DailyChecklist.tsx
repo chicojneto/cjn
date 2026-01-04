@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ClipboardCheck, TrendingUp, TrendingDown, Minus, RefreshCw, Loader2 } from 'lucide-react';
-import { useMarketCorrelations, CorrelationAnalysis } from '@/hooks/useMarketCorrelations';
+import { useMarketCorrelations, CorrelationAnalysis, BrazilRatesData } from '@/hooks/useMarketCorrelations';
 import { Button } from '@/components/ui/button';
 
 interface MarketIndicator {
@@ -69,6 +69,62 @@ function SignalsList({ signals, color }: { signals: string[]; color: 'green' | '
           • {signal}
         </p>
       ))}
+    </div>
+  );
+}
+
+function BrazilRatesSection({ brazilRates }: { brazilRates: BrazilRatesData }) {
+  return (
+    <div className="space-y-1">
+      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Juros Brasil</h4>
+      
+      {/* CDI */}
+      {brazilRates.cdi && (
+        <div className="flex items-center justify-between py-1 border-b border-border/10">
+          <span className="text-xs text-muted-foreground">Taxa CDI</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium">{brazilRates.cdi.value.toFixed(2)}%</span>
+            <span className="text-[10px] text-muted-foreground">a.a.</span>
+          </div>
+        </div>
+      )}
+      
+      {/* CDS Brazil */}
+      {brazilRates.cdsBrazil && (
+        <div className="flex items-center justify-between py-1 border-b border-border/10">
+          <span className="text-xs text-muted-foreground">CDS Brasil 5Y</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium">{brazilRates.cdsBrazil.value.toFixed(0)} bps</span>
+            <span className={`text-[10px] font-medium ${
+              brazilRates.cdsBrazil.changePercent > 0 ? 'text-red-500' : 'text-emerald-500'
+            }`}>
+              {brazilRates.cdsBrazil.changePercent > 0 ? '+' : ''}{brazilRates.cdsBrazil.changePercent.toFixed(2)}%
+            </span>
+          </div>
+        </div>
+      )}
+      
+      {/* DI Futures */}
+      {brazilRates.diFutures && brazilRates.diFutures.length > 0 && (
+        <>
+          <div className="pt-1">
+            <span className="text-[10px] font-semibold text-muted-foreground">DI Futuro B3:</span>
+          </div>
+          {brazilRates.diFutures.map((di, idx) => (
+            <div key={idx} className="flex items-center justify-between py-0.5 border-b border-border/10 last:border-0">
+              <span className="text-[10px] text-muted-foreground">{di.contract}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-medium">{di.rate.toFixed(2)}%</span>
+                <span className={`text-[9px] font-medium ${
+                  di.change > 0 ? 'text-red-500' : di.change < 0 ? 'text-emerald-500' : 'text-muted-foreground'
+                }`}>
+                  {di.change > 0 ? '+' : ''}{di.change.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 }
@@ -168,7 +224,7 @@ export function DailyChecklist() {
           </div>
 
           {/* Market Indicators Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Futures */}
             <div className="space-y-1">
               <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Futuros EUA</h4>
@@ -195,11 +251,16 @@ export function DailyChecklist() {
 
             {/* Rates & Volatility */}
             <div className="space-y-1">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Juros & Volatilidade</h4>
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Juros & Volatilidade EUA</h4>
               {indicators.rates.map((ind, idx) => (
                 <IndicatorRow key={idx} indicator={ind} />
               ))}
             </div>
+
+            {/* Brazil Rates Section */}
+            {data.brazilRates && (
+              <BrazilRatesSection brazilRates={data.brazilRates} />
+            )}
           </div>
 
           {/* Correlation Signals */}
@@ -248,6 +309,8 @@ export function DailyChecklist() {
               <p>• VIX &gt; 20 = medo no mercado = cautela com posições</p>
               <p>• Treasury 10Y &gt; 4.5% = estresse, emergentes sofrem</p>
               <p>• Ouro disparando = busca por proteção = risco global</p>
+              <p>• CDI alto = juros elevados = pressão em ações brasileiras</p>
+              <p>• CDS Brasil &gt; 200 bps = risco país elevado = pressão no real</p>
             </div>
           </div>
         </div>
