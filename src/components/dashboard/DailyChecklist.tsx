@@ -22,31 +22,32 @@ function formatIndicator(data: CorrelationAnalysis['dxy'], decimals = 2): Market
 
 function BiasIndicator({ bias, label }: { bias: 'bullish' | 'bearish' | 'neutral'; label: string }) {
   const biasConfig = {
-    bullish: { icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10', text: 'COMPRADOR' },
-    bearish: { icon: TrendingDown, color: 'text-red-500', bg: 'bg-red-500/10', text: 'VENDEDOR' },
-    neutral: { icon: Minus, color: 'text-yellow-500', bg: 'bg-yellow-500/10', text: 'NEUTRO' },
+    bullish: { icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/20 border-emerald-500/50', text: 'COMPRA' },
+    bearish: { icon: TrendingDown, color: 'text-red-400', bg: 'bg-red-500/20 border-red-500/50', text: 'VENDA' },
+    neutral: { icon: Minus, color: 'text-yellow-400', bg: 'bg-yellow-500/20 border-yellow-500/50', text: 'NEUTRO' },
   };
   
   const config = biasConfig[bias];
   const Icon = config.icon;
   
   return (
-    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md ${config.bg}`}>
+    <div className={`flex items-center gap-2 px-3 py-2 border ${config.bg}`}>
       <Icon className={`h-4 w-4 ${config.color}`} />
-      <span className={`text-xs font-bold ${config.color}`}>{label}: {config.text}</span>
+      <span className={`text-sm font-bold font-mono ${config.color}`}>{label}</span>
+      <span className={`text-xs font-mono ${config.color}`}>{config.text}</span>
     </div>
   );
 }
 
-function IndicatorRow({ indicator }: { indicator: MarketIndicator }) {
+function TerminalRow({ indicator }: { indicator: MarketIndicator }) {
   return (
-    <div className="flex items-center justify-between py-1 border-b border-border/10 last:border-0">
-      <span className="text-xs text-muted-foreground">{indicator.label}</span>
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-medium">{indicator.value}</span>
-        <span className={`text-[10px] font-medium ${
+    <div className="flex items-center justify-between py-1.5 px-2 border-b border-border/30 hover:bg-muted/20 transition-colors">
+      <span className="text-xs font-medium text-muted-foreground truncate">{indicator.label}</span>
+      <div className="flex items-center gap-3 font-mono">
+        <span className="text-sm font-semibold text-foreground">{indicator.value}</span>
+        <span className={`text-xs font-bold min-w-[60px] text-right ${
           indicator.isPositive === null ? 'text-muted-foreground' :
-          indicator.isPositive ? 'text-emerald-500' : 'text-red-500'
+          indicator.isPositive ? 'text-emerald-400' : 'text-red-400'
         }`}>
           {indicator.change}
         </span>
@@ -55,76 +56,144 @@ function IndicatorRow({ indicator }: { indicator: MarketIndicator }) {
   );
 }
 
-function SignalsList({ signals, color }: { signals: string[]; color: 'green' | 'red' | 'yellow' }) {
-  const colorClasses = {
-    green: 'text-emerald-500',
-    red: 'text-red-500',
-    yellow: 'text-yellow-500',
+function TerminalPanel({ 
+  title, 
+  indicators, 
+  variant = 'default' 
+}: { 
+  title: string; 
+  indicators: MarketIndicator[]; 
+  variant?: 'default' | 'highlight-blue' | 'highlight-amber' | 'highlight-green';
+}) {
+  const headerStyles = {
+    default: 'bg-muted/50 text-muted-foreground border-border/50',
+    'highlight-blue': 'bg-blue-500/20 text-blue-400 border-blue-500/50',
+    'highlight-amber': 'bg-amber-500/20 text-amber-400 border-amber-500/50',
+    'highlight-green': 'bg-green-500/20 text-green-400 border-green-500/50',
   };
-  
+
   return (
-    <div className="space-y-0.5">
-      {signals.map((signal, idx) => (
-        <p key={idx} className={`text-[11px] leading-relaxed ${colorClasses[color]}`}>
-          • {signal}
-        </p>
-      ))}
+    <div className="border border-border/50 bg-card/30 h-full flex flex-col">
+      <div className={`px-3 py-2 border-b ${headerStyles[variant]}`}>
+        <h4 className="text-xs font-bold uppercase tracking-wider">{title}</h4>
+      </div>
+      <div className="flex-1 overflow-auto">
+        {indicators.map((ind, idx) => (
+          <TerminalRow key={idx} indicator={ind} />
+        ))}
+      </div>
     </div>
   );
 }
 
-function BrazilRatesSection({ brazilRates }: { brazilRates: BrazilRatesData }) {
+function BrazilRatesPanel({ brazilRates }: { brazilRates: BrazilRatesData }) {
   return (
-    <div className="space-y-1">
-      <h4 className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded bg-green-500/20 text-green-400">🇧🇷 Juros Brasil</h4>
-      
-      {/* CDI */}
-      {brazilRates.cdi && (
-        <div className="flex items-center justify-between py-1 border-b border-border/10">
-          <span className="text-xs text-muted-foreground">Taxa CDI</span>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium">{brazilRates.cdi.value.toFixed(2)}%</span>
-            <span className="text-[10px] text-muted-foreground">a.a.</span>
-          </div>
-        </div>
-      )}
-      
-      {/* CDS Brazil */}
-      {brazilRates.cdsBrazil && (
-        <div className="flex items-center justify-between py-1 border-b border-border/10">
-          <span className="text-xs text-muted-foreground">CDS Brasil 5Y</span>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium">{brazilRates.cdsBrazil.value.toFixed(0)} bps</span>
-            <span className={`text-[10px] font-medium ${
-              brazilRates.cdsBrazil.changePercent > 0 ? 'text-red-500' : 'text-emerald-500'
-            }`}>
-              {brazilRates.cdsBrazil.changePercent > 0 ? '+' : ''}{brazilRates.cdsBrazil.changePercent.toFixed(2)}%
-            </span>
-          </div>
-        </div>
-      )}
-      
-      {/* DI Futures */}
-      {brazilRates.diFutures && brazilRates.diFutures.length > 0 && (
-        <>
-          <div className="pt-1">
-            <span className="text-[10px] font-semibold text-muted-foreground">DI Futuro B3:</span>
-          </div>
-          {brazilRates.diFutures.map((di, idx) => (
-            <div key={idx} className="flex items-center justify-between py-0.5 border-b border-border/10 last:border-0">
-              <span className="text-[10px] text-muted-foreground">{di.contract}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-medium">{di.rate.toFixed(2)}%</span>
-                <span className={`text-[9px] font-medium ${
-                  di.change > 0 ? 'text-red-500' : di.change < 0 ? 'text-emerald-500' : 'text-muted-foreground'
-                }`}>
-                  {di.change > 0 ? '+' : ''}{di.change.toFixed(2)}
-                </span>
-              </div>
+    <div className="border border-border/50 bg-card/30 h-full flex flex-col">
+      <div className="px-3 py-2 border-b bg-green-500/20 text-green-400 border-green-500/50">
+        <h4 className="text-xs font-bold uppercase tracking-wider">🇧🇷 JUROS BRASIL</h4>
+      </div>
+      <div className="flex-1 overflow-auto">
+        {brazilRates.cdi && (
+          <div className="flex items-center justify-between py-1.5 px-2 border-b border-border/30 hover:bg-muted/20">
+            <span className="text-xs font-medium text-muted-foreground">Taxa CDI</span>
+            <div className="flex items-center gap-2 font-mono">
+              <span className="text-sm font-semibold text-foreground">{brazilRates.cdi.value.toFixed(2)}%</span>
+              <span className="text-[10px] text-muted-foreground">a.a.</span>
             </div>
-          ))}
-        </>
-      )}
+          </div>
+        )}
+        
+        {brazilRates.cdsBrazil && (
+          <div className="flex items-center justify-between py-1.5 px-2 border-b border-border/30 hover:bg-muted/20">
+            <span className="text-xs font-medium text-muted-foreground">CDS Brasil 5Y</span>
+            <div className="flex items-center gap-3 font-mono">
+              <span className="text-sm font-semibold text-foreground">{brazilRates.cdsBrazil.value.toFixed(0)} bps</span>
+              <span className={`text-xs font-bold min-w-[50px] text-right ${
+                brazilRates.cdsBrazil.changePercent > 0 ? 'text-red-400' : 'text-emerald-400'
+              }`}>
+                {brazilRates.cdsBrazil.changePercent > 0 ? '+' : ''}{brazilRates.cdsBrazil.changePercent.toFixed(2)}%
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {brazilRates.diFutures && brazilRates.diFutures.length > 0 && (
+          <>
+            <div className="px-2 py-1 bg-muted/30 border-b border-border/30">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">DI Futuro B3</span>
+            </div>
+            {brazilRates.diFutures.map((di, idx) => (
+              <div key={idx} className="flex items-center justify-between py-1 px-2 border-b border-border/30 hover:bg-muted/20">
+                <span className="text-[11px] text-muted-foreground font-mono">{di.contract}</span>
+                <div className="flex items-center gap-2 font-mono">
+                  <span className="text-xs font-semibold text-foreground">{di.rate.toFixed(2)}%</span>
+                  <span className={`text-[10px] font-bold ${
+                    di.change > 0 ? 'text-red-400' : di.change < 0 ? 'text-emerald-400' : 'text-muted-foreground'
+                  }`}>
+                    {di.change > 0 ? '+' : ''}{di.change.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SignalsPanel({ 
+  winSignals, 
+  wdoSignals, 
+  goldSignals,
+  winBias,
+  wdoBias,
+  goldBias
+}: { 
+  winSignals: string[]; 
+  wdoSignals: string[]; 
+  goldSignals: string[];
+  winBias: 'bullish' | 'bearish' | 'neutral';
+  wdoBias: 'bullish' | 'bearish' | 'neutral';
+  goldBias: 'bullish' | 'bearish' | 'neutral';
+}) {
+  const getColor = (bias: 'bullish' | 'bearish' | 'neutral') => {
+    return bias === 'bullish' ? 'text-emerald-400' : bias === 'bearish' ? 'text-red-400' : 'text-yellow-400';
+  };
+
+  return (
+    <div className="border border-border/50 bg-card/30 h-full flex flex-col">
+      <div className="px-3 py-2 border-b bg-yellow-500/20 text-yellow-400 border-yellow-500/50">
+        <h4 className="text-xs font-bold uppercase tracking-wider">📊 ANÁLISE DE CORRELAÇÕES</h4>
+      </div>
+      <div className="flex-1 overflow-auto p-2 space-y-3">
+        {winSignals.length > 0 && (
+          <div>
+            <h5 className="text-[10px] font-bold text-red-400 mb-1 font-mono">WIN:</h5>
+            {winSignals.map((signal, idx) => (
+              <p key={idx} className={`text-[11px] leading-relaxed ${getColor(winBias)}`}>• {signal}</p>
+            ))}
+          </div>
+        )}
+        
+        {wdoSignals.length > 0 && (
+          <div>
+            <h5 className="text-[10px] font-bold text-red-400 mb-1 font-mono">WDO:</h5>
+            {wdoSignals.map((signal, idx) => (
+              <p key={idx} className={`text-[11px] leading-relaxed ${getColor(wdoBias)}`}>• {signal}</p>
+            ))}
+          </div>
+        )}
+        
+        {goldSignals.length > 0 && (
+          <div>
+            <h5 className="text-[10px] font-bold text-red-400 mb-1 font-mono">XAU/USD:</h5>
+            {goldSignals.map((signal, idx) => (
+              <p key={idx} className={`text-[11px] leading-relaxed ${getColor(goldBias)}`}>• {signal}</p>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -134,17 +203,17 @@ export function DailyChecklist() {
 
   if (isLoading) {
     return (
-      <Card className="border-border/30 bg-card/50">
-        <CardHeader className="py-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <ClipboardCheck className="h-5 w-5" />
-            Check List Diário
+      <Card className="border-border/50 bg-background">
+        <CardHeader className="py-2 px-3 border-b border-border/50">
+          <CardTitle className="text-sm font-mono flex items-center gap-2">
+            <ClipboardCheck className="h-4 w-4" />
+            CHECK LIST DIÁRIO
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 pt-0">
+        <CardContent className="p-4">
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            <span className="ml-2 text-sm text-muted-foreground">Carregando dados de mercado...</span>
+            <span className="ml-2 text-sm text-muted-foreground font-mono">Carregando dados...</span>
           </div>
         </CardContent>
       </Card>
@@ -153,19 +222,19 @@ export function DailyChecklist() {
 
   if (error || !data) {
     return (
-      <Card className="border-border/30 bg-card/50">
-        <CardHeader className="py-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <ClipboardCheck className="h-5 w-5" />
-            Check List Diário
+      <Card className="border-border/50 bg-background">
+        <CardHeader className="py-2 px-3 border-b border-border/50">
+          <CardTitle className="text-sm font-mono flex items-center gap-2">
+            <ClipboardCheck className="h-4 w-4" />
+            CHECK LIST DIÁRIO
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 pt-0">
+        <CardContent className="p-4">
           <div className="text-center py-4">
-            <p className="text-sm text-muted-foreground mb-2">Erro ao carregar dados</p>
+            <p className="text-sm text-muted-foreground mb-2 font-mono">Erro ao carregar dados</p>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
               <RefreshCw className="h-4 w-4 mr-2" />
-              Tentar novamente
+              Retry
             </Button>
           </div>
         </CardContent>
@@ -208,136 +277,104 @@ export function DailyChecklist() {
   };
 
   return (
-    <Card className="border-border/30 bg-card/50">
-      <CardHeader className="py-3 flex flex-row items-center justify-between">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <ClipboardCheck className="h-5 w-5" />
-          Check List Diário
-        </CardTitle>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => refetch()}
-          disabled={isFetching}
-          className="h-8 px-2"
-        >
-          <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
-        </Button>
+    <Card className="border-border/50 bg-background">
+      {/* Terminal Header */}
+      <CardHeader className="py-2 px-3 border-b border-border/50 bg-muted/30">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-mono font-bold flex items-center gap-2 text-foreground">
+            <ClipboardCheck className="h-4 w-4" />
+            CHECK LIST DIÁRIO
+          </CardTitle>
+          <div className="flex items-center gap-3">
+            {/* Bias Summary in Header */}
+            <div className="hidden lg:flex items-center gap-1">
+              <BiasIndicator bias={data.winBias} label="WIN" />
+              <BiasIndicator bias={data.wdoBias} label="WDO" />
+              <BiasIndicator bias={data.goldBias} label="OURO" />
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="h-7 px-2 font-mono text-xs"
+            >
+              <RefreshCw className={`h-3 w-3 ${isFetching ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="p-4 pt-0">
-        <div className="space-y-4">
-          {/* Bias Summary */}
-          <div className="flex flex-wrap gap-2">
-            <BiasIndicator bias={data.winBias} label="WIN" />
-            <BiasIndicator bias={data.wdoBias} label="WDO" />
-            <BiasIndicator bias={data.goldBias} label="OURO" />
+
+      <CardContent className="p-2">
+        {/* Mobile Bias */}
+        <div className="lg:hidden flex flex-wrap gap-1 mb-2">
+          <BiasIndicator bias={data.winBias} label="WIN" />
+          <BiasIndicator bias={data.wdoBias} label="WDO" />
+          <BiasIndicator bias={data.goldBias} label="OURO" />
+        </div>
+
+        {/* Main Grid - Bloomberg Style */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-2">
+          {/* Row 1: Global Markets */}
+          <TerminalPanel 
+            title="🌏 ÁSIA" 
+            indicators={indicators.asianMarkets} 
+          />
+          
+          <TerminalPanel 
+            title="🇪🇺 EUROPA" 
+            indicators={indicators.europeanMarkets} 
+          />
+          
+          <TerminalPanel 
+            title="🇺🇸 FUTUROS EUA" 
+            indicators={indicators.futures} 
+          />
+
+          {/* Row 2: Currencies, Commodities, Rates */}
+          <TerminalPanel 
+            title="💱 MOEDAS" 
+            indicators={indicators.currencies}
+            variant="highlight-blue"
+          />
+          
+          <TerminalPanel 
+            title="🛢️ COMMODITIES" 
+            indicators={indicators.commodities}
+            variant="highlight-amber"
+          />
+          
+          <TerminalPanel 
+            title="📈 JUROS & VIX" 
+            indicators={indicators.rates} 
+          />
+
+          {/* Row 3: Brazil Rates & Signals */}
+          {data.brazilRates && (
+            <BrazilRatesPanel brazilRates={data.brazilRates} />
+          )}
+          
+          <div className="sm:col-span-2 lg:col-span-2 xl:col-span-3 2xl:col-span-3">
+            <SignalsPanel 
+              winSignals={data.winSignals}
+              wdoSignals={data.wdoSignals}
+              goldSignals={data.goldSignals}
+              winBias={data.winBias}
+              wdoBias={data.wdoBias}
+              goldBias={data.goldBias}
+            />
           </div>
+        </div>
 
-          {/* Market Indicators Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Asian Markets */}
-            <div className="space-y-1">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">🌏 Ásia (Fechamento)</h4>
-              {indicators.asianMarkets.map((ind, idx) => (
-                <IndicatorRow key={idx} indicator={ind} />
-              ))}
-            </div>
-
-            {/* European Markets */}
-            <div className="space-y-1">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">🇪🇺 Europa</h4>
-              {indicators.europeanMarkets.map((ind, idx) => (
-                <IndicatorRow key={idx} indicator={ind} />
-              ))}
-            </div>
-
-            {/* US Futures */}
-            <div className="space-y-1">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">🇺🇸 Futuros EUA</h4>
-              {indicators.futures.map((ind, idx) => (
-                <IndicatorRow key={idx} indicator={ind} />
-              ))}
-            </div>
-
-            {/* Currencies */}
-            <div className="space-y-1">
-              <h4 className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded bg-blue-500/20 text-blue-400">💱 Moedas</h4>
-              {indicators.currencies.map((ind, idx) => (
-                <IndicatorRow key={idx} indicator={ind} />
-              ))}
-            </div>
-
-            {/* Commodities */}
-            <div className="space-y-1">
-              <h4 className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded bg-amber-500/20 text-amber-400">🛢️ Commodities</h4>
-              {indicators.commodities.map((ind, idx) => (
-                <IndicatorRow key={idx} indicator={ind} />
-              ))}
-            </div>
-
-            {/* Rates & Volatility */}
-            <div className="space-y-1">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Juros & Volatilidade EUA</h4>
-              {indicators.rates.map((ind, idx) => (
-                <IndicatorRow key={idx} indicator={ind} />
-              ))}
-            </div>
-
-            {/* Brazil Rates Section */}
-            {data.brazilRates && (
-              <BrazilRatesSection brazilRates={data.brazilRates} />
-            )}
-          </div>
-
-          {/* Correlation Signals */}
-          <div className="border-t border-border/20 pt-3 space-y-3">
-            <h3 className="text-sm font-bold text-yellow-500">ANÁLISE DE CORRELAÇÕES</h3>
-            
-            {/* WIN Signals */}
-            {data.winSignals.length > 0 && (
-              <div>
-                <h4 className="text-xs font-bold text-red-500 mb-1">PARA WIN:</h4>
-                <SignalsList 
-                  signals={data.winSignals} 
-                  color={data.winBias === 'bullish' ? 'green' : data.winBias === 'bearish' ? 'red' : 'yellow'} 
-                />
-              </div>
-            )}
-            
-            {/* WDO Signals */}
-            {data.wdoSignals.length > 0 && (
-              <div>
-                <h4 className="text-xs font-bold text-red-500 mb-1">PARA WDO:</h4>
-                <SignalsList 
-                  signals={data.wdoSignals} 
-                  color={data.wdoBias === 'bullish' ? 'green' : data.wdoBias === 'bearish' ? 'red' : 'yellow'} 
-                />
-              </div>
-            )}
-            
-            {/* Gold Signals */}
-            {data.goldSignals.length > 0 && (
-              <div>
-                <h4 className="text-xs font-bold text-red-500 mb-1">PARA XAU/USD:</h4>
-                <SignalsList 
-                  signals={data.goldSignals} 
-                  color={data.goldBias === 'bullish' ? 'green' : data.goldBias === 'bearish' ? 'red' : 'yellow'} 
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Static Tips */}
-          <div className="border-t border-border/20 pt-3 space-y-2">
-            <h3 className="text-xs font-bold text-muted-foreground">DICAS RÁPIDAS</h3>
-            <div className="space-y-0.5 text-[10px] text-muted-foreground">
-              <p>• DXY subindo → pressão de alta no dólar/real (WDO ↑, WIN ↓)</p>
-              <p>• VIX &gt; 20 = medo no mercado = cautela com posições</p>
-              <p>• Treasury 10Y &gt; 4.5% = estresse, emergentes sofrem</p>
-              <p>• Ouro disparando = busca por proteção = risco global</p>
-              <p>• CDI alto = juros elevados = pressão em ações brasileiras</p>
-              <p>• CDS Brasil &gt; 200 bps = risco país elevado = pressão no real</p>
-            </div>
+        {/* Footer Tips */}
+        <div className="mt-2 border border-border/50 bg-muted/20 p-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-0.5 text-[10px] text-muted-foreground font-mono">
+            <span>• DXY ↑ = WDO ↑, WIN ↓</span>
+            <span>• VIX &gt; 20 = Alta volatilidade</span>
+            <span>• T10Y &gt; 4.5% = Estresse</span>
+            <span>• Ouro ↑↑ = Risk-off</span>
+            <span>• CDS &gt; 200 bps = Risco alto</span>
+            <span>• CDI alto = Pressão ações BR</span>
           </div>
         </div>
       </CardContent>
