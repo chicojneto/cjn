@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ClipboardCheck, TrendingUp, TrendingDown, Minus, RefreshCw, Loader2 } from 'lucide-react';
+import { ClipboardCheck, TrendingUp, TrendingDown, Minus, RefreshCw, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 import { useMarketCorrelations, CorrelationAnalysis, BrazilRatesData } from '@/hooks/useMarketCorrelations';
 import { Button } from '@/components/ui/button';
 
@@ -205,6 +205,35 @@ export function DailyChecklist() {
   const { data, isLoading, error, refetch, isFetching } = useMarketCorrelations();
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState(30);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Toggle fullscreen mode
+  const toggleFullscreen = useCallback(async () => {
+    if (!containerRef.current) return;
+
+    try {
+      if (!document.fullscreenElement) {
+        await containerRef.current.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch (err) {
+      console.error('Fullscreen error:', err);
+    }
+  }, []);
+
+  // Listen for fullscreen changes (e.g., ESC key)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
@@ -300,65 +329,82 @@ export function DailyChecklist() {
   };
 
   return (
-    <Card className="border-border/50 bg-background">
-      {/* Terminal Header */}
-      <CardHeader className="py-2 px-3 border-b border-border/50 bg-muted/30">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-3">
-            <CardTitle className="text-sm font-mono font-bold flex items-center gap-2 text-foreground">
-              <ClipboardCheck className="h-4 w-4" />
-              CHECK LIST DIÁRIO
-            </CardTitle>
-            {/* Auto-refresh indicator */}
-            <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground">
-              <span className="hidden sm:inline">Atualizado: {lastUpdate.toLocaleTimeString('pt-BR')}</span>
-              <span className={`px-1.5 py-0.5 rounded ${countdown <= 5 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-muted'}`}>
-                {isFetching ? (
-                  <span className="flex items-center gap-1">
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    <span>...</span>
-                  </span>
-                ) : (
-                  <span>{countdown}s</span>
-                )}
-              </span>
+    <div 
+      ref={containerRef} 
+      className={`${isFullscreen ? 'bg-background p-4 overflow-auto' : ''}`}
+    >
+      <Card className={`border-border/50 bg-background ${isFullscreen ? 'h-full flex flex-col' : ''}`}>
+        {/* Terminal Header */}
+        <CardHeader className="py-2 px-3 border-b border-border/50 bg-muted/30">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-3">
+              <CardTitle className={`font-mono font-bold flex items-center gap-2 text-foreground ${isFullscreen ? 'text-lg' : 'text-sm'}`}>
+                <ClipboardCheck className={isFullscreen ? 'h-5 w-5' : 'h-4 w-4'} />
+                CHECK LIST DIÁRIO
+              </CardTitle>
+              {/* Auto-refresh indicator */}
+              <div className={`flex items-center gap-2 font-mono text-muted-foreground ${isFullscreen ? 'text-xs' : 'text-[10px]'}`}>
+                <span className="hidden sm:inline">Atualizado: {lastUpdate.toLocaleTimeString('pt-BR')}</span>
+                <span className={`px-1.5 py-0.5 rounded ${countdown <= 5 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-muted'}`}>
+                  {isFetching ? (
+                    <span className="flex items-center gap-1">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <span>...</span>
+                    </span>
+                  ) : (
+                    <span>{countdown}s</span>
+                  )}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {/* Bias Summary in Header */}
+              <div className="hidden lg:flex items-center gap-1">
+                <BiasIndicator bias={data.winBias} label="WIN" />
+                <BiasIndicator bias={data.wdoBias} label="WDO" />
+                <BiasIndicator bias={data.goldBias} label="OURO" />
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => {
+                  refetch();
+                  setLastUpdate(new Date());
+                  setCountdown(30);
+                }}
+                disabled={isFetching}
+                className="h-7 px-2 font-mono text-xs"
+                title="Atualizar agora"
+              >
+                <RefreshCw className={`h-3 w-3 ${isFetching ? 'animate-spin' : ''}`} />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={toggleFullscreen}
+                className="h-7 px-2 font-mono text-xs"
+                title={isFullscreen ? 'Sair do modo TV' : 'Modo TV (Fullscreen)'}
+              >
+                {isFullscreen ? <Minimize2 className="h-3 w-3" /> : <Maximize2 className="h-3 w-3" />}
+              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            {/* Bias Summary in Header */}
-            <div className="hidden lg:flex items-center gap-1">
-              <BiasIndicator bias={data.winBias} label="WIN" />
-              <BiasIndicator bias={data.wdoBias} label="WDO" />
-              <BiasIndicator bias={data.goldBias} label="OURO" />
-            </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => {
-                refetch();
-                setLastUpdate(new Date());
-                setCountdown(30);
-              }}
-              disabled={isFetching}
-              className="h-7 px-2 font-mono text-xs"
-              title="Atualizar agora"
-            >
-              <RefreshCw className={`h-3 w-3 ${isFetching ? 'animate-spin' : ''}`} />
-            </Button>
+        </CardHeader>
+
+        <CardContent className={`p-2 ${isFullscreen ? 'flex-1 overflow-auto' : ''}`}>
+          {/* Mobile Bias */}
+          <div className="lg:hidden flex flex-wrap gap-1 mb-2">
+            <BiasIndicator bias={data.winBias} label="WIN" />
+            <BiasIndicator bias={data.wdoBias} label="WDO" />
+            <BiasIndicator bias={data.goldBias} label="OURO" />
           </div>
-        </div>
-      </CardHeader>
 
-      <CardContent className="p-2">
-        {/* Mobile Bias */}
-        <div className="lg:hidden flex flex-wrap gap-1 mb-2">
-          <BiasIndicator bias={data.winBias} label="WIN" />
-          <BiasIndicator bias={data.wdoBias} label="WDO" />
-          <BiasIndicator bias={data.goldBias} label="OURO" />
-        </div>
-
-        {/* Main Grid - Bloomberg Style */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-2">
+          {/* Main Grid - Bloomberg Style */}
+          <div className={`grid gap-2 ${
+            isFullscreen 
+              ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8' 
+              : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6'
+          }`}>
           {/* Row 1: Global Markets */}
           <TerminalPanel 
             title="🌏 ÁSIA" 
@@ -423,5 +469,6 @@ export function DailyChecklist() {
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 }
