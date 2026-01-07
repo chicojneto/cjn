@@ -50,10 +50,12 @@ async function fetchStocks(): Promise<{ b3Quotes: Quote[], dowQuotes: Quote[] }>
 // Mappings for categories
 const INDICES_MAPPING: Record<string, string> = {
   'DXY': 'currencies',
-  'VIX': 'yields', // VIX now goes to yields panel (Juros EUA / VIX)
-  'NASDAQ': 'indices',
-  'S&P 500': 'indices',
-  'DOW': 'indices',
+  'VIX': 'yields', // VIX now goes to yields panel
+  'NASDAQ': 'yields', // US indices go to yields panel
+  'S&P 500': 'yields',
+  'DOW': 'yields',
+  'RUSSELL': 'yields',
+  'RUSSELL 2000': 'yields',
   'NIKKEI': 'indices',
   'HK50': 'indices',
   'US2Y': 'yields',
@@ -299,13 +301,15 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
           />
         )}
 
-        {/* 5. Juros EUA / VIX */}
+        {/* 5. Juros EUA / Índices / VIX */}
         {organizedQuotes.yields.length > 0 && (
           <MarketTable
-            title="Juros EUA / VIX"
+            title="Juros / Índices EUA"
             quotes={organizedQuotes.yields.map(q => ({
               ...q,
-              priceFormatted: q.symbol === 'VIX' ? q.priceFormatted : `${q.priceFormatted}%`,
+              priceFormatted: ['US2Y', 'US10Y', 'US30Y'].includes(q.symbol) 
+                ? `${q.priceFormatted}%` 
+                : q.priceFormatted,
               flag: (q as any).flag,
             }))}
             showTime={true}
