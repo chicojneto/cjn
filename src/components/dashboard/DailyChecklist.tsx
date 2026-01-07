@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ClipboardCheck, TrendingUp, TrendingDown, Minus, RefreshCw, Loader2 } from 'lucide-react';
 import { useMarketCorrelations, CorrelationAnalysis, BrazilRatesData } from '@/hooks/useMarketCorrelations';
@@ -198,8 +199,30 @@ function SignalsPanel({
   );
 }
 
+const AUTO_REFRESH_INTERVAL = 30000; // 30 seconds
+
 export function DailyChecklist() {
   const { data, isLoading, error, refetch, isFetching } = useMarketCorrelations();
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [countdown, setCountdown] = useState(30);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      refetch();
+      setLastUpdate(new Date());
+      setCountdown(30);
+    }, AUTO_REFRESH_INTERVAL);
+
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => (prev > 0 ? prev - 1 : 30));
+    }, 1000);
+
+    return () => {
+      clearInterval(refreshInterval);
+      clearInterval(countdownInterval);
+    };
+  }, [refetch]);
 
   if (isLoading) {
     return (
@@ -280,11 +303,27 @@ export function DailyChecklist() {
     <Card className="border-border/50 bg-background">
       {/* Terminal Header */}
       <CardHeader className="py-2 px-3 border-b border-border/50 bg-muted/30">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-mono font-bold flex items-center gap-2 text-foreground">
-            <ClipboardCheck className="h-4 w-4" />
-            CHECK LIST DIÁRIO
-          </CardTitle>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-3">
+            <CardTitle className="text-sm font-mono font-bold flex items-center gap-2 text-foreground">
+              <ClipboardCheck className="h-4 w-4" />
+              CHECK LIST DIÁRIO
+            </CardTitle>
+            {/* Auto-refresh indicator */}
+            <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground">
+              <span className="hidden sm:inline">Atualizado: {lastUpdate.toLocaleTimeString('pt-BR')}</span>
+              <span className={`px-1.5 py-0.5 rounded ${countdown <= 5 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-muted'}`}>
+                {isFetching ? (
+                  <span className="flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <span>...</span>
+                  </span>
+                ) : (
+                  <span>{countdown}s</span>
+                )}
+              </span>
+            </div>
+          </div>
           <div className="flex items-center gap-3">
             {/* Bias Summary in Header */}
             <div className="hidden lg:flex items-center gap-1">
@@ -295,9 +334,14 @@ export function DailyChecklist() {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => refetch()}
+              onClick={() => {
+                refetch();
+                setLastUpdate(new Date());
+                setCountdown(30);
+              }}
               disabled={isFetching}
               className="h-7 px-2 font-mono text-xs"
+              title="Atualizar agora"
             >
               <RefreshCw className={`h-3 w-3 ${isFetching ? 'animate-spin' : ''}`} />
             </Button>
