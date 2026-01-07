@@ -68,6 +68,7 @@ export function useEventAlerts(enabled = true) {
         .gte('event_date', todayStart.toISOString())
         .lte('event_date', todayEnd.toISOString())
         .eq('impact', 'high') // Only high impact events (3 stars)
+        .in('country', ['US', 'USA', 'United States']) // Only USA events
         .order('event_date', { ascending: true });
 
       if (error) throw error;
