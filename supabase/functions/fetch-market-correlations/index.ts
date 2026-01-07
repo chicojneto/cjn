@@ -69,6 +69,7 @@ const SYMBOLS: Record<string, { yahoo: string; name: string }> = {
   sp500Futures: { yahoo: 'ES=F', name: 'S&P 500 Futuros' },
   nasdaqFutures: { yahoo: 'NQ=F', name: 'Nasdaq Futuros' },
   dowFutures: { yahoo: 'YM=F', name: 'Dow Jones Futuros' },
+  russell2000: { yahoo: '^RUT', name: 'Russell 2000' },
   eurUsd: { yahoo: 'EURUSD=X', name: 'EUR/USD' },
   usdJpy: { yahoo: 'JPY=X', name: 'USD/JPY' },
   usdBrl: { yahoo: 'BRL=X', name: 'USD/BRL' },
