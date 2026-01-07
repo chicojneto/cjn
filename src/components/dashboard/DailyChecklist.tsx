@@ -76,7 +76,7 @@ function SignalsList({ signals, color }: { signals: string[]; color: 'green' | '
 function BrazilRatesSection({ brazilRates }: { brazilRates: BrazilRatesData }) {
   return (
     <div className="space-y-1">
-      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Juros Brasil</h4>
+      <h4 className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded bg-green-500/20 text-green-400">🇧🇷 Juros Brasil</h4>
       
       {/* CDI */}
       {brazilRates.cdi && (
@@ -261,7 +261,7 @@ export function DailyChecklist() {
 
             {/* Currencies */}
             <div className="space-y-1">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Moedas</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded bg-blue-500/20 text-blue-400">💱 Moedas</h4>
               {indicators.currencies.map((ind, idx) => (
                 <IndicatorRow key={idx} indicator={ind} />
               ))}
@@ -269,7 +269,7 @@ export function DailyChecklist() {
 
             {/* Commodities */}
             <div className="space-y-1">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Commodities</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wide px-2 py-1 rounded bg-amber-500/20 text-amber-400">🛢️ Commodities</h4>
               {indicators.commodities.map((ind, idx) => (
                 <IndicatorRow key={idx} indicator={ind} />
               ))}
