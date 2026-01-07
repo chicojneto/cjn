@@ -54,8 +54,6 @@ const INDICES_MAPPING: Record<string, string> = {
   'NASDAQ': 'yields', // US indices go to yields panel
   'S&P 500': 'yields',
   'DOW': 'yields',
-  'RUSSELL': 'yields',
-  'RUSSELL 2000': 'yields',
   'NIKKEI': 'indices',
   'HK50': 'indices',
   'US2Y': 'yields',
