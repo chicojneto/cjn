@@ -37,6 +37,14 @@ interface CorrelationAnalysis {
   usdJpy: MarketData | null;
   usdBrl: MarketData | null;
   ibovFutures: MarketData | null;
+  // Asian Markets
+  nikkei: MarketData | null;
+  hangSeng: MarketData | null;
+  szseComp: MarketData | null;
+  // European Markets
+  dax: MarketData | null;
+  ftse: MarketData | null;
+  stoxx50: MarketData | null;
   // Brazil Rates
   brazilRates: BrazilRatesData;
   // Analysis signals
@@ -65,9 +73,14 @@ const SYMBOLS: Record<string, { yahoo: string; name: string }> = {
   usdJpy: { yahoo: 'JPY=X', name: 'USD/JPY' },
   usdBrl: { yahoo: 'BRL=X', name: 'USD/BRL' },
   ibov: { yahoo: '^BVSP', name: 'Ibovespa' },
-  dax: { yahoo: '^GDAXI', name: 'DAX' },
+  // Asian Markets
   nikkei: { yahoo: '^N225', name: 'Nikkei 225' },
   hangSeng: { yahoo: '^HSI', name: 'Hang Seng' },
+  szseComp: { yahoo: '399106.SZ', name: 'SZSE Composite' },
+  // European Markets
+  dax: { yahoo: '^GDAXI', name: 'DAX' },
+  ftse: { yahoo: '^FTSE', name: 'FTSE 100' },
+  stoxx50: { yahoo: '^STOXX50E', name: 'Euro Stoxx 50' },
 };
 
 async function fetchQuoteFromYahoo(key: string, config: { yahoo: string; name: string }): Promise<MarketData | null> {
@@ -365,6 +378,14 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
     usdJpy: data.usdJpy,
     usdBrl: data.usdBrl,
     ibovFutures: data.ibov,
+    // Asian Markets
+    nikkei: data.nikkei,
+    hangSeng: data.hangSeng,
+    szseComp: data.szseComp,
+    // European Markets
+    dax: data.dax,
+    ftse: data.ftse,
+    stoxx50: data.stoxx50,
     brazilRates,
     winBias,
     wdoBias,

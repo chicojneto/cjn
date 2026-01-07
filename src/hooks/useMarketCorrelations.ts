@@ -33,6 +33,14 @@ export interface CorrelationAnalysis {
   usdJpy: MarketData | null;
   usdBrl: MarketData | null;
   ibovFutures: MarketData | null;
+  // Asian Markets
+  nikkei: MarketData | null;
+  hangSeng: MarketData | null;
+  szseComp: MarketData | null;
+  // European Markets
+  dax: MarketData | null;
+  ftse: MarketData | null;
+  stoxx50: MarketData | null;
   brazilRates: BrazilRatesData;
   winBias: 'bullish' | 'bearish' | 'neutral';
   wdoBias: 'bullish' | 'bearish' | 'neutral';

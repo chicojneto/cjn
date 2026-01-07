@@ -175,6 +175,16 @@ export function DailyChecklist() {
 
   // Format indicators
   const indicators = {
+    asianMarkets: [
+      formatIndicator(data.hangSeng),
+      formatIndicator(data.nikkei),
+      formatIndicator(data.szseComp),
+    ].filter(Boolean) as MarketIndicator[],
+    europeanMarkets: [
+      formatIndicator(data.dax),
+      formatIndicator(data.ftse),
+      formatIndicator(data.stoxx50),
+    ].filter(Boolean) as MarketIndicator[],
     futures: [
       formatIndicator(data.sp500Futures),
       formatIndicator(data.nasdaqFutures),
@@ -225,9 +235,25 @@ export function DailyChecklist() {
 
           {/* Market Indicators Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Futures */}
+            {/* Asian Markets */}
             <div className="space-y-1">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Futuros EUA</h4>
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">🌏 Ásia (Fechamento)</h4>
+              {indicators.asianMarkets.map((ind, idx) => (
+                <IndicatorRow key={idx} indicator={ind} />
+              ))}
+            </div>
+
+            {/* European Markets */}
+            <div className="space-y-1">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">🇪🇺 Europa</h4>
+              {indicators.europeanMarkets.map((ind, idx) => (
+                <IndicatorRow key={idx} indicator={ind} />
+              ))}
+            </div>
+
+            {/* US Futures */}
+            <div className="space-y-1">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">🇺🇸 Futuros EUA</h4>
               {indicators.futures.map((ind, idx) => (
                 <IndicatorRow key={idx} indicator={ind} />
               ))}
