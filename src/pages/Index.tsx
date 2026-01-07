@@ -9,6 +9,7 @@ import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
 import { MacroFundamentals } from '@/components/dashboard/MacroFundamentals';
 import { LongShortTips } from '@/components/dashboard/LongShortTips';
 import { useAutoFetchNews } from '@/hooks/useAutoFetchNews';
+import { useEventAlerts } from '@/hooks/useEventAlerts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Newspaper, BookOpen, Calendar, Activity, TrendingUp, ClipboardCheck } from 'lucide-react';
 
@@ -17,6 +18,9 @@ const Index = () => {
   
   // Auto-fetch news on page load and every 5 minutes
   useAutoFetchNews();
+
+  // Enable event alerts for high-impact economic events
+  useEventAlerts(true);
 
   const handleRefresh = () => {
     window.location.reload();
