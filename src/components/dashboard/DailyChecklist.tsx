@@ -325,6 +325,9 @@ export function DailyChecklist() {
     rates: [
       formatIndicator(data.us10y),
       formatIndicator(data.vix),
+      formatIndicator(data.sp500Futures),
+      formatIndicator(data.nasdaqFutures),
+      formatIndicator(data.dowFutures),
     ].filter(Boolean) as MarketIndicator[],
   };
 
