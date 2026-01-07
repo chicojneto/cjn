@@ -141,7 +141,8 @@ export function WDOCalculator() {
                   type="number"
                   step="0.001"
                   value={ptaxAnterior}
-                  onChange={(e) => setPtaxAnterior(parseFloat(e.target.value) || 0)}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => setPtaxAnterior(e.target.value === '' ? 0 : parseFloat(e.target.value))}
                   className="h-8 text-sm font-mono bg-yellow-500/10 border-yellow-500/30"
                 />
               </div>
@@ -153,7 +154,8 @@ export function WDOCalculator() {
                   min="0.5"
                   max="1.5"
                   value={volatilidade}
-                  onChange={(e) => setVolatilidade(parseFloat(e.target.value) || 0.8)}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => setVolatilidade(e.target.value === '' ? 0.8 : parseFloat(e.target.value))}
                   className="h-8 text-sm font-mono bg-yellow-500/10 border-yellow-500/30"
                 />
               </div>
@@ -162,7 +164,8 @@ export function WDOCalculator() {
                 <Input
                   type="number"
                   value={maximaD1}
-                  onChange={(e) => setMaximaD1(parseFloat(e.target.value) || 0)}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => setMaximaD1(e.target.value === '' ? 0 : parseFloat(e.target.value))}
                   className="h-8 text-sm font-mono bg-yellow-500/10 border-yellow-500/30"
                 />
               </div>
@@ -171,7 +174,8 @@ export function WDOCalculator() {
                 <Input
                   type="number"
                   value={minimaD1}
-                  onChange={(e) => setMinimaD1(parseFloat(e.target.value) || 0)}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => setMinimaD1(e.target.value === '' ? 0 : parseFloat(e.target.value))}
                   className="h-8 text-sm font-mono bg-yellow-500/10 border-yellow-500/30"
                 />
               </div>
@@ -180,7 +184,8 @@ export function WDOCalculator() {
                 <Input
                   type="number"
                   value={aberturaHoje}
-                  onChange={(e) => setAberturaHoje(parseFloat(e.target.value) || 0)}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => setAberturaHoje(e.target.value === '' ? 0 : parseFloat(e.target.value))}
                   className="h-8 text-sm font-mono bg-yellow-500/10 border-yellow-500/30"
                 />
               </div>
