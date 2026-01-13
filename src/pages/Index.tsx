@@ -4,7 +4,6 @@ import { MarketGrid } from '@/components/dashboard/MarketGrid';
 import { NewsFeed } from '@/components/dashboard/NewsFeed';
 import { EconomicCalendar } from '@/components/dashboard/EconomicCalendar';
 import { DailyChecklist } from '@/components/dashboard/DailyChecklist';
-import { WDOCalculator } from '@/components/dashboard/WDOCalculator';
 import { TradingStrategies } from '@/components/dashboard/TradingStrategies';
 import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
 import { MacroFundamentals } from '@/components/dashboard/MacroFundamentals';
@@ -12,7 +11,7 @@ import { LongShortTips } from '@/components/dashboard/LongShortTips';
 import { useAutoFetchNews } from '@/hooks/useAutoFetchNews';
 import { useEventAlerts } from '@/hooks/useEventAlerts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Newspaper, BookOpen, Calendar, Activity, TrendingUp, ClipboardCheck, Calculator } from 'lucide-react';
+import { Newspaper, BookOpen, Calendar, Activity, TrendingUp, ClipboardCheck } from 'lucide-react';
 
 const Index = () => {
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
@@ -43,7 +42,7 @@ const Index = () => {
         {/* Tabbed Content for iPad readability */}
         <section>
           <Tabs defaultValue="news" className="w-full">
-            <TabsList className="w-full grid grid-cols-7 h-auto bg-card/50 border border-border/30 rounded-lg p-1">
+            <TabsList className="w-full grid grid-cols-6 h-auto bg-card/50 border border-border/30 rounded-lg p-1">
               <TabsTrigger 
                 value="news" 
                 className="flex items-center gap-2 py-2.5 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -86,13 +85,6 @@ const Index = () => {
                 <ClipboardCheck className="h-4 w-4" />
                 <span className="hidden sm:inline">Check List</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="wdo" 
-                className="flex items-center gap-2 py-2.5 text-sm data-[state=active]:bg-blue-500 data-[state=active]:text-white"
-              >
-                <Calculator className="h-4 w-4" />
-                <span className="hidden sm:inline">WDO1!</span>
-              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="news" className="mt-4">
@@ -123,10 +115,6 @@ const Index = () => {
             
             <TabsContent value="checklist" className="mt-4">
               <DailyChecklist />
-            </TabsContent>
-
-            <TabsContent value="wdo" className="mt-4">
-              <WDOCalculator />
             </TabsContent>
           </Tabs>
         </section>
