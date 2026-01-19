@@ -11,10 +11,29 @@ interface MarketData {
   timestamp: string | null;
 }
 
+export interface DIFutureContract {
+  contract: string;
+  label: string;
+  category: 'short_term' | 'one_year' | 'macro';
+  rate: number;
+  change: number;
+  description: string;
+}
+
+export interface CurveAnalysis {
+  shortTermRate: number;
+  oneYearRate: number;
+  macroRate: number;
+  spread: number;
+  inclination: 'positive' | 'negative' | 'flat';
+  signal: string;
+}
+
 export interface BrazilRatesData {
   cdi: { value: number; date: string } | null;
   cdsBrazil: { value: number; change: number; changePercent: number } | null;
-  diFutures: { contract: string; rate: number; change: number }[] | null;
+  diFutures: DIFutureContract[] | null;
+  curveAnalysis: CurveAnalysis | null;
 }
 
 export interface CorrelationAnalysis {

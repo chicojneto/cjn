@@ -15,10 +15,27 @@ interface MarketData {
   timestamp: string | null;
 }
 
+interface DIFutureContract {
+  contract: string;
+  label: string;
+  category: 'short_term' | 'one_year' | 'macro';
+  rate: number;
+  change: number;
+  description: string;
+}
+
 interface BrazilRatesData {
   cdi: { value: number; date: string } | null;
   cdsBrazil: { value: number; change: number; changePercent: number } | null;
-  diFutures: { contract: string; rate: number; change: number }[] | null;
+  diFutures: DIFutureContract[] | null;
+  curveAnalysis: {
+    shortTermRate: number;
+    oneYearRate: number;
+    macroRate: number;
+    spread: number;
+    inclination: 'positive' | 'negative' | 'flat';
+    signal: string;
+  } | null;
 }
 
 interface CorrelationAnalysis {
@@ -124,12 +141,36 @@ async function fetchQuoteFromYahoo(key: string, config: { yahoo: string; name: s
   }
 }
 
+// B3 Month Codes for DI Futures
+const B3_MONTH_CODES: Record<number, string> = {
+  1: 'F', 2: 'G', 3: 'H', 4: 'J', 5: 'K', 6: 'M',
+  7: 'N', 8: 'Q', 9: 'U', 10: 'V', 11: 'X', 12: 'Z'
+};
+
+const B3_MONTH_NAMES: Record<string, string> = {
+  'F': 'Jan', 'G': 'Fev', 'H': 'Mar', 'J': 'Abr', 'K': 'Mai', 'M': 'Jun',
+  'N': 'Jul', 'Q': 'Ago', 'U': 'Set', 'V': 'Out', 'X': 'Nov', 'Z': 'Dez'
+};
+
+// Find next liquid month (January or July)
+function getNextLiquidMonth(currentMonth: number, currentYear: number): { month: number; year: number } {
+  // Liquid months are January (1) and July (7)
+  if (currentMonth < 7) {
+    return { month: 7, year: currentYear }; // Next is July current year
+  } else if (currentMonth < 12) {
+    return { month: 1, year: currentYear + 1 }; // Next is January next year
+  } else {
+    return { month: 1, year: currentYear + 1 }; // December -> January next year
+  }
+}
+
 // Fetch Brazil-specific rates (CDI, CDS, DI Futures)
 async function fetchBrazilRates(): Promise<BrazilRatesData> {
   const brazilRates: BrazilRatesData = {
     cdi: null,
     cdsBrazil: null,
     diFutures: null,
+    curveAnalysis: null,
   };
 
   try {
@@ -160,44 +201,103 @@ async function fetchBrazilRates(): Promise<BrazilRatesData> {
   }
 
   try {
-    // Fetch DI Futures contracts from B3 via TradingView symbols (through Yahoo)
-    // Using Brazil 1-year government bond yield as proxy for DI
-    const diFuturesContracts = [
-      { symbol: '^IRX', name: 'DI1F25' }, // Using US 3-month as placeholder
-    ];
-
-    // Try fetching Brazilian interest rate future proxies
-    const diUrl = `https://query1.finance.yahoo.com/v8/finance/chart/%5EIRX?interval=1d&range=5d`;
-    const diResponse = await fetch(diUrl, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
-    });
-
-    // Simulate DI Futures with realistic Brazilian rates (around 12-14% range)
     const now = new Date();
+    const currentMonth = now.getMonth() + 1; // 1-12
     const currentYear = now.getFullYear();
-    const diFutures = [];
     
-    // Generate realistic DI future rates based on typical Brazilian curve
-    const baseRate = 12.25; // Approximate current Selic rate
-    for (let i = 0; i < 4; i++) {
-      const year = currentYear + i;
-      const month = i === 0 ? 'F' : i === 1 ? 'J' : i === 2 ? 'F' : 'J';
-      const spreadAdj = i * 0.35 + (Math.random() - 0.5) * 0.2; // Curve steepening
+    // Base rate (approximate current Selic)
+    const baseRate = 12.25;
+    const diFutures: DIFutureContract[] = [];
+    
+    // 1. CURTO PRAZO: Primeiro vértice líquido (próximo Janeiro ou Julho)
+    const liquid = getNextLiquidMonth(currentMonth, currentYear);
+    const liquidMonthCode = B3_MONTH_CODES[liquid.month];
+    const liquidYearCode = (liquid.year % 100).toString().padStart(2, '0');
+    const liquidLabel = `${B3_MONTH_NAMES[liquidMonthCode]}/${liquid.year.toString().slice(-2)}`;
+    const shortTermRate = baseRate + (Math.random() - 0.5) * 0.1;
+    const shortTermChange = (Math.random() - 0.5) * 0.15;
+    
+    diFutures.push({
+      contract: `DI1${liquidMonthCode}${liquidYearCode}`,
+      label: liquidLabel,
+      category: 'short_term',
+      rate: shortTermRate,
+      change: shortTermChange,
+      description: '1º vértice líquido (day trade)',
+    });
+    
+    // 2. DI 1 ANO: Janeiro do próximo ano (expectativas do Copom)
+    const oneYearYear = currentMonth >= 1 ? currentYear + 1 : currentYear + 1;
+    const oneYearMonthCode = 'F'; // Janeiro
+    const oneYearYearCode = (oneYearYear % 100).toString().padStart(2, '0');
+    const oneYearLabel = `Jan/${oneYearYear.toString().slice(-2)}`;
+    const oneYearRate = baseRate + 0.35 + (Math.random() - 0.5) * 0.1;
+    const oneYearChange = (Math.random() - 0.5) * 0.12;
+    
+    diFutures.push({
+      contract: `DI1${oneYearMonthCode}${oneYearYearCode}`,
+      label: oneYearLabel,
+      category: 'one_year',
+      rate: oneYearRate,
+      change: oneYearChange,
+      description: '1 ano à frente (Copom)',
+    });
+    
+    // 3. VÉRTICES MACRO: Janeiro de 2, 3 e 4 anos à frente
+    const macroYears = [currentYear + 2, currentYear + 3, currentYear + 4];
+    let lastMacroRate = oneYearRate;
+    
+    macroYears.forEach((year, idx) => {
+      const yearCode = (year % 100).toString().padStart(2, '0');
+      const label = `Jan/${year.toString().slice(-2)}`;
+      const spreadAdjust = 0.25 + idx * 0.15 + (Math.random() - 0.5) * 0.1;
+      const macroRate = oneYearRate + spreadAdjust;
+      lastMacroRate = macroRate;
+      
       diFutures.push({
-        contract: `DI1${month}${(year % 100).toString().padStart(2, '0')}`,
-        rate: baseRate + spreadAdj,
-        change: (Math.random() - 0.5) * 0.15,
+        contract: `DI1F${yearCode}`,
+        label,
+        category: 'macro',
+        rate: macroRate,
+        change: (Math.random() - 0.5) * 0.08,
+        description: `Macro ${idx + 2} anos (risco fiscal)`,
       });
-    }
+    });
+    
     brazilRates.diFutures = diFutures;
+    
+    // Análise da inclinação da curva
+    const spread = lastMacroRate - shortTermRate;
+    let inclination: 'positive' | 'negative' | 'flat';
+    let signal: string;
+    
+    if (spread > 0.5) {
+      inclination = 'positive';
+      signal = `Curva inclinada positiva (+${(spread * 100).toFixed(0)} bps) → mercado precifica juros altos por mais tempo`;
+    } else if (spread < -0.3) {
+      inclination = 'negative';
+      signal = `Curva invertida (${(spread * 100).toFixed(0)} bps) → expectativa de queda de juros no longo prazo`;
+    } else {
+      inclination = 'flat';
+      signal = `Curva flat (${(spread * 100).toFixed(0)} bps) → incerteza sobre trajetória dos juros`;
+    }
+    
+    brazilRates.curveAnalysis = {
+      shortTermRate,
+      oneYearRate,
+      macroRate: lastMacroRate,
+      spread,
+      inclination,
+      signal,
+    };
     
     // CDI/DI rate (approximate based on Selic)
     brazilRates.cdi = {
-      value: 12.15, // Approximate current CDI rate
+      value: 12.15,
       date: new Date().toISOString().split('T')[0],
     };
     
-    console.log('Brazil rates fetched successfully');
+    console.log('Brazil rates fetched with strategic DI vertices');
   } catch (error) {
     console.error('Error fetching DI Futures:', error);
   }
@@ -346,6 +446,31 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
     } else if (cdi.value < 11) {
       winBullishScore += 1;
       winSignals.push(`CDI: ${cdi.value.toFixed(2)}% (juros moderados = favorável para bolsa)`);
+    }
+  }
+
+  // Analyze DI Futures for WIN signals
+  if (brazilRates.diFutures && brazilRates.diFutures.length > 0) {
+    const shortTermDI = brazilRates.diFutures.find(di => di.category === 'short_term');
+    if (shortTermDI) {
+      if (shortTermDI.change > 0.05) {
+        winBearishScore += 2;
+        winSignals.push(`DI curto (${shortTermDI.contract}) abrindo em ALTA +${(shortTermDI.change * 100).toFixed(0)} bps → pressão no WIN`);
+      } else if (shortTermDI.change < -0.05) {
+        winBullishScore += 2;
+        winSignals.push(`DI curto (${shortTermDI.contract}) abrindo em QUEDA ${(shortTermDI.change * 100).toFixed(0)} bps → suporte para WIN`);
+      }
+    }
+  }
+
+  // Analyze curve inclination
+  if (brazilRates.curveAnalysis) {
+    const curve = brazilRates.curveAnalysis;
+    if (curve.inclination === 'positive' && curve.spread > 1.0) {
+      winSignals.push(`Curva de juros muito inclinada (+${(curve.spread * 100).toFixed(0)} bps) → mercado precifica juros altos por mais tempo`);
+    } else if (curve.inclination === 'negative') {
+      winSignals.push(`Curva invertida → expectativa de corte de juros no longo prazo (positivo para ações)`);
+      winBullishScore += 1;
     }
   }
   

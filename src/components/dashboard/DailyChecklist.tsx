@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ClipboardCheck, TrendingUp, TrendingDown, Minus, RefreshCw, Loader2, Maximize2, Minimize2 } from 'lucide-react';
-import { useMarketCorrelations, CorrelationAnalysis, BrazilRatesData } from '@/hooks/useMarketCorrelations';
+import { useMarketCorrelations, CorrelationAnalysis, BrazilRatesData, DIFutureContract } from '@/hooks/useMarketCorrelations';
 import { Button } from '@/components/ui/button';
 
 interface MarketIndicator {
@@ -87,13 +87,51 @@ function TerminalPanel({
   );
 }
 
+function DIContractRow({ di }: { di: DIFutureContract }) {
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'short_term': return 'text-blue-400';
+      case 'one_year': return 'text-amber-400';
+      case 'macro': return 'text-purple-400';
+      default: return 'text-muted-foreground';
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-between py-1.5 px-2 border-b border-border/30 hover:bg-muted/20">
+      <div className="flex flex-col">
+        <div className="flex items-center gap-2">
+          <span className={`text-[11px] font-mono font-semibold ${getCategoryColor(di.category)}`}>
+            {di.contract}
+          </span>
+          <span className="text-[10px] text-muted-foreground">({di.label})</span>
+        </div>
+        <span className="text-[9px] text-muted-foreground/70">{di.description}</span>
+      </div>
+      <div className="flex items-center gap-2 font-mono">
+        <span className="text-xs font-semibold text-foreground">{di.rate.toFixed(2)}%</span>
+        <span className={`text-[10px] font-bold min-w-[40px] text-right ${
+          di.change > 0 ? 'text-red-400' : di.change < 0 ? 'text-emerald-400' : 'text-muted-foreground'
+        }`}>
+          {di.change > 0 ? '+' : ''}{(di.change * 100).toFixed(0)} bps
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function BrazilRatesPanel({ brazilRates }: { brazilRates: BrazilRatesData }) {
+  const shortTermDI = brazilRates.diFutures?.filter(di => di.category === 'short_term') || [];
+  const oneYearDI = brazilRates.diFutures?.filter(di => di.category === 'one_year') || [];
+  const macroDI = brazilRates.diFutures?.filter(di => di.category === 'macro') || [];
+
   return (
     <div className="border border-border/50 bg-card/30 h-full flex flex-col">
       <div className="px-3 py-2 border-b bg-green-500/20 text-green-400 border-green-500/50">
         <h4 className="text-xs font-bold uppercase tracking-wider">🇧🇷 JUROS BRASIL</h4>
       </div>
       <div className="flex-1 overflow-auto">
+        {/* CDI */}
         {brazilRates.cdi && (
           <div className="flex items-center justify-between py-1.5 px-2 border-b border-border/30 hover:bg-muted/20">
             <span className="text-xs font-medium text-muted-foreground">Taxa CDI</span>
@@ -104,6 +142,7 @@ function BrazilRatesPanel({ brazilRates }: { brazilRates: BrazilRatesData }) {
           </div>
         )}
         
+        {/* CDS Brasil */}
         {brazilRates.cdsBrazil && (
           <div className="flex items-center justify-between py-1.5 px-2 border-b border-border/30 hover:bg-muted/20">
             <span className="text-xs font-medium text-muted-foreground">CDS Brasil 5Y</span>
@@ -118,24 +157,63 @@ function BrazilRatesPanel({ brazilRates }: { brazilRates: BrazilRatesData }) {
           </div>
         )}
         
-        {brazilRates.diFutures && brazilRates.diFutures.length > 0 && (
+        {/* DI Curto Prazo - Day Trade */}
+        {shortTermDI.length > 0 && (
+          <>
+            <div className="px-2 py-1 bg-blue-500/10 border-b border-border/30">
+              <span className="text-[10px] font-bold text-blue-400 uppercase">📈 DI CURTO PRAZO (Day Trade)</span>
+            </div>
+            {shortTermDI.map((di, idx) => (
+              <DIContractRow key={idx} di={di} />
+            ))}
+          </>
+        )}
+        
+        {/* DI 1 Ano - Copom */}
+        {oneYearDI.length > 0 && (
+          <>
+            <div className="px-2 py-1 bg-amber-500/10 border-b border-border/30">
+              <span className="text-[10px] font-bold text-amber-400 uppercase">📊 DI 1 ANO (Expectativas Copom)</span>
+            </div>
+            {oneYearDI.map((di, idx) => (
+              <DIContractRow key={idx} di={di} />
+            ))}
+          </>
+        )}
+        
+        {/* Vértices Macro */}
+        {macroDI.length > 0 && (
+          <>
+            <div className="px-2 py-1 bg-purple-500/10 border-b border-border/30">
+              <span className="text-[10px] font-bold text-purple-400 uppercase">🏛️ VÉRTICES MACRO (Risco Fiscal)</span>
+            </div>
+            {macroDI.map((di, idx) => (
+              <DIContractRow key={idx} di={di} />
+            ))}
+          </>
+        )}
+        
+        {/* Análise da Curva */}
+        {brazilRates.curveAnalysis && (
           <>
             <div className="px-2 py-1 bg-muted/30 border-b border-border/30">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase">DI Futuro B3</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">📐 INCLINAÇÃO DA CURVA</span>
             </div>
-            {brazilRates.diFutures.map((di, idx) => (
-              <div key={idx} className="flex items-center justify-between py-1 px-2 border-b border-border/30 hover:bg-muted/20">
-                <span className="text-[11px] text-muted-foreground font-mono">{di.contract}</span>
-                <div className="flex items-center gap-2 font-mono">
-                  <span className="text-xs font-semibold text-foreground">{di.rate.toFixed(2)}%</span>
-                  <span className={`text-[10px] font-bold ${
-                    di.change > 0 ? 'text-red-400' : di.change < 0 ? 'text-emerald-400' : 'text-muted-foreground'
-                  }`}>
-                    {di.change > 0 ? '+' : ''}{di.change.toFixed(2)}
-                  </span>
-                </div>
+            <div className="px-2 py-2 border-b border-border/30">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] text-muted-foreground">Spread (Longo - Curto)</span>
+                <span className={`text-xs font-mono font-bold ${
+                  brazilRates.curveAnalysis.inclination === 'positive' ? 'text-amber-400' :
+                  brazilRates.curveAnalysis.inclination === 'negative' ? 'text-emerald-400' :
+                  'text-muted-foreground'
+                }`}>
+                  {brazilRates.curveAnalysis.spread > 0 ? '+' : ''}{(brazilRates.curveAnalysis.spread * 100).toFixed(0)} bps
+                </span>
               </div>
-            ))}
+              <p className="text-[10px] text-muted-foreground/80 leading-relaxed">
+                {brazilRates.curveAnalysis.signal}
+              </p>
+            </div>
           </>
         )}
       </div>
