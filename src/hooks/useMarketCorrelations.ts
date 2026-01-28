@@ -93,7 +93,7 @@ export function useMarketCorrelations() {
       
       return data.data;
     },
-    refetchInterval: 60000,
-    staleTime: 30000,
+    refetchInterval: 15 * 60 * 1000, // 15 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
