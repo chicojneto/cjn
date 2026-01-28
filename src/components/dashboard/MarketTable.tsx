@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface MarketQuote {
   symbol: string;
@@ -40,51 +41,70 @@ export function MarketTable({
   }
 
   return (
-    <div className="bg-card/50 rounded-md border border-border/30 overflow-hidden">
-      <div className="px-2 py-1 border-b border-border/30 bg-muted/20">
-        <h3 className="text-xs font-semibold text-foreground">{title}</h3>
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="glass-card overflow-hidden"
+    >
+      {/* Header */}
+      <div className="px-3 py-2.5 border-b border-border/30 bg-muted/20">
+        <h3 className="text-xs font-semibold text-foreground tracking-wide">{title}</h3>
       </div>
-      <div className={cn("divide-y divide-border/10", compact ? "max-h-[280px]" : "max-h-[350px]", "overflow-y-auto")}>
+      
+      {/* Content */}
+      <div className={cn(
+        "divide-y divide-border/10 scrollbar-thin",
+        compact ? "max-h-[280px]" : "max-h-[350px]",
+        "overflow-y-auto"
+      )}>
         {quotes.map((quote, idx) => (
-          <div
+          <motion.div
             key={`${quote.symbol}-${idx}`}
+            initial={{ opacity: 0, x: -5 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.2, delay: idx * 0.02 }}
             onClick={() => onSelect?.(quote.symbol)}
             className={cn(
-              "flex items-center justify-between px-2 py-0.5 transition-colors",
-              onSelect && "cursor-pointer hover:bg-muted/30",
-              selectedSymbol === quote.symbol && "bg-primary/10"
+              "flex items-center justify-between px-3 py-2 transition-all duration-200",
+              onSelect && "cursor-pointer",
+              selectedSymbol === quote.symbol 
+                ? "bg-primary/10 border-l-2 border-l-primary" 
+                : "hover:bg-muted/30 border-l-2 border-l-transparent"
             )}
           >
-            <div className="flex items-center gap-1.5 min-w-0 flex-1">
+            {/* Left - Symbol & Name */}
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               {quote.flag && (
-                <span className="text-xs shrink-0">{quote.flag}</span>
+                <span className="text-sm shrink-0">{quote.flag}</span>
               )}
               <span className="text-xs font-medium text-foreground truncate">
                 {quote.name || quote.symbol}
               </span>
             </div>
             
-            <div className="flex items-center gap-2 text-right shrink-0">
-              <span className="font-mono text-xs text-foreground tabular-nums min-w-[60px] text-right">
+            {/* Right - Price & Change */}
+            <div className="flex items-center gap-3 text-right shrink-0">
+              <span className="font-mono text-xs font-semibold text-foreground tabular-nums min-w-[65px] text-right">
                 {quote.priceFormatted}
               </span>
               <span className={cn(
-                "font-mono text-[10px] tabular-nums min-w-[48px] text-right",
-                quote.isPositive && "text-primary",
-                quote.isNegative && "text-destructive",
+                "font-mono text-[11px] font-semibold tabular-nums min-w-[50px] text-right px-1.5 py-0.5 rounded",
+                quote.isPositive && "text-success bg-success/10",
+                quote.isNegative && "text-destructive bg-destructive/10",
                 !quote.isPositive && !quote.isNegative && "text-muted-foreground"
               )}>
                 {quote.changePercent}
               </span>
               {showTime && (
-                <span className="font-mono text-[10px] text-muted-foreground tabular-nums min-w-[50px]">
+                <span className="font-mono text-[10px] text-muted-foreground tabular-nums min-w-[45px] hidden lg:block">
                   {quote.time || formatTime()}
                 </span>
               )}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
