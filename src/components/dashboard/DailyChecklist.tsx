@@ -277,12 +277,12 @@ function SignalsPanel({
   );
 }
 
-const AUTO_REFRESH_INTERVAL = 30000; // 30 seconds
+const AUTO_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
 
 export function DailyChecklist() {
   const { data, isLoading, error, refetch, isFetching } = useMarketCorrelations();
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [countdown, setCountdown] = useState(30);
+  const [countdown, setCountdown] = useState(15 * 60); // 15 minutes in seconds
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -313,16 +313,16 @@ export function DailyChecklist() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  // Auto-refresh every 30 seconds
+  // Auto-refresh every 15 minutes
   useEffect(() => {
     const refreshInterval = setInterval(() => {
       refetch();
       setLastUpdate(new Date());
-      setCountdown(30);
+      setCountdown(15 * 60);
     }, AUTO_REFRESH_INTERVAL);
 
     const countdownInterval = setInterval(() => {
-      setCountdown((prev) => (prev > 0 ? prev - 1 : 30));
+      setCountdown((prev) => (prev > 0 ? prev - 1 : 15 * 60));
     }, 1000);
 
     return () => {
@@ -426,14 +426,19 @@ export function DailyChecklist() {
               {/* Auto-refresh indicator */}
               <div className={`flex items-center gap-2 font-mono text-muted-foreground ${isFullscreen ? 'text-xs' : 'text-[10px]'}`}>
                 <span className="hidden sm:inline">Atualizado: {lastUpdate.toLocaleTimeString('pt-BR')}</span>
-                <span className={`px-1.5 py-0.5 rounded ${countdown <= 5 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-muted'}`}>
+                <span className={`px-2 py-1 rounded-md flex items-center gap-1.5 ${
+                  countdown <= 60 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-muted/50 border border-border/50'
+                }`}>
                   {isFetching ? (
                     <span className="flex items-center gap-1">
                       <Loader2 className="h-3 w-3 animate-spin" />
-                      <span>...</span>
+                      <span>Atualizando...</span>
                     </span>
                   ) : (
-                    <span>{countdown}s</span>
+                    <span className="flex items-center gap-1">
+                      <RefreshCw className="h-3 w-3" />
+                      <span>{Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')}</span>
+                    </span>
                   )}
                 </span>
               </div>
@@ -451,13 +456,12 @@ export function DailyChecklist() {
                 onClick={() => {
                   refetch();
                   setLastUpdate(new Date());
-                  setCountdown(30);
+                  setCountdown(15 * 60);
                 }}
                 disabled={isFetching}
                 className="h-7 px-2 font-mono text-xs"
                 title="Atualizar agora"
               >
-                <RefreshCw className={`h-3 w-3 ${isFetching ? 'animate-spin' : ''}`} />
               </Button>
               <Button 
                 variant="ghost" 
