@@ -35,7 +35,7 @@ export default function CheckList() {
               Check List Diário
             </h1>
             <p className="text-sm text-muted-foreground">
-              Análise de correlações e viés dos mercados
+              Análise do Dia • Notícias do Calendário
             </p>
           </div>
         </div>
