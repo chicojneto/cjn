@@ -3,12 +3,12 @@ import { motion } from 'framer-motion';
 import { MarketGrid } from '@/components/dashboard/MarketGrid';
 import { NewsFeed } from '@/components/dashboard/NewsFeed';
 import { DailyChecklist } from '@/components/dashboard/DailyChecklist';
-import { DailyCorrelationsCard } from '@/components/dashboard/DailyCorrelationsCard';
 import { useAutoFetchNews } from '@/hooks/useAutoFetchNews';
 import { useEventAlerts } from '@/hooks/useEventAlerts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Newspaper, ClipboardCheck, TrendingUp, Activity } from 'lucide-react';
+import { Newspaper, ClipboardCheck, Activity } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -64,7 +64,7 @@ export default function Dashboard() {
       {/* Tabbed Content */}
       <motion.section variants={item}>
         <Tabs defaultValue="news" className="w-full">
-          <TabsList className="w-full max-w-md grid grid-cols-3 h-12 bg-card/50 border border-border/30 rounded-xl p-1">
+          <TabsList className="w-full max-w-md grid grid-cols-2 h-12 bg-card/50 border border-border/30 rounded-xl p-1">
             <TabsTrigger 
               value="news" 
               className="flex items-center gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
@@ -79,13 +79,6 @@ export default function Dashboard() {
               <ClipboardCheck className="h-4 w-4" />
               <span className="hidden sm:inline">Check List</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="correlations" 
-              className="flex items-center gap-2 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
-            >
-              <TrendingUp className="h-4 w-4" />
-              <span className="hidden sm:inline">Análises</span>
-            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="news" className="mt-6">
@@ -94,10 +87,6 @@ export default function Dashboard() {
           
           <TabsContent value="checklist" className="mt-6">
             <DailyChecklist />
-          </TabsContent>
-          
-          <TabsContent value="correlations" className="mt-6">
-            <DailyCorrelationsCard />
           </TabsContent>
         </Tabs>
       </motion.section>
