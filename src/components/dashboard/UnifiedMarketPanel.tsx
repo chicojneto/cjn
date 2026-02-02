@@ -33,44 +33,59 @@ function isRateLimited(data: any): boolean {
 
 // Fetch global indices
 async function fetchGlobalIndices(): Promise<Quote[]> {
-  const { data, error } = await supabase.functions.invoke('fetch-global-indices');
-  if (error) {
-    console.warn('fetch-global-indices error:', error.message);
+  try {
+    const { data, error } = await supabase.functions.invoke('fetch-global-indices');
+    if (error) {
+      console.warn('fetch-global-indices error:', error.message);
+      return [];
+    }
+    if (isRateLimited(data)) {
+      console.log('fetch-global-indices rate limited');
+      return [];
+    }
+    return data?.quotes || [];
+  } catch (err) {
+    console.warn('fetch-global-indices exception:', err);
     return [];
   }
-  if (isRateLimited(data)) {
-    console.log('fetch-global-indices rate limited');
-    return [];
-  }
-  return data?.quotes || [];
 }
 
 // Fetch currency rates
 async function fetchCurrencyRates(): Promise<Quote[]> {
-  const { data, error } = await supabase.functions.invoke('fetch-currency-rates');
-  if (error) {
-    console.warn('fetch-currency-rates error:', error.message);
+  try {
+    const { data, error } = await supabase.functions.invoke('fetch-currency-rates');
+    if (error) {
+      console.warn('fetch-currency-rates error:', error.message);
+      return [];
+    }
+    if (isRateLimited(data)) {
+      console.log('fetch-currency-rates rate limited');
+      return [];
+    }
+    return data?.quotes || [];
+  } catch (err) {
+    console.warn('fetch-currency-rates exception:', err);
     return [];
   }
-  if (isRateLimited(data)) {
-    console.log('fetch-currency-rates rate limited');
-    return [];
-  }
-  return data?.quotes || [];
 }
 
 // Fetch asset quotes
 async function fetchAssetQuotes(): Promise<Quote[]> {
-  const { data, error } = await supabase.functions.invoke('fetch-asset-quotes');
-  if (error) {
-    console.warn('fetch-asset-quotes error:', error.message);
+  try {
+    const { data, error } = await supabase.functions.invoke('fetch-asset-quotes');
+    if (error) {
+      console.warn('fetch-asset-quotes error:', error.message);
+      return [];
+    }
+    if (isRateLimited(data)) {
+      console.log('fetch-asset-quotes rate limited');
+      return [];
+    }
+    return data?.quotes || [];
+  } catch (err) {
+    console.warn('fetch-asset-quotes exception:', err);
     return [];
   }
-  if (isRateLimited(data)) {
-    console.log('fetch-asset-quotes rate limited');
-    return [];
-  }
-  return data?.quotes || [];
 }
 
 // Fetch historical quotes
@@ -138,6 +153,7 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
     queryFn: fetchAssetQuotes,
     refetchInterval: 60000,
     staleTime: 30000,
+    retry: false,
   });
   
   const { data: globalIndices, isLoading: indicesLoading, refetch: refetchIndices, isFetching: indicesFetching } = useQuery({
@@ -145,6 +161,7 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
     queryFn: fetchGlobalIndices,
     refetchInterval: 60000,
     staleTime: 30000,
+    retry: false,
   });
 
   const { data: currencyRates, isLoading: currencyLoading, refetch: refetchCurrency, isFetching: currencyFetching } = useQuery({
@@ -152,6 +169,7 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
     queryFn: fetchCurrencyRates,
     refetchInterval: 60000,
     staleTime: 30000,
+    retry: false,
   });
 
   const { data: historicalQuotes } = useQuery({
