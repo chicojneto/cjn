@@ -13,8 +13,8 @@ export function EconomicCalendar() {
       <CardContent className="p-0">
         <div className="w-full overflow-hidden rounded-b-lg">
           <iframe 
-            src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&category=_employment,_economicActivity,_inflation,_credit,_centralBanks,_confidenceIndex,_balance,_Bonds&importance=2&features=datepicker,timezone,timeselector,filters&countries=17,25,32,6,37,5,35,43,4,12,72&calType=week&timeZone=12&lang=12" 
-            width="100%" 
+            src="https://sslecal2.investing.com?ecoDayBackground=%23000000&defaultFont=%23000000&innerBorderColor=%23e3e3e3&borderColor=%23d4d0d0&ecoDayFontColor=%23f2ff00&columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&category=_employment,_economicActivity,_inflation,_credit,_centralBanks,_confidenceIndex,_balance,_Bonds&importance=2,3&features=datepicker,timezone,timeselector,filters&countries=25,32,6,37,5,35,4,72&calType=week&timeZone=12&lang=12" 
+            width="100%"
             height="500" 
             frameBorder="0" 
             allowTransparency={true}
