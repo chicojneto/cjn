@@ -33,10 +33,10 @@ const impactConfig = {
   },
 };
 
-const strengthColors = {
-  high: 'bg-primary/30 text-primary',
-  medium: 'bg-warning/30 text-warning',
-  low: 'bg-muted text-muted-foreground',
+const strengthConfig = {
+  high: { label: 'Alto Impacto', color: 'bg-destructive/20 text-destructive' },
+  medium: { label: 'Médio Impacto', color: 'bg-warning/20 text-warning' },
+  low: { label: 'Baixo Impacto', color: 'bg-muted text-muted-foreground' },
 };
 
 export function DailyCorrelationsCard({ compact = false }: DailyCorrelationsCardProps) {
@@ -133,9 +133,12 @@ export function DailyCorrelationsCard({ compact = false }: DailyCorrelationsCard
                 </p>
                 
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="outline" className={cn("text-[10px]", strengthColors[correlation.strength])}>
-                    Força: {correlation.strength === 'high' ? 'Alta' : correlation.strength === 'medium' ? 'Média' : 'Baixa'}
+                  <Badge variant="outline" className={cn("text-[10px]", strengthConfig[correlation.strength].color)}>
+                    {strengthConfig[correlation.strength].label}
                   </Badge>
+                  <span className="text-[10px] text-muted-foreground">
+                    {correlation.events.length} evento{correlation.events.length !== 1 ? 's' : ''}
+                  </span>
                 </div>
                 
                 <p className="text-xs text-muted-foreground line-clamp-2">
