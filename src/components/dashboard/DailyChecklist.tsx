@@ -360,11 +360,15 @@ export function DailyChecklist() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4">
-          <div className="text-center py-4">
-            <p className="text-sm text-muted-foreground mb-2 font-mono">Erro ao carregar dados</p>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Retry
+          <div className="text-center py-8">
+            <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-3">
+              <RefreshCw className="h-6 w-6 text-amber-400" />
+            </div>
+            <p className="text-sm text-muted-foreground mb-1 font-mono">Aguardando dados do mercado...</p>
+            <p className="text-xs text-muted-foreground/70 mb-4">Rate limit ativo. Tentando novamente em breve.</p>
+            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+              {isFetching ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+              Tentar Novamente
             </Button>
           </div>
         </CardContent>
