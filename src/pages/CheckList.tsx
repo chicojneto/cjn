@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { DailyChecklist } from '@/components/dashboard/DailyChecklist';
+import { DailyCorrelationsCard } from '@/components/dashboard/DailyCorrelationsCard';
 import { ClipboardCheck } from 'lucide-react';
 
 const container = {
@@ -39,6 +40,11 @@ export default function CheckList() {
           </div>
         </div>
       </motion.div>
+
+      {/* Daily Correlations Summary */}
+      <motion.section variants={item}>
+        <DailyCorrelationsCard compact />
+      </motion.section>
 
       {/* Checklist */}
       <motion.section variants={item}>
