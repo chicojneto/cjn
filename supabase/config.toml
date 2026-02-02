@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.fetch-market-correlations]
 verify_jwt = false
+
+[functions.analyze-daily-correlations]
+verify_jwt = false

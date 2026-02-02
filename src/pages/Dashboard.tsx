@@ -3,13 +3,12 @@ import { motion } from 'framer-motion';
 import { MarketGrid } from '@/components/dashboard/MarketGrid';
 import { NewsFeed } from '@/components/dashboard/NewsFeed';
 import { DailyChecklist } from '@/components/dashboard/DailyChecklist';
+import { DailyCorrelationsCard } from '@/components/dashboard/DailyCorrelationsCard';
 import { useAutoFetchNews } from '@/hooks/useAutoFetchNews';
 import { useEventAlerts } from '@/hooks/useEventAlerts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ModernCard, ModernCardHeader, ModernCardTitle, ModernCardContent } from '@/components/ui/modern-card';
 import { Newspaper, ClipboardCheck, TrendingUp, Activity } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -98,16 +97,7 @@ export default function Dashboard() {
           </TabsContent>
           
           <TabsContent value="correlations" className="mt-6">
-            <ModernCard variant="elevated">
-              <ModernCardHeader icon={<TrendingUp className="h-4 w-4" />}>
-                <ModernCardTitle>Correlações de Mercado</ModernCardTitle>
-              </ModernCardHeader>
-              <ModernCardContent>
-                <p className="text-muted-foreground text-sm">
-                  Selecione um ativo no grid acima para ver correlações detalhadas.
-                </p>
-              </ModernCardContent>
-            </ModernCard>
+            <DailyCorrelationsCard />
           </TabsContent>
         </Tabs>
       </motion.section>
