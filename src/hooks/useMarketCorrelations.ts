@@ -81,28 +81,40 @@ export function useMarketCorrelations() {
   return useQuery({
     queryKey: ['market-correlations'],
     queryFn: async (): Promise<CorrelationAnalysis | null> => {
-      const { data, error } = await supabase.functions.invoke<CorrelationResponse>('fetch-market-correlations');
-      
-      if (error) {
-        console.warn('fetch-market-correlations error:', error.message);
+      try {
+        const { data, error } = await supabase.functions.invoke<CorrelationResponse>('fetch-market-correlations');
+        
+        if (error) {
+          // Check if it's a rate limit error
+          if (error.message?.includes('429') || error.message?.includes('Rate limit')) {
+            console.log('fetch-market-correlations rate limited');
+            return null;
+          }
+          console.warn('fetch-market-correlations error:', error.message);
+          return null;
+        }
+        
+        // Handle rate limiting gracefully from response body
+        if (data && !data.success && (data as any).error === 'Rate limit exceeded') {
+          console.log('fetch-market-correlations rate limited, retry after:', (data as any).retry_after);
+          return null;
+        }
+        
+        if (!data?.success) {
+          console.warn('fetch-market-correlations failed:', data?.error);
+          return null;
+        }
+        
+        return data.data;
+      } catch (err) {
+        // Catch any thrown errors including HTTP 429
+        console.warn('fetch-market-correlations exception:', err);
         return null;
       }
-      
-      // Handle rate limiting gracefully
-      if (data && !data.success && (data as any).error === 'Rate limit exceeded') {
-        console.log('fetch-market-correlations rate limited, retry after:', (data as any).retry_after);
-        return null;
-      }
-      
-      if (!data?.success) {
-        console.warn('fetch-market-correlations failed:', data?.error);
-        return null;
-      }
-      
-      return data.data;
     },
     refetchInterval: 15 * 60 * 1000, // 15 minutes
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes - keep stale data longer
     retry: false, // Don't retry on failure to avoid hammering rate-limited endpoint
+    refetchOnWindowFocus: false, // Don't refetch when window gains focus
   });
 }
