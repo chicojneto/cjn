@@ -29,15 +29,30 @@ interface HistoricalQuote {
   quote_date: string;
 }
 
+// Helper to handle rate limited responses gracefully
+function isRateLimited(data: any): boolean {
+  return data?.success === false && data?.error === 'Rate limit exceeded';
+}
+
 async function fetchGlobalIndices(): Promise<IndexQuote[]> {
-  const { data, error } = await supabase.functions.invoke('fetch-global-indices');
-  
-  if (error) {
-    console.error('Error fetching global indices:', error);
-    throw error;
+  try {
+    const { data, error } = await supabase.functions.invoke('fetch-global-indices');
+    
+    if (error) {
+      console.warn('fetch-global-indices error:', error.message);
+      return [];
+    }
+    
+    if (isRateLimited(data)) {
+      console.log('fetch-global-indices rate limited');
+      return [];
+    }
+    
+    return data?.quotes || [];
+  } catch (err) {
+    console.warn('fetch-global-indices exception:', err);
+    return [];
   }
-  
-  return data?.quotes || [];
 }
 
 async function fetchHistoricalQuotes(): Promise<HistoricalQuote[]> {
@@ -100,6 +115,7 @@ export function GlobalIndices() {
     queryFn: fetchGlobalIndices,
     refetchInterval: 60000,
     staleTime: 30000,
+    retry: false,
   });
 
   const { data: historicalQuotes } = useQuery({
