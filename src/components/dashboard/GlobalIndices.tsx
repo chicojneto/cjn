@@ -116,12 +116,15 @@ export function GlobalIndices() {
     refetchInterval: 60000,
     staleTime: 30000,
     retry: false,
+    throwOnError: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: historicalQuotes } = useQuery({
     queryKey: ['global-indices-history'],
     queryFn: fetchHistoricalQuotes,
     staleTime: 60000,
+    throwOnError: false,
   });
 
   const getHistoricalData = (symbol: string) => {
@@ -258,6 +261,12 @@ export function GlobalIndices() {
                 <Skeleton className="h-4 w-20" />
               </div>
             ))}
+          </div>
+        ) : (!quotes || quotes.length === 0) ? (
+          <div className="text-center py-8">
+            <RefreshCw className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground mb-1">Aguardando dados do mercado...</p>
+            <p className="text-xs text-muted-foreground/70">Tente novamente em alguns minutos.</p>
           </div>
         ) : (
           categoryOrder.map((category) => {
