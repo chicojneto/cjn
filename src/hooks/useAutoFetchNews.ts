@@ -11,15 +11,25 @@ export function useAutoFetchNews() {
   useEffect(() => {
     const fetchNews = async () => {
       console.log('Fetching news automatically...');
-      const result = await newsApi.fetchNews();
-      
-      if (result.success) {
-        console.log(`News fetched: ${result.inserted} inserted`);
-        // Invalidate news queries to refetch data
-        queryClient.invalidateQueries({ queryKey: ['news'] });
-        queryClient.invalidateQueries({ queryKey: ['news-with-assets'] });
-      } else {
-        console.error('Failed to fetch news:', result.error);
+      try {
+        const result = await newsApi.fetchNews();
+        
+        // Handle rate limiting gracefully
+        if (result.error === 'Rate limit exceeded') {
+          console.log('News fetch rate limited, will retry later');
+          return;
+        }
+        
+        if (result.success) {
+          console.log(`News fetched: ${result.inserted} inserted`);
+          // Invalidate news queries to refetch data
+          queryClient.invalidateQueries({ queryKey: ['news'] });
+          queryClient.invalidateQueries({ queryKey: ['news-with-assets'] });
+        } else {
+          console.warn('Failed to fetch news:', result.error);
+        }
+      } catch (err) {
+        console.warn('Error fetching news:', err);
       }
     };
 
