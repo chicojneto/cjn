@@ -37,7 +37,16 @@ export function CurrencyRates() {
     try {
       const { data, error } = await supabase.functions.invoke('fetch-currency-rates');
       
-      if (error) throw error;
+      if (error) {
+        console.warn('Error fetching currency rates:', error.message);
+        return;
+      }
+      
+      // Handle rate limiting gracefully
+      if (data?.success === false && data?.error === 'Rate limit exceeded') {
+        console.log('Currency rates rate limited, retry after:', data.retry_after);
+        return;
+      }
       
       if (data?.quotes) {
         setQuotes(data.quotes);
