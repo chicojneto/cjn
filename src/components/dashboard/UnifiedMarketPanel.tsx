@@ -26,24 +26,50 @@ interface HistoricalQuote {
   change_percent: number;
 }
 
+// Helper to handle rate limited responses gracefully
+function isRateLimited(data: any): boolean {
+  return data?.success === false && data?.error === 'Rate limit exceeded';
+}
+
 // Fetch global indices
 async function fetchGlobalIndices(): Promise<Quote[]> {
   const { data, error } = await supabase.functions.invoke('fetch-global-indices');
-  if (error) throw error;
+  if (error) {
+    console.warn('fetch-global-indices error:', error.message);
+    return [];
+  }
+  if (isRateLimited(data)) {
+    console.log('fetch-global-indices rate limited');
+    return [];
+  }
   return data?.quotes || [];
 }
 
 // Fetch currency rates
 async function fetchCurrencyRates(): Promise<Quote[]> {
   const { data, error } = await supabase.functions.invoke('fetch-currency-rates');
-  if (error) throw error;
+  if (error) {
+    console.warn('fetch-currency-rates error:', error.message);
+    return [];
+  }
+  if (isRateLimited(data)) {
+    console.log('fetch-currency-rates rate limited');
+    return [];
+  }
   return data?.quotes || [];
 }
 
 // Fetch asset quotes
 async function fetchAssetQuotes(): Promise<Quote[]> {
   const { data, error } = await supabase.functions.invoke('fetch-asset-quotes');
-  if (error) throw error;
+  if (error) {
+    console.warn('fetch-asset-quotes error:', error.message);
+    return [];
+  }
+  if (isRateLimited(data)) {
+    console.log('fetch-asset-quotes rate limited');
+    return [];
+  }
   return data?.quotes || [];
 }
 
