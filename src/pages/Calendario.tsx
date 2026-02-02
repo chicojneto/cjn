@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { EconomicCalendar } from '@/components/dashboard/EconomicCalendar';
-import { DailyCorrelationsCard } from '@/components/dashboard/DailyCorrelationsCard';
 import { Calendar } from 'lucide-react';
 
 const container = {
@@ -40,11 +39,6 @@ export default function Calendario() {
           </div>
         </div>
       </motion.div>
-
-      {/* Daily Correlations Analysis */}
-      <motion.section variants={item}>
-        <DailyCorrelationsCard />
-      </motion.section>
 
       {/* Calendar */}
       <motion.section variants={item}>
