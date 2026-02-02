@@ -34,9 +34,13 @@ export default function CheckList() {
             <h1 className="text-2xl font-bold text-foreground tracking-tight">
               Check List Diário
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Análise do Dia • Notícias do Calendário
-            </p>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground">Análise do Dia</span>
+              <span className="text-muted-foreground">•</span>
+              <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-semibold border border-amber-500/30">
+                📅 Notícias do Calendário
+              </span>
+            </div>
           </div>
         </div>
       </motion.div>
