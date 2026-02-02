@@ -80,20 +80,29 @@ interface CorrelationResponse {
 export function useMarketCorrelations() {
   return useQuery({
     queryKey: ['market-correlations'],
-    queryFn: async (): Promise<CorrelationAnalysis> => {
+    queryFn: async (): Promise<CorrelationAnalysis | null> => {
       const { data, error } = await supabase.functions.invoke<CorrelationResponse>('fetch-market-correlations');
       
       if (error) {
-        throw new Error(error.message);
+        console.warn('fetch-market-correlations error:', error.message);
+        return null;
+      }
+      
+      // Handle rate limiting gracefully
+      if (data && !data.success && (data as any).error === 'Rate limit exceeded') {
+        console.log('fetch-market-correlations rate limited, retry after:', (data as any).retry_after);
+        return null;
       }
       
       if (!data?.success) {
-        throw new Error(data?.error || 'Failed to fetch correlations');
+        console.warn('fetch-market-correlations failed:', data?.error);
+        return null;
       }
       
       return data.data;
     },
     refetchInterval: 15 * 60 * 1000, // 15 minutes
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false, // Don't retry on failure to avoid hammering rate-limited endpoint
   });
 }
