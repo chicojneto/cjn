@@ -26,58 +26,78 @@ function isRateLimited(data: any): boolean {
 
 // Fetch global indices
 async function fetchGlobalIndices(): Promise<Quote[]> {
-  const { data, error } = await supabase.functions.invoke('fetch-global-indices');
-  if (error) {
-    console.warn('fetch-global-indices error:', error.message);
+  try {
+    const { data, error } = await supabase.functions.invoke('fetch-global-indices');
+    if (error) {
+      console.warn('fetch-global-indices error:', error.message);
+      return [];
+    }
+    if (isRateLimited(data)) {
+      console.log('fetch-global-indices rate limited, using cached data');
+      return [];
+    }
+    return data?.quotes || [];
+  } catch (err) {
+    console.warn('fetch-global-indices exception:', err);
     return [];
   }
-  if (isRateLimited(data)) {
-    console.log('fetch-global-indices rate limited, using cached data');
-    return [];
-  }
-  return data?.quotes || [];
 }
 
 // Fetch currency rates
 async function fetchCurrencyRates(): Promise<Quote[]> {
-  const { data, error } = await supabase.functions.invoke('fetch-currency-rates');
-  if (error) {
-    console.warn('fetch-currency-rates error:', error.message);
+  try {
+    const { data, error } = await supabase.functions.invoke('fetch-currency-rates');
+    if (error) {
+      console.warn('fetch-currency-rates error:', error.message);
+      return [];
+    }
+    if (isRateLimited(data)) {
+      console.log('fetch-currency-rates rate limited, using cached data');
+      return [];
+    }
+    return data?.quotes || [];
+  } catch (err) {
+    console.warn('fetch-currency-rates exception:', err);
     return [];
   }
-  if (isRateLimited(data)) {
-    console.log('fetch-currency-rates rate limited, using cached data');
-    return [];
-  }
-  return data?.quotes || [];
 }
 
 // Fetch asset quotes
 async function fetchAssetQuotes(): Promise<Quote[]> {
-  const { data, error } = await supabase.functions.invoke('fetch-asset-quotes');
-  if (error) {
-    console.warn('fetch-asset-quotes error:', error.message);
+  try {
+    const { data, error } = await supabase.functions.invoke('fetch-asset-quotes');
+    if (error) {
+      console.warn('fetch-asset-quotes error:', error.message);
+      return [];
+    }
+    if (isRateLimited(data)) {
+      console.log('fetch-asset-quotes rate limited, using cached data');
+      return [];
+    }
+    return data?.quotes || [];
+  } catch (err) {
+    console.warn('fetch-asset-quotes exception:', err);
     return [];
   }
-  if (isRateLimited(data)) {
-    console.log('fetch-asset-quotes rate limited, using cached data');
-    return [];
-  }
-  return data?.quotes || [];
 }
 
 // Fetch stocks (B3 and DOW)
 async function fetchStocks(): Promise<{ b3Quotes: Quote[], dowQuotes: Quote[] }> {
-  const { data, error } = await supabase.functions.invoke('fetch-stocks');
-  if (error) {
-    console.warn('fetch-stocks error:', error.message);
+  try {
+    const { data, error } = await supabase.functions.invoke('fetch-stocks');
+    if (error) {
+      console.warn('fetch-stocks error:', error.message);
+      return { b3Quotes: [], dowQuotes: [] };
+    }
+    if (isRateLimited(data)) {
+      console.log('fetch-stocks rate limited, using cached data');
+      return { b3Quotes: [], dowQuotes: [] };
+    }
+    return { b3Quotes: data?.b3Quotes || [], dowQuotes: data?.dowQuotes || [] };
+  } catch (err) {
+    console.warn('fetch-stocks exception:', err);
     return { b3Quotes: [], dowQuotes: [] };
   }
-  if (isRateLimited(data)) {
-    console.log('fetch-stocks rate limited, using cached data');
-    return { b3Quotes: [], dowQuotes: [] };
-  }
-  return { b3Quotes: data?.b3Quotes || [], dowQuotes: data?.dowQuotes || [] };
 }
 
 // Mappings for categories
@@ -149,6 +169,7 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     queryFn: fetchAssetQuotes,
     refetchInterval: 60000,
     staleTime: 30000,
+    retry: false,
   });
   
   const { data: globalIndices, isLoading: indicesLoading, refetch: refetchIndices, isFetching: indicesFetching } = useQuery({
@@ -156,6 +177,7 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     queryFn: fetchGlobalIndices,
     refetchInterval: 60000,
     staleTime: 30000,
+    retry: false,
   });
 
   const { data: currencyRates, isLoading: currencyLoading, refetch: refetchCurrency, isFetching: currencyFetching } = useQuery({
@@ -163,6 +185,7 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     queryFn: fetchCurrencyRates,
     refetchInterval: 60000,
     staleTime: 30000,
+    retry: false,
   });
 
   const { data: stocksData, isLoading: stocksLoading, refetch: refetchStocks, isFetching: stocksFetching } = useQuery({
@@ -170,6 +193,7 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     queryFn: fetchStocks,
     refetchInterval: 60000,
     staleTime: 30000,
+    retry: false,
   });
 
   const isLoading = assetsLoading || indicesLoading || currencyLoading || stocksLoading;
