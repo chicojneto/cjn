@@ -82,39 +82,33 @@ export function useMarketCorrelations() {
     queryKey: ['market-correlations'],
     queryFn: async (): Promise<CorrelationAnalysis | null> => {
       try {
-        const { data, error } = await supabase.functions.invoke<CorrelationResponse>('fetch-market-correlations');
+        const response = await supabase.functions.invoke<CorrelationResponse>('fetch-market-correlations');
         
-        if (error) {
-          // Check if it's a rate limit error
-          if (error.message?.includes('429') || error.message?.includes('Rate limit')) {
-            console.log('fetch-market-correlations rate limited');
-            return null;
-          }
-          console.warn('fetch-market-correlations error:', error.message);
+        // Handle FunctionsHttpError (429 returns error in response)
+        if (response.error) {
+          console.log('fetch-market-correlations error:', response.error.message);
           return null;
         }
+        
+        const data = response.data;
         
         // Handle rate limiting gracefully from response body
-        if (data && !data.success && (data as any).error === 'Rate limit exceeded') {
-          console.log('fetch-market-correlations rate limited, retry after:', (data as any).retry_after);
+        if (data && !data.success) {
+          console.log('fetch-market-correlations not successful:', (data as any).error);
           return null;
         }
         
-        if (!data?.success) {
-          console.warn('fetch-market-correlations failed:', data?.error);
-          return null;
-        }
-        
-        return data.data;
+        return data?.data ?? null;
       } catch (err) {
         // Catch any thrown errors including HTTP 429
-        console.warn('fetch-market-correlations exception:', err);
+        console.log('fetch-market-correlations exception caught:', err);
         return null;
       }
     },
     refetchInterval: 15 * 60 * 1000, // 15 minutes
-    staleTime: 10 * 60 * 1000, // 10 minutes - keep stale data longer
-    retry: false, // Don't retry on failure to avoid hammering rate-limited endpoint
-    refetchOnWindowFocus: false, // Don't refetch when window gains focus
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    retry: false,
+    refetchOnWindowFocus: false,
+    throwOnError: false, // Never throw errors to prevent blank screen
   });
 }
