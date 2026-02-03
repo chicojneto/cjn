@@ -29,6 +29,7 @@ export function CurrencyRates() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [rateLimited, setRateLimited] = useState(false);
 
   const fetchQuotes = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -39,21 +40,25 @@ export function CurrencyRates() {
       
       if (error) {
         console.warn('Error fetching currency rates:', error.message);
+        setRateLimited(true);
         return;
       }
       
       // Handle rate limiting gracefully
       if (data?.success === false && data?.error === 'Rate limit exceeded') {
         console.log('Currency rates rate limited, retry after:', data.retry_after);
+        setRateLimited(true);
         return;
       }
       
+      setRateLimited(false);
       if (data?.quotes) {
         setQuotes(data.quotes);
         setLastUpdate(new Date());
       }
     } catch (error) {
       console.error('Error fetching currency rates:', error);
+      setRateLimited(true);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -93,6 +98,38 @@ export function CurrencyRates() {
             {[...Array(8)].map((_, i) => (
               <Skeleton key={i} className="h-10 w-full" />
             ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Show fallback when rate limited and no data
+  if (rateLimited && quotes.length === 0) {
+    return (
+      <Card className="glass-card">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Moedas & Commodities
+            </CardTitle>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-7 w-7" 
+              onClick={() => fetchQuotes(true)}
+              disabled={refreshing}
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <RefreshCw className="h-8 w-8 text-muted-foreground mb-2" />
+            <p className="text-sm text-muted-foreground">Aguardando dados...</p>
+            <p className="text-xs text-muted-foreground/70">Rate limit ativo</p>
           </div>
         </CardContent>
       </Card>

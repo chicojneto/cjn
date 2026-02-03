@@ -154,6 +154,8 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
     refetchInterval: 60000,
     staleTime: 30000,
     retry: false,
+    throwOnError: false,
+    refetchOnWindowFocus: false,
   });
   
   const { data: globalIndices, isLoading: indicesLoading, refetch: refetchIndices, isFetching: indicesFetching } = useQuery({
@@ -162,6 +164,8 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
     refetchInterval: 60000,
     staleTime: 30000,
     retry: false,
+    throwOnError: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: currencyRates, isLoading: currencyLoading, refetch: refetchCurrency, isFetching: currencyFetching } = useQuery({
@@ -170,12 +174,16 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
     refetchInterval: 60000,
     staleTime: 30000,
     retry: false,
+    throwOnError: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: historicalQuotes } = useQuery({
     queryKey: ['global-indices-history'],
     queryFn: fetchHistoricalQuotes,
     staleTime: 60000,
+    throwOnError: false,
+    refetchOnWindowFocus: false,
   });
 
   const isLoading = assetsLoading || indicesLoading || currencyLoading;
@@ -345,6 +353,44 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
                 ))}
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Check if all data is empty (likely rate limited)
+  const hasAnyData = 
+    (assetQuotes && assetQuotes.length > 0) ||
+    organizedQuotes.indices.length > 0 ||
+    organizedQuotes.yields.length > 0 ||
+    organizedQuotes.volatility.length > 0 ||
+    organizedQuotes.currencies.length > 0 ||
+    organizedQuotes.commodities.length > 0;
+
+  if (!hasAnyData) {
+    return (
+      <Card className="glass-card">
+        <CardHeader className="flex flex-row items-center justify-between pb-3">
+          <div className="flex items-center gap-2">
+            <Activity className="h-5 w-5 text-primary" />
+            <CardTitle className="text-lg">Painel de Mercados</CardTitle>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={refetchAll}
+            disabled={isFetching}
+            className="h-8 w-8 p-0"
+          >
+            <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <RefreshCw className="h-10 w-10 text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground font-medium">Aguardando dados do mercado...</p>
+            <p className="text-xs text-muted-foreground/70 mt-1">Rate limit ativo. Tente novamente em alguns minutos.</p>
           </div>
         </CardContent>
       </Card>

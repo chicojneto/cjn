@@ -170,6 +170,8 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     refetchInterval: 60000,
     staleTime: 30000,
     retry: false,
+    throwOnError: false,
+    refetchOnWindowFocus: false,
   });
   
   const { data: globalIndices, isLoading: indicesLoading, refetch: refetchIndices, isFetching: indicesFetching } = useQuery({
@@ -178,6 +180,8 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     refetchInterval: 60000,
     staleTime: 30000,
     retry: false,
+    throwOnError: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: currencyRates, isLoading: currencyLoading, refetch: refetchCurrency, isFetching: currencyFetching } = useQuery({
@@ -186,6 +190,8 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     refetchInterval: 60000,
     staleTime: 30000,
     retry: false,
+    throwOnError: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: stocksData, isLoading: stocksLoading, refetch: refetchStocks, isFetching: stocksFetching } = useQuery({
@@ -194,6 +200,8 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
     refetchInterval: 60000,
     staleTime: 30000,
     retry: false,
+    throwOnError: false,
+    refetchOnWindowFocus: false,
   });
 
   const isLoading = assetsLoading || indicesLoading || currencyLoading || stocksLoading;
@@ -282,6 +290,41 @@ export function MarketGrid({ onAssetSelect, selectedAsset }: MarketGridProps) {
             ))}
           </div>
         ))}
+      </div>
+    );
+  }
+
+  // Check if all data is empty (likely rate limited)
+  const hasAnyData = 
+    organizedQuotes.myAssets.length > 0 ||
+    organizedQuotes.currencies.length > 0 ||
+    organizedQuotes.indices.length > 0 ||
+    organizedQuotes.yields.length > 0 ||
+    organizedQuotes.commodities.length > 0 ||
+    organizedQuotes.crypto.length > 0 ||
+    organizedQuotes.b3Stocks.length > 0 ||
+    organizedQuotes.dowStocks.length > 0;
+
+  if (!hasAnyData) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-end">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={refetchAll}
+            disabled={isFetching}
+            className="h-8 gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+            <span className="text-xs">Atualizar</span>
+          </Button>
+        </div>
+        <div className="flex flex-col items-center justify-center py-12 text-center border border-border/50 rounded-lg bg-card/30">
+          <RefreshCw className="h-10 w-10 text-muted-foreground mb-3" />
+          <p className="text-sm text-muted-foreground font-medium">Aguardando dados do mercado...</p>
+          <p className="text-xs text-muted-foreground/70 mt-1">Rate limit ativo. Tente novamente em alguns minutos.</p>
+        </div>
       </div>
     );
   }
