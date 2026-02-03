@@ -225,19 +225,39 @@ function SignalsPanel({
   winSignals, 
   wdoSignals, 
   goldSignals,
+  sp500Signals,
+  nasdaqSignals,
+  eurUsdSignals,
+  gbpUsdSignals,
   winBias,
   wdoBias,
-  goldBias
+  goldBias,
+  sp500Bias,
+  nasdaqBias,
+  eurUsdBias,
+  gbpUsdBias,
 }: { 
   winSignals: string[]; 
   wdoSignals: string[]; 
   goldSignals: string[];
+  sp500Signals: string[];
+  nasdaqSignals: string[];
+  eurUsdSignals: string[];
+  gbpUsdSignals: string[];
   winBias: 'bullish' | 'bearish' | 'neutral';
   wdoBias: 'bullish' | 'bearish' | 'neutral';
   goldBias: 'bullish' | 'bearish' | 'neutral';
+  sp500Bias: 'bullish' | 'bearish' | 'neutral';
+  nasdaqBias: 'bullish' | 'bearish' | 'neutral';
+  eurUsdBias: 'bullish' | 'bearish' | 'neutral';
+  gbpUsdBias: 'bullish' | 'bearish' | 'neutral';
 }) {
   const getColor = (bias: 'bullish' | 'bearish' | 'neutral') => {
     return bias === 'bullish' ? 'text-emerald-400' : bias === 'bearish' ? 'text-red-400' : 'text-yellow-400';
+  };
+
+  const getBiasLabel = (bias: 'bullish' | 'bearish' | 'neutral') => {
+    return bias === 'bullish' ? 'LONG' : bias === 'bearish' ? 'SHORT' : 'NEUTRO';
   };
 
   return (
@@ -246,9 +266,12 @@ function SignalsPanel({
         <h4 className="text-xs font-bold uppercase tracking-wider">📊 ANÁLISE DE CORRELAÇÕES</h4>
       </div>
       <div className="flex-1 overflow-auto p-2 space-y-3">
+        {/* Brasil */}
         {winSignals.length > 0 && (
           <div>
-            <h5 className="text-[10px] font-bold text-red-400 mb-1 font-mono">WIN:</h5>
+            <h5 className={`text-[10px] font-bold mb-1 font-mono ${getColor(winBias)}`}>
+              WIN ({getBiasLabel(winBias)}):
+            </h5>
             {winSignals.map((signal, idx) => (
               <p key={idx} className={`text-[11px] leading-relaxed ${getColor(winBias)}`}>• {signal}</p>
             ))}
@@ -257,7 +280,9 @@ function SignalsPanel({
         
         {wdoSignals.length > 0 && (
           <div>
-            <h5 className="text-[10px] font-bold text-red-400 mb-1 font-mono">WDO:</h5>
+            <h5 className={`text-[10px] font-bold mb-1 font-mono ${getColor(wdoBias)}`}>
+              WDO ({getBiasLabel(wdoBias)}):
+            </h5>
             {wdoSignals.map((signal, idx) => (
               <p key={idx} className={`text-[11px] leading-relaxed ${getColor(wdoBias)}`}>• {signal}</p>
             ))}
@@ -266,9 +291,57 @@ function SignalsPanel({
         
         {goldSignals.length > 0 && (
           <div>
-            <h5 className="text-[10px] font-bold text-red-400 mb-1 font-mono">XAU/USD:</h5>
+            <h5 className={`text-[10px] font-bold mb-1 font-mono ${getColor(goldBias)}`}>
+              XAU/USD ({getBiasLabel(goldBias)}):
+            </h5>
             {goldSignals.map((signal, idx) => (
               <p key={idx} className={`text-[11px] leading-relaxed ${getColor(goldBias)}`}>• {signal}</p>
+            ))}
+          </div>
+        )}
+
+        {/* US Indices */}
+        {sp500Signals.length > 0 && (
+          <div>
+            <h5 className={`text-[10px] font-bold mb-1 font-mono ${getColor(sp500Bias)}`}>
+              S&P 500 ({getBiasLabel(sp500Bias)}):
+            </h5>
+            {sp500Signals.map((signal, idx) => (
+              <p key={idx} className={`text-[11px] leading-relaxed ${getColor(sp500Bias)}`}>• {signal}</p>
+            ))}
+          </div>
+        )}
+
+        {nasdaqSignals.length > 0 && (
+          <div>
+            <h5 className={`text-[10px] font-bold mb-1 font-mono ${getColor(nasdaqBias)}`}>
+              NASDAQ ({getBiasLabel(nasdaqBias)}):
+            </h5>
+            {nasdaqSignals.map((signal, idx) => (
+              <p key={idx} className={`text-[11px] leading-relaxed ${getColor(nasdaqBias)}`}>• {signal}</p>
+            ))}
+          </div>
+        )}
+
+        {/* Forex */}
+        {eurUsdSignals.length > 0 && (
+          <div>
+            <h5 className={`text-[10px] font-bold mb-1 font-mono ${getColor(eurUsdBias)}`}>
+              EUR/USD ({getBiasLabel(eurUsdBias)}):
+            </h5>
+            {eurUsdSignals.map((signal, idx) => (
+              <p key={idx} className={`text-[11px] leading-relaxed ${getColor(eurUsdBias)}`}>• {signal}</p>
+            ))}
+          </div>
+        )}
+
+        {gbpUsdSignals.length > 0 && (
+          <div>
+            <h5 className={`text-[10px] font-bold mb-1 font-mono ${getColor(gbpUsdBias)}`}>
+              GBP/USD ({getBiasLabel(gbpUsdBias)}):
+            </h5>
+            {gbpUsdSignals.map((signal, idx) => (
+              <p key={idx} className={`text-[11px] leading-relaxed ${getColor(gbpUsdBias)}`}>• {signal}</p>
             ))}
           </div>
         )}
@@ -539,9 +612,17 @@ export function DailyChecklist() {
               winSignals={data.winSignals}
               wdoSignals={data.wdoSignals}
               goldSignals={data.goldSignals}
+              sp500Signals={data.sp500Signals || []}
+              nasdaqSignals={data.nasdaqSignals || []}
+              eurUsdSignals={data.eurUsdSignals || []}
+              gbpUsdSignals={data.gbpUsdSignals || []}
               winBias={data.winBias}
               wdoBias={data.wdoBias}
               goldBias={data.goldBias}
+              sp500Bias={data.sp500Bias || 'neutral'}
+              nasdaqBias={data.nasdaqBias || 'neutral'}
+              eurUsdBias={data.eurUsdBias || 'neutral'}
+              gbpUsdBias={data.gbpUsdBias || 'neutral'}
             />
           </div>
         </div>
