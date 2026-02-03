@@ -396,6 +396,7 @@ export function DailyChecklist() {
     currencies: [
       formatIndicator(data.dxy),
       formatIndicator(data.eurUsd, 4),
+      formatIndicator(data.gbpUsd, 4),
       formatIndicator(data.usdJpy, 2),
       formatIndicator(data.usdBrl, 4),
     ].filter(Boolean) as MarketIndicator[],

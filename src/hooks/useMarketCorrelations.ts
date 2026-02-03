@@ -49,6 +49,7 @@ export interface CorrelationAnalysis {
   nasdaqFutures: MarketData | null;
   dowFutures: MarketData | null;
   eurUsd: MarketData | null;
+  gbpUsd: MarketData | null;
   usdJpy: MarketData | null;
   usdBrl: MarketData | null;
   ibovFutures: MarketData | null;
