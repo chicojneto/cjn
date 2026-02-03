@@ -6,9 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Rate limiting configuration
-const RATE_LIMIT_KEY = 'function-last-run-fetch-asset-quotes';
-const MIN_INTERVAL_MS = 3 * 60 * 1000; // 3 minutes
 
 // Map asset symbols to Yahoo Finance symbols
 const YAHOO_SYMBOLS: Record<string, string> = {
@@ -104,31 +101,6 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Rate limiting check
-    const { data: lastRun } = await supabase
-      .from('system_config')
-      .select('value')
-      .eq('key', RATE_LIMIT_KEY)
-      .single();
-
-    if (lastRun) {
-      const elapsed = Date.now() - new Date(lastRun.value).getTime();
-      if (elapsed < MIN_INTERVAL_MS) {
-        return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: 'Rate limit exceeded',
-            retry_after: Math.ceil((MIN_INTERVAL_MS - elapsed) / 1000)
-          }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-    }
-
-    // Update last run time
-    await supabase
-      .from('system_config')
-      .upsert({ key: RATE_LIMIT_KEY, value: new Date().toISOString() });
 
     // Fetch assets from database
     const { data: assets, error: assetsError } = await supabase
