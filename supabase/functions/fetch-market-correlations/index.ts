@@ -56,6 +56,7 @@ interface CorrelationAnalysis {
   nasdaqFutures: MarketData | null;
   dowFutures: MarketData | null;
   eurUsd: MarketData | null;
+  gbpUsd: MarketData | null;
   usdJpy: MarketData | null;
   usdBrl: MarketData | null;
   ibovFutures: MarketData | null;
@@ -92,6 +93,7 @@ const SYMBOLS: Record<string, { yahoo: string; name: string }> = {
   nasdaqFutures: { yahoo: 'NQ=F', name: 'Nasdaq Futuros' },
   dowFutures: { yahoo: 'YM=F', name: 'Dow Jones Futuros' },
   eurUsd: { yahoo: 'EURUSD=X', name: 'EUR/USD' },
+  gbpUsd: { yahoo: 'GBPUSD=X', name: 'GBP/USD' },
   usdJpy: { yahoo: 'JPY=X', name: 'USD/JPY' },
   usdBrl: { yahoo: 'BRL=X', name: 'USD/BRL' },
   ibov: { yahoo: '^BVSP', name: 'Ibovespa' },
@@ -505,6 +507,7 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
     nasdaqFutures: data.nasdaqFutures,
     dowFutures: data.dowFutures,
     eurUsd: data.eurUsd,
+    gbpUsd: data.gbpUsd,
     usdJpy: data.usdJpy,
     usdBrl: data.usdBrl,
     ibovFutures: data.ibov,
