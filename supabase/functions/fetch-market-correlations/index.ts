@@ -74,9 +74,17 @@ interface CorrelationAnalysis {
   winBias: 'bullish' | 'bearish' | 'neutral';
   wdoBias: 'bullish' | 'bearish' | 'neutral';
   goldBias: 'bullish' | 'bearish' | 'neutral';
+  sp500Bias: 'bullish' | 'bearish' | 'neutral';
+  nasdaqBias: 'bullish' | 'bearish' | 'neutral';
+  eurUsdBias: 'bullish' | 'bearish' | 'neutral';
+  gbpUsdBias: 'bullish' | 'bearish' | 'neutral';
   winSignals: string[];
   wdoSignals: string[];
   goldSignals: string[];
+  sp500Signals: string[];
+  nasdaqSignals: string[];
+  eurUsdSignals: string[];
+  gbpUsdSignals: string[];
 }
 
 // Yahoo Finance symbols mapping
@@ -316,6 +324,10 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
   const winSignals: string[] = [];
   const wdoSignals: string[] = [];
   const goldSignals: string[] = [];
+  const sp500Signals: string[] = [];
+  const nasdaqSignals: string[] = [];
+  const eurUsdSignals: string[] = [];
+  const gbpUsdSignals: string[] = [];
   
   let winBullishScore = 0;
   let winBearishScore = 0;
@@ -323,56 +335,100 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
   let wdoBearishScore = 0;
   let goldBullishScore = 0;
   let goldBearishScore = 0;
+  let sp500BullishScore = 0;
+  let sp500BearishScore = 0;
+  let nasdaqBullishScore = 0;
+  let nasdaqBearishScore = 0;
+  let eurUsdBullishScore = 0;
+  let eurUsdBearishScore = 0;
+  let gbpUsdBullishScore = 0;
+  let gbpUsdBearishScore = 0;
   
-  // Analyze US Futures for WIN
+  // Get market data
   const spFutures = data.sp500Futures;
   const nqFutures = data.nasdaqFutures;
-  const ymFutures = data.dowFutures;
-  
-  if (spFutures) {
-    if (spFutures.isPositive) {
-      winBullishScore += 2;
-      winSignals.push(`Futuros S&P 500: +${spFutures.changePercent.toFixed(2)}% (positivo para WIN)`);
-    } else {
-      winBearishScore += 2;
-      winSignals.push(`Futuros S&P 500: ${spFutures.changePercent.toFixed(2)}% (pressão no WIN)`);
-    }
-  }
-  
-  // Analyze DXY for WDO
   const dxy = data.dxy;
+  const vix = data.vix;
+  const us10y = data.us10y;
+  const oil = data.oil;
+  const gold = data.gold;
+  const copper = data.copper;
+  const usdBrl = data.usdBrl;
+  const eurUsd = data.eurUsd;
+  const gbpUsd = data.gbpUsd;
+  
+  // === DXY Analysis (impacts multiple assets) ===
   if (dxy) {
+    // WDO correlation
     if (dxy.isPositive) {
       wdoBullishScore += 3;
       wdoSignals.push(`DXY subindo +${dxy.changePercent.toFixed(2)}% → pressão de alta no WDO`);
       goldBearishScore += 2;
       goldSignals.push(`DXY forte: ${dxy.price.toFixed(2)} (+${dxy.changePercent.toFixed(2)}%) → pressão no ouro`);
+      
+      // S&P 500: DXY forte = negativo (receitas internacionais perdem valor)
+      sp500BearishScore += 2;
+      sp500Signals.push(`DXY forte (+${dxy.changePercent.toFixed(2)}%) → 40% receita S&P vem do exterior, perdem valor`);
+      
+      // Nasdaq: DXY forte = muito negativo (techs têm grande exposição internacional)
+      nasdaqBearishScore += 3;
+      nasdaqSignals.push(`DXY forte (+${dxy.changePercent.toFixed(2)}%) → Techs muito expostas a receitas internacionais`);
+      
+      // EUR/USD: DXY forte = EUR/USD cai
+      eurUsdBearishScore += 3;
+      eurUsdSignals.push(`DXY forte (+${dxy.changePercent.toFixed(2)}%) → pressão de queda no EUR/USD`);
+      
+      // GBP/USD: DXY forte = GBP/USD cai
+      gbpUsdBearishScore += 3;
+      gbpUsdSignals.push(`DXY forte (+${dxy.changePercent.toFixed(2)}%) → pressão de queda no GBP/USD`);
     } else {
       wdoBearishScore += 3;
       wdoSignals.push(`DXY caindo ${dxy.changePercent.toFixed(2)}% → alívio no câmbio, WDO para baixo`);
       goldBullishScore += 2;
       goldSignals.push(`DXY fraco: ${dxy.price.toFixed(2)} (${dxy.changePercent.toFixed(2)}%) → suporte para ouro`);
+      
+      // S&P 500: DXY fraco = positivo (exportações competitivas)
+      sp500BullishScore += 2;
+      sp500Signals.push(`DXY fraco (${dxy.changePercent.toFixed(2)}%) → exportações competitivas, capital estrangeiro flui para EUA`);
+      
+      // Nasdaq: DXY fraco = muito positivo (techs se beneficiam)
+      nasdaqBullishScore += 3;
+      nasdaqSignals.push(`DXY fraco (${dxy.changePercent.toFixed(2)}%) → Techs se beneficiam muito de dólar fraco`);
+      
+      // EUR/USD: DXY fraco = EUR/USD sobe
+      eurUsdBullishScore += 3;
+      eurUsdSignals.push(`DXY fraco (${dxy.changePercent.toFixed(2)}%) → suporte para alta no EUR/USD`);
+      
+      // GBP/USD: DXY fraco = GBP/USD sobe
+      gbpUsdBullishScore += 3;
+      gbpUsdSignals.push(`DXY fraco (${dxy.changePercent.toFixed(2)}%) → suporte para alta no GBP/USD`);
     }
   }
   
-  // Analyze VIX
-  const vix = data.vix;
+  // === VIX Analysis ===
   if (vix) {
     if (vix.price > 20) {
       winBearishScore += 1;
       winSignals.push(`VIX elevado: ${vix.price.toFixed(2)} (medo no mercado)`);
       goldBullishScore += 2;
       goldSignals.push(`VIX alto: ${vix.price.toFixed(2)} → demanda por proteção = suporte ouro`);
+      sp500BearishScore += 2;
+      sp500Signals.push(`VIX elevado: ${vix.price.toFixed(2)} → alta volatilidade, risco elevado`);
+      nasdaqBearishScore += 2;
+      nasdaqSignals.push(`VIX elevado: ${vix.price.toFixed(2)} → growth stocks sofrem mais com medo`);
     } else if (vix.price < 15) {
       winBullishScore += 1;
       winSignals.push(`VIX baixo: ${vix.price.toFixed(2)} (apetite a risco)`);
       goldBearishScore += 1;
       goldSignals.push(`VIX baixo: ${vix.price.toFixed(2)} → menos demanda por proteção`);
+      sp500BullishScore += 2;
+      sp500Signals.push(`VIX baixo: ${vix.price.toFixed(2)} → ambiente favorável para risco`);
+      nasdaqBullishScore += 2;
+      nasdaqSignals.push(`VIX baixo: ${vix.price.toFixed(2)} → apetite por growth stocks`);
     }
   }
   
-  // Analyze Treasuries
-  const us10y = data.us10y;
+  // === Treasury 10Y Analysis ===
   if (us10y) {
     if (us10y.price > 4.5) {
       winBearishScore += 2;
@@ -381,18 +437,49 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
       wdoSignals.push(`Yields altos: ${us10y.price.toFixed(2)}% → atrai capital para EUA`);
       goldBearishScore += 2;
       goldSignals.push(`Yields altos: ${us10y.price.toFixed(2)}% → custo de oportunidade alto para ouro`);
+      
+      // Yields altos pressionam valuations (especialmente growth)
+      nasdaqBearishScore += 3;
+      nasdaqSignals.push(`Yields 10Y altos: ${us10y.price.toFixed(2)}% → pressiona valuations de growth stocks`);
+      sp500BearishScore += 1;
+      sp500Signals.push(`Yields 10Y: ${us10y.price.toFixed(2)}% (acima de 4.5% = estresse)`);
     } else {
       winBullishScore += 1;
       winSignals.push(`Treasury 10Y: ${us10y.price.toFixed(2)}% (apetite por risco)`);
       if (us10y.changePercent < 0) {
         goldBullishScore += 2;
         goldSignals.push(`Yields caindo: ${us10y.changePercent.toFixed(2)}% → suporte para ouro`);
+        nasdaqBullishScore += 2;
+        nasdaqSignals.push(`Yields caindo (${us10y.changePercent.toFixed(2)}%) → favorece growth stocks`);
+        sp500BullishScore += 1;
+        sp500Signals.push(`Yields caindo (${us10y.changePercent.toFixed(2)}%) → favorece ações`);
       }
     }
   }
   
-  // Analyze Oil for WIN (Petrobras weight)
-  const oil = data.oil;
+  // === S&P 500 Futures for WIN ===
+  if (spFutures) {
+    if (spFutures.isPositive) {
+      winBullishScore += 2;
+      winSignals.push(`Futuros S&P 500: +${spFutures.changePercent.toFixed(2)}% (positivo para WIN)`);
+      sp500Signals.push(`S&P 500 Futuros: +${spFutures.changePercent.toFixed(2)}% (momentum positivo)`);
+    } else {
+      winBearishScore += 2;
+      winSignals.push(`Futuros S&P 500: ${spFutures.changePercent.toFixed(2)}% (pressão no WIN)`);
+      sp500Signals.push(`S&P 500 Futuros: ${spFutures.changePercent.toFixed(2)}% (momentum negativo)`);
+    }
+  }
+  
+  // === Nasdaq Futures ===
+  if (nqFutures) {
+    if (nqFutures.isPositive) {
+      nasdaqSignals.push(`Nasdaq Futuros: +${nqFutures.changePercent.toFixed(2)}% (momentum positivo)`);
+    } else {
+      nasdaqSignals.push(`Nasdaq Futuros: ${nqFutures.changePercent.toFixed(2)}% (momentum negativo)`);
+    }
+  }
+  
+  // === Oil for WIN (Petrobras weight) ===
   if (oil) {
     if (oil.isPositive) {
       winBullishScore += 1;
@@ -403,8 +490,7 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
     }
   }
   
-  // Analyze Gold
-  const gold = data.gold;
+  // === Gold Analysis ===
   if (gold) {
     if (gold.isPositive && gold.changePercent > 1) {
       winBearishScore += 1;
@@ -413,8 +499,7 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
     goldSignals.push(`Ouro atual: $${gold.price.toFixed(2)} (${gold.isPositive ? '+' : ''}${gold.changePercent.toFixed(2)}%)`);
   }
   
-  // Analyze Copper (industrial activity indicator)
-  const copper = data.copper;
+  // === Copper (industrial activity indicator) ===
   if (copper) {
     if (copper.isPositive) {
       winBullishScore += 1;
@@ -425,13 +510,22 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
     }
   }
   
-  // Analyze USD/BRL
-  const usdBrl = data.usdBrl;
+  // === USD/BRL ===
   if (usdBrl) {
     wdoSignals.push(`USD/BRL: R$ ${usdBrl.price.toFixed(4)} (${usdBrl.isPositive ? '+' : ''}${usdBrl.changePercent.toFixed(2)}%)`);
   }
+  
+  // === EUR/USD current price ===
+  if (eurUsd) {
+    eurUsdSignals.push(`EUR/USD atual: ${eurUsd.price.toFixed(4)} (${eurUsd.isPositive ? '+' : ''}${eurUsd.changePercent.toFixed(2)}%)`);
+  }
+  
+  // === GBP/USD current price ===
+  if (gbpUsd) {
+    gbpUsdSignals.push(`GBP/USD atual: ${gbpUsd.price.toFixed(4)} (${gbpUsd.isPositive ? '+' : ''}${gbpUsd.changePercent.toFixed(2)}%)`);
+  }
 
-  // Analyze Brazil Rates for WIN/WDO
+  // === Brazil Rates for WIN/WDO ===
   if (brazilRates.cdsBrazil) {
     const cds = brazilRates.cdsBrazil;
     if (cds.value > 200) {
@@ -481,7 +575,7 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
     }
   }
   
-  // Determine biases
+  // === Determine biases ===
   const winBias = winBullishScore > winBearishScore + 1 ? 'bullish' 
     : winBearishScore > winBullishScore + 1 ? 'bearish' 
     : 'neutral';
@@ -492,6 +586,22 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
     
   const goldBias = goldBullishScore > goldBearishScore + 1 ? 'bullish'
     : goldBearishScore > goldBullishScore + 1 ? 'bearish'
+    : 'neutral';
+    
+  const sp500Bias = sp500BullishScore > sp500BearishScore + 1 ? 'bullish'
+    : sp500BearishScore > sp500BullishScore + 1 ? 'bearish'
+    : 'neutral';
+    
+  const nasdaqBias = nasdaqBullishScore > nasdaqBearishScore + 1 ? 'bullish'
+    : nasdaqBearishScore > nasdaqBullishScore + 1 ? 'bearish'
+    : 'neutral';
+    
+  const eurUsdBias = eurUsdBullishScore > eurUsdBearishScore + 1 ? 'bullish'
+    : eurUsdBearishScore > eurUsdBullishScore + 1 ? 'bearish'
+    : 'neutral';
+    
+  const gbpUsdBias = gbpUsdBullishScore > gbpUsdBearishScore + 1 ? 'bullish'
+    : gbpUsdBearishScore > gbpUsdBullishScore + 1 ? 'bearish'
     : 'neutral';
   
   return {
@@ -523,9 +633,17 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
     winBias,
     wdoBias,
     goldBias,
+    sp500Bias,
+    nasdaqBias,
+    eurUsdBias,
+    gbpUsdBias,
     winSignals,
     wdoSignals,
     goldSignals,
+    sp500Signals,
+    nasdaqSignals,
+    eurUsdSignals,
+    gbpUsdSignals,
   };
 }
 

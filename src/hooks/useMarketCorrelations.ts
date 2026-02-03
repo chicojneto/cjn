@@ -65,9 +65,17 @@ export interface CorrelationAnalysis {
   winBias: 'bullish' | 'bearish' | 'neutral';
   wdoBias: 'bullish' | 'bearish' | 'neutral';
   goldBias: 'bullish' | 'bearish' | 'neutral';
+  sp500Bias: 'bullish' | 'bearish' | 'neutral';
+  nasdaqBias: 'bullish' | 'bearish' | 'neutral';
+  eurUsdBias: 'bullish' | 'bearish' | 'neutral';
+  gbpUsdBias: 'bullish' | 'bearish' | 'neutral';
   winSignals: string[];
   wdoSignals: string[];
   goldSignals: string[];
+  sp500Signals: string[];
+  nasdaqSignals: string[];
+  eurUsdSignals: string[];
+  gbpUsdSignals: string[];
 }
 
 interface CorrelationResponse {
