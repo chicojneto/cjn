@@ -523,10 +523,14 @@ export function DailyChecklist() {
             </div>
             <div className="flex items-center gap-2">
               {/* Bias Summary in Header */}
-              <div className="hidden lg:flex items-center gap-1">
+              <div className="hidden lg:flex items-center gap-1 flex-wrap">
                 <BiasIndicator bias={data.winBias} label="WIN" />
                 <BiasIndicator bias={data.wdoBias} label="WDO" />
                 <BiasIndicator bias={data.goldBias} label="OURO" />
+                <BiasIndicator bias={data.sp500Bias || 'neutral'} label="S&P" />
+                <BiasIndicator bias={data.nasdaqBias || 'neutral'} label="NDX" />
+                <BiasIndicator bias={data.eurUsdBias || 'neutral'} label="EUR" />
+                <BiasIndicator bias={data.gbpUsdBias || 'neutral'} label="GBP" />
               </div>
               <Button 
                 variant="ghost" 
@@ -560,6 +564,10 @@ export function DailyChecklist() {
             <BiasIndicator bias={data.winBias} label="WIN" />
             <BiasIndicator bias={data.wdoBias} label="WDO" />
             <BiasIndicator bias={data.goldBias} label="OURO" />
+            <BiasIndicator bias={data.sp500Bias || 'neutral'} label="S&P" />
+            <BiasIndicator bias={data.nasdaqBias || 'neutral'} label="NDX" />
+            <BiasIndicator bias={data.eurUsdBias || 'neutral'} label="EUR" />
+            <BiasIndicator bias={data.gbpUsdBias || 'neutral'} label="GBP" />
           </div>
 
           {/* Main Grid - Bloomberg Style */}
