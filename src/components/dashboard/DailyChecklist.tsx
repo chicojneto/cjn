@@ -609,31 +609,39 @@ export function DailyChecklist() {
             title="📈 JUROS & VIX" 
             indicators={indicators.rates} 
           />
-
-          {/* Row 3: Brazil Rates & Signals */}
-          {data.brazilRates && (
-            <BrazilRatesPanel brazilRates={data.brazilRates} />
-          )}
-          
-          <div className="sm:col-span-2 lg:col-span-2 xl:col-span-3 2xl:col-span-3">
-            <SignalsPanel 
-              winSignals={data.winSignals}
-              wdoSignals={data.wdoSignals}
-              goldSignals={data.goldSignals}
-              sp500Signals={data.sp500Signals || []}
-              nasdaqSignals={data.nasdaqSignals || []}
-              eurUsdSignals={data.eurUsdSignals || []}
-              gbpUsdSignals={data.gbpUsdSignals || []}
-              winBias={data.winBias}
-              wdoBias={data.wdoBias}
-              goldBias={data.goldBias}
-              sp500Bias={data.sp500Bias || 'neutral'}
-              nasdaqBias={data.nasdaqBias || 'neutral'}
-              eurUsdBias={data.eurUsdBias || 'neutral'}
-              gbpUsdBias={data.gbpUsdBias || 'neutral'}
-            />
-          </div>
         </div>
+
+          {/* Row 3: Brazil Rates & Signals - Separate flex container for alignment */}
+          <div className={`mt-2 flex gap-2 ${
+            isFullscreen 
+              ? 'flex-col xl:flex-row' 
+              : 'flex-col lg:flex-row'
+          }`}>
+            {data.brazilRates && (
+              <div className={`${isFullscreen ? 'xl:w-1/4' : 'lg:w-1/4'} min-w-0`}>
+                <BrazilRatesPanel brazilRates={data.brazilRates} />
+              </div>
+            )}
+            
+            <div className={`${isFullscreen ? 'xl:flex-1' : 'lg:flex-1'} min-w-0`}>
+              <SignalsPanel 
+                winSignals={data.winSignals}
+                wdoSignals={data.wdoSignals}
+                goldSignals={data.goldSignals}
+                sp500Signals={data.sp500Signals || []}
+                nasdaqSignals={data.nasdaqSignals || []}
+                eurUsdSignals={data.eurUsdSignals || []}
+                gbpUsdSignals={data.gbpUsdSignals || []}
+                winBias={data.winBias}
+                wdoBias={data.wdoBias}
+                goldBias={data.goldBias}
+                sp500Bias={data.sp500Bias || 'neutral'}
+                nasdaqBias={data.nasdaqBias || 'neutral'}
+                eurUsdBias={data.eurUsdBias || 'neutral'}
+                gbpUsdBias={data.gbpUsdBias || 'neutral'}
+              />
+            </div>
+          </div>
 
         {/* Footer Tips */}
         <div className="mt-2 border border-border/50 bg-muted/20 p-2">
