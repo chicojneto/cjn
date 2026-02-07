@@ -15,6 +15,8 @@ export function useNews(limit = 20) {
       if (error) throw error;
       return data as News[];
     },
+    retry: false,
+    throwOnError: false,
   });
 }
 
@@ -37,5 +39,7 @@ export function useNewsWithAssets(limit = 20) {
       if (error) throw error;
       return data;
     },
+    retry: false,
+    throwOnError: false,
   });
 }
