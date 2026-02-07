@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAlerts } from '@/hooks/useAlerts';
 import { NavLink } from 'react-router-dom';
+import { MacroPulseBar } from '@/components/dashboard/MacroPulseBar';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -118,6 +119,9 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
         </header>
 
+        {/* Mobile Macro Pulse Bar */}
+        <MacroPulseBar />
+
         <motion.main 
           className="flex-1 p-3 sm:p-4 overflow-auto scrollbar-thin"
           initial={{ opacity: 0, y: 10 }}
@@ -190,6 +194,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               </div>
             </div>
           </header>
+
+          {/* Desktop Macro Pulse Bar */}
+          <MacroPulseBar />
 
           <motion.main 
             className="flex-1 p-4 lg:p-6 overflow-auto scrollbar-thin"

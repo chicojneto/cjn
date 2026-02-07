@@ -1,4 +1,4 @@
-import { Coffee, LayoutDashboard, Newspaper, Calendar, BookOpen, TrendingUp, ClipboardCheck, BarChart3, Settings } from 'lucide-react';
+import { Coffee, Activity, Newspaper, Calendar, BookOpen, TrendingUp, ClipboardCheck, BarChart3, Settings } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/sidebar';
 
 const mainNavItems = [
-  { title: 'Dashboard', url: '/', icon: LayoutDashboard },
+  { title: 'Cenário Macro', url: '/', icon: Activity },
   { title: 'Mercados', url: '/mercados', icon: BarChart3 },
   { title: 'Notícias', url: '/noticias', icon: Newspaper },
   { title: 'Calendário', url: '/calendario', icon: Calendar },
