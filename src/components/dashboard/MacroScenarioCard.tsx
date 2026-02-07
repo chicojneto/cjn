@@ -282,17 +282,23 @@ export function MacroScenarioCard() {
 
   if (isLoading) {
     return (
-      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-        <CardHeader className="pb-3">
-          <Skeleton className="h-6 w-3/4" />
+      <Card className="border-border/50 bg-background">
+        <CardHeader className="py-2 px-3 border-b border-border/50 bg-amber-500/20">
+          <CardTitle className="text-sm font-mono flex items-center gap-2 text-amber-400">
+            <Zap className="h-4 w-4" />
+            CENÁRIO MACRO DO DIA
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-2/3" />
-          <div className="flex gap-2">
-            <Skeleton className="h-8 w-20" />
-            <Skeleton className="h-8 w-20" />
-            <Skeleton className="h-8 w-20" />
+        <CardContent className="p-4">
+          <div className="space-y-3">
+            <Skeleton className="h-5 w-3/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+            <div className="flex gap-2 pt-2">
+              <Skeleton className="h-7 w-24" />
+              <Skeleton className="h-7 w-24" />
+              <Skeleton className="h-7 w-24" />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -301,17 +307,18 @@ export function MacroScenarioCard() {
 
   if (error || !data) {
     return (
-      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Info className="h-5 w-5 text-muted-foreground" />
-            Cenário Macro
+      <Card className="border-border/50 bg-background">
+        <CardHeader className="py-2 px-3 border-b border-border/50 bg-amber-500/20">
+          <CardTitle className="text-sm font-mono flex items-center gap-2 text-amber-400">
+            <Zap className="h-4 w-4" />
+            CENÁRIO MACRO DO DIA
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Aguardando dados do mercado para análise...
-          </p>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Info className="h-4 w-4" />
+            <span className="text-sm font-mono">Aguardando dados do mercado para análise...</span>
+          </div>
         </CardContent>
       </Card>
     );
@@ -321,20 +328,20 @@ export function MacroScenarioCard() {
 
   const sentimentConfig = {
     'risk-on': {
-      color: 'bg-success/10 border-success/30',
-      textColor: 'text-success',
+      bg: 'bg-emerald-500/20 border-emerald-500/50',
+      text: 'text-emerald-400',
       icon: TrendingUp,
       label: 'RISK-ON'
     },
     'risk-off': {
-      color: 'bg-destructive/10 border-destructive/30',
-      textColor: 'text-destructive',
+      bg: 'bg-red-500/20 border-red-500/50',
+      text: 'text-red-400',
       icon: TrendingDown,
       label: 'RISK-OFF'
     },
     neutral: {
-      color: 'bg-warning/10 border-warning/30',
-      textColor: 'text-warning',
+      bg: 'bg-yellow-500/20 border-yellow-500/50',
+      text: 'text-yellow-400',
       icon: Minus,
       label: 'NEUTRO'
     },
@@ -349,79 +356,79 @@ export function MacroScenarioCard() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className={cn(
-        "border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden",
-        "hover:border-border/70 transition-colors duration-300"
-      )}>
-        {/* Accent bar at top */}
-        <div className={cn(
-          "h-1",
-          scenario.sentiment === 'risk-on' && "bg-gradient-to-r from-success/50 to-success/20",
-          scenario.sentiment === 'risk-off' && "bg-gradient-to-r from-destructive/50 to-destructive/20",
-          scenario.sentiment === 'neutral' && "bg-gradient-to-r from-warning/50 to-warning/20"
-        )} />
-        
-        <CardHeader className="pb-3">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <Zap className="h-4 w-4 text-primary" />
-                <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-                  Cenário Macro do Dia
-                </span>
-              </div>
-              <CardTitle className="text-xl font-bold tracking-tight">
-                {scenario.title}
-              </CardTitle>
-            </div>
+      <Card className="border-border/50 bg-background overflow-hidden">
+        {/* Terminal-style header */}
+        <CardHeader className="py-2 px-3 border-b border-amber-500/50 bg-amber-500/20">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-mono flex items-center gap-2 text-amber-400 uppercase tracking-wider">
+              <Zap className="h-4 w-4" />
+              CENÁRIO MACRO DO DIA
+            </CardTitle>
             <div className={cn(
-              "flex items-center gap-2 px-3 py-2 rounded-lg border font-mono text-sm font-bold",
-              sentimentStyle.color,
-              sentimentStyle.textColor
+              "flex items-center gap-2 px-2 py-1 border font-mono text-xs font-bold",
+              sentimentStyle.bg,
+              sentimentStyle.text
             )}>
-              <SentimentIcon className="h-4 w-4" />
+              <SentimentIcon className="h-3 w-3" />
               {sentimentStyle.label}
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4">
+        <CardContent className="p-0">
+          {/* Title Section */}
+          <div className="px-3 py-3 border-b border-border/30 bg-card/30">
+            <h3 className="text-base font-bold text-foreground">
+              {scenario.title}
+            </h3>
+          </div>
+
           {/* Key Points */}
-          <div className="space-y-2">
-            {scenario.keyPoints.map((point, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="flex items-start gap-2"
-              >
-                <span className="text-primary mt-1">•</span>
-                <p className="text-sm text-foreground/90 leading-relaxed">
-                  {point}
-                </p>
-              </motion.div>
-            ))}
+          <div className="px-3 py-2 border-b border-border/30">
+            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+              📋 PONTOS-CHAVE
+            </div>
+            <div className="space-y-1.5">
+              {scenario.keyPoints.map((point, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="flex items-start gap-2"
+                >
+                  <span className="text-amber-400 mt-0.5 text-xs">•</span>
+                  <p className="text-xs text-foreground/90 leading-relaxed">
+                    {point}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
           {/* Signals Grid */}
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-border/30">
-            {scenario.signals.map((signal, idx) => (
-              <motion.div
-                key={signal.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 + idx * 0.05 }}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-lg border",
-                  getStatusColor(signal.status)
-                )}
-              >
-                {getStatusIcon(signal.status)}
-                <span className="text-xs font-mono font-bold">{signal.label}</span>
-                <span className="text-xs font-mono opacity-80">{signal.description}</span>
-              </motion.div>
-            ))}
+          <div className="px-3 py-2 bg-card/20">
+            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+              📊 INDICADORES
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {scenario.signals.map((signal, idx) => (
+                <motion.div
+                  key={signal.label}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 + idx * 0.03 }}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2 py-1 border",
+                    getStatusColor(signal.status)
+                  )}
+                >
+                  {getStatusIcon(signal.status)}
+                  <span className="text-[10px] font-mono font-bold">{signal.label}</span>
+                  <span className="text-[10px] font-mono opacity-80">{signal.description}</span>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </CardContent>
       </Card>
