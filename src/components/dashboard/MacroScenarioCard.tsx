@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, AlertCircle, CheckCircle, AlertTriangle, Info, Zap } from 'lucide-react';
 import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -282,14 +281,14 @@ export function MacroScenarioCard() {
 
   if (isLoading) {
     return (
-      <Card className="border-border/50 bg-background">
-        <CardHeader className="py-2 px-3 border-b border-border/50 bg-amber-500/20">
-          <CardTitle className="text-sm font-mono flex items-center gap-2 text-amber-400">
+      <div className="border border-border/50 bg-background">
+        <div className="py-2 px-3 border-b border-amber-500/50 bg-amber-500/20">
+          <h3 className="text-sm font-mono flex items-center gap-2 text-amber-400 font-bold uppercase tracking-wider">
             <Zap className="h-4 w-4" />
             CENÁRIO MACRO DO DIA
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-4">
+          </h3>
+        </div>
+        <div className="p-4">
           <div className="space-y-3">
             <Skeleton className="h-5 w-3/4" />
             <Skeleton className="h-4 w-full" />
@@ -300,27 +299,27 @@ export function MacroScenarioCard() {
               <Skeleton className="h-7 w-24" />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   if (error || !data) {
     return (
-      <Card className="border-border/50 bg-background">
-        <CardHeader className="py-2 px-3 border-b border-border/50 bg-amber-500/20">
-          <CardTitle className="text-sm font-mono flex items-center gap-2 text-amber-400">
+      <div className="border border-border/50 bg-background">
+        <div className="py-2 px-3 border-b border-amber-500/50 bg-amber-500/20">
+          <h3 className="text-sm font-mono flex items-center gap-2 text-amber-400 font-bold uppercase tracking-wider">
             <Zap className="h-4 w-4" />
             CENÁRIO MACRO DO DIA
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-4">
+          </h3>
+        </div>
+        <div className="p-4">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Info className="h-4 w-4" />
             <span className="text-sm font-mono">Aguardando dados do mercado para análise...</span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
@@ -356,14 +355,14 @@ export function MacroScenarioCard() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className="border-border/50 bg-background overflow-hidden">
+      <div className="border border-border/50 bg-background">
         {/* Terminal-style header */}
-        <CardHeader className="py-2 px-3 border-b border-amber-500/50 bg-amber-500/20">
+        <div className="py-2 px-3 border-b border-amber-500/50 bg-amber-500/20">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-mono flex items-center gap-2 text-amber-400 uppercase tracking-wider">
+            <h3 className="text-sm font-mono flex items-center gap-2 text-amber-400 font-bold uppercase tracking-wider">
               <Zap className="h-4 w-4" />
               CENÁRIO MACRO DO DIA
-            </CardTitle>
+            </h3>
             <div className={cn(
               "flex items-center gap-2 px-2 py-1 border font-mono text-xs font-bold",
               sentimentStyle.bg,
@@ -373,14 +372,14 @@ export function MacroScenarioCard() {
               {sentimentStyle.label}
             </div>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="p-0">
+        <div className="p-0">
           {/* Title Section */}
           <div className="px-3 py-3 border-b border-border/30 bg-card/30">
-            <h3 className="text-base font-bold text-foreground">
+            <h4 className="text-base font-bold text-foreground">
               {scenario.title}
-            </h3>
+            </h4>
           </div>
 
           {/* Key Points */}
@@ -398,7 +397,7 @@ export function MacroScenarioCard() {
                   className="flex items-start gap-2"
                 >
                   <span className="text-amber-400 mt-0.5 text-xs">•</span>
-                  <p className="text-xs text-foreground/90 leading-relaxed">
+                  <p className="text-xs text-foreground/90 leading-relaxed font-mono">
                     {point}
                   </p>
                 </motion.div>
@@ -430,8 +429,8 @@ export function MacroScenarioCard() {
               ))}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 }
