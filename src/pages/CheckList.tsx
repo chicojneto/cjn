@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { DailyChecklist } from '@/components/dashboard/DailyChecklist';
-import { ClipboardCheck } from 'lucide-react';
+import { Tv, Maximize2 } from 'lucide-react';
 
 const container = {
   hidden: { opacity: 0 },
@@ -27,17 +27,18 @@ export default function CheckList() {
       <motion.div variants={item}>
         <div className="flex items-center gap-3 mb-2">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <ClipboardCheck className="h-5 w-5 text-primary" />
+            <Tv className="h-5 w-5 text-primary" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground tracking-tight">
-              Check List Diário
+              Modo TV
             </h1>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Análise do Dia</span>
+              <span className="text-muted-foreground">Análise otimizada para telas grandes</span>
               <span className="text-muted-foreground">•</span>
-              <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-semibold border border-amber-500/30">
-                📅 Notícias do Calendário
+              <span className="px-2 py-0.5 rounded bg-primary/20 text-primary font-semibold border border-primary/30 flex items-center gap-1">
+                <Maximize2 className="h-3 w-3" />
+                Fullscreen disponível
               </span>
             </div>
           </div>
