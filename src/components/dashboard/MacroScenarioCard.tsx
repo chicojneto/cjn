@@ -54,6 +54,7 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
   const signals: ScenarioSignal[] = [];
   let bullishScore = 0;
   let bearishScore = 0;
+  let carryTradeRisk: 'low' | 'medium' | 'high' = 'low';
 
   // DXY Analysis
   if (data.dxy) {
@@ -75,12 +76,39 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
     });
   }
 
+  // USD/JPY & Carry Trade Analysis
+  if (data.usdJpy) {
+    const yenStrengthening = data.usdJpy.changePercent < -0.5; // USD/JPY falling = Yen strengthening
+    const yenWeakening = data.usdJpy.changePercent > 0.5;
+    const severeYenStrength = data.usdJpy.changePercent < -1.5;
+    
+    if (severeYenStrength) {
+      keyPoints.push(`⚠️ ALERTA CARRY TRADE: Iene forte (${data.usdJpy.changePercent.toFixed(2)}%) - risco de unwinding em tech stocks`);
+      bearishScore += 4;
+      carryTradeRisk = 'high';
+    } else if (yenStrengthening) {
+      keyPoints.push(`Iene se fortalecendo (USD/JPY ${data.usdJpy.changePercent.toFixed(2)}%) - monitorar risco carry trade`);
+      bearishScore += 2;
+      carryTradeRisk = 'medium';
+    } else if (yenWeakening) {
+      keyPoints.push(`Iene enfraquecido favorece fluxo de carry trade para tech stocks`);
+      bullishScore += 1;
+    }
+    
+    signals.push({
+      label: 'USD/JPY',
+      status: yenStrengthening ? 'bearish' : yenWeakening ? 'bullish' : 'neutral',
+      description: `${data.usdJpy.price.toFixed(2)} (${data.usdJpy.changePercent > 0 ? '+' : ''}${data.usdJpy.changePercent.toFixed(2)}%)`,
+    });
+  }
+
   // VIX Analysis
   if (data.vix) {
     const vixHigh = data.vix.price > 20;
     const vixLow = data.vix.price < 15;
     const vixSpike = data.vix.changePercent > 10;
     const vixDrop = data.vix.changePercent < -10;
+    const vixExtreme = data.vix.price > 30;
     
     if (vixSpike) {
       keyPoints.push(`VIX dispara ${data.vix.changePercent.toFixed(1)}% - mercado precifica risco elevado`);
@@ -96,14 +124,20 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
       bullishScore += 1;
     }
     
+    // Carry Trade + VIX compound risk
+    if (carryTradeRisk === 'high' && vixHigh) {
+      keyPoints.push(`🔴 Risco sistêmico: VIX alto + Iene forte = condições para liquidação em cascata`);
+      bearishScore += 3;
+    }
+    
     signals.push({
       label: 'VIX',
-      status: vixHigh || vixSpike ? 'bearish' : vixLow ? 'bullish' : 'neutral',
+      status: vixExtreme ? 'bearish' : vixHigh || vixSpike ? 'bearish' : vixLow ? 'bullish' : 'neutral',
       description: `${data.vix.price.toFixed(2)} (${data.vix.changePercent > 0 ? '+' : ''}${data.vix.changePercent.toFixed(2)}%)`,
     });
   }
 
-  // US 10Y Yields
+  // US 10Y Yields - Important for Carry Trade differential
   if (data.us10y) {
     const yieldHigh = data.us10y.price > 4.5;
     const yieldRising = data.us10y.changePercent > 1;
@@ -117,6 +151,12 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
       bullishScore += 1;
     }
     
+    // Carry trade context: High US yields maintain the differential
+    if (yieldHigh && carryTradeRisk === 'low') {
+      // High yield differential keeps carry trade attractive
+      bullishScore += 1;
+    }
+    
     signals.push({
       label: 'US10Y',
       status: yieldHigh || yieldRising ? 'bearish' : yieldFalling ? 'bullish' : 'neutral',
@@ -124,15 +164,21 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
     });
   }
 
-  // S&P 500 Futures
+  // S&P 500 Futures - Tech exposure indicator
   if (data.sp500Futures) {
     const futuresUp = data.sp500Futures.changePercent > 0.5;
     const futuresDown = data.sp500Futures.changePercent < -0.5;
+    const severeDrop = data.sp500Futures.changePercent < -2;
     
     if (futuresUp) {
       bullishScore += 2;
     } else if (futuresDown) {
       bearishScore += 2;
+    }
+    
+    // Compound carry trade risk assessment
+    if (severeDrop && carryTradeRisk !== 'low') {
+      keyPoints.push(`Futuros S&P em queda ${data.sp500Futures.changePercent.toFixed(2)}% com risco carry trade - possível margin call em curso`);
     }
     
     signals.push({
@@ -142,13 +188,13 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
     });
   }
 
-  // Gold
+  // Gold - Safe haven indicator
   if (data.gold) {
     const goldUp = data.gold.changePercent > 0.5;
     const goldDown = data.gold.changePercent < -0.5;
     
     if (goldUp && data.vix && data.vix.price > 18) {
-      keyPoints.push(`Ouro em alta com VIX elevado - busca por proteção`);
+      keyPoints.push(`Ouro em alta com VIX elevado - busca por proteção (flight to quality)`);
     }
     
     signals.push({
@@ -158,12 +204,39 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
     });
   }
 
+  // Nikkei Analysis - Japanese market health indicator
+  if (data.nikkei) {
+    const nikkeiDown = data.nikkei.changePercent < -1;
+    const nikkeiSevere = data.nikkei.changePercent < -3;
+    
+    if (nikkeiSevere) {
+      keyPoints.push(`🇯🇵 Nikkei em queda severa (${data.nikkei.changePercent.toFixed(2)}%) - estresse no mercado japonês`);
+      bearishScore += 3;
+      if (carryTradeRisk !== 'low') {
+        carryTradeRisk = 'high';
+      }
+    } else if (nikkeiDown && carryTradeRisk !== 'low') {
+      keyPoints.push(`Nikkei pressionado junto com iene forte - observar contágio`);
+      bearishScore += 1;
+    }
+    
+    signals.push({
+      label: 'NKY',
+      status: nikkeiSevere ? 'bearish' : nikkeiDown ? 'bearish' : 'neutral',
+      description: `${data.nikkei.price.toFixed(0)} (${data.nikkei.changePercent > 0 ? '+' : ''}${data.nikkei.changePercent.toFixed(2)}%)`,
+    });
+  }
+
   // Determine overall sentiment
   const netScore = bullishScore - bearishScore;
   let sentiment: 'risk-on' | 'risk-off' | 'neutral' = 'neutral';
   let title = 'Mercado em modo de consolidação';
 
-  if (netScore >= 3) {
+  // Override sentiment if carry trade risk is high
+  if (carryTradeRisk === 'high') {
+    sentiment = 'risk-off';
+    title = '⚠️ Alerta: Risco de unwinding do Carry Trade japonês';
+  } else if (netScore >= 3) {
     sentiment = 'risk-on';
     title = 'Cenário favorável para ativos de risco';
   } else if (netScore <= -3) {
@@ -181,18 +254,25 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
     keyPoints.push('📍 Abertura do mercado americano em breve');
   } else if (hour >= 4 && hour < 6) {
     keyPoints.push('📍 Sessão europeia ativa - atenção aos dados da zona do euro');
+  } else if (hour >= 20 || hour < 2) {
+    keyPoints.push('📍 Sessão asiática ativa - monitorar USD/JPY e Nikkei');
   }
 
   // Ensure at least some key points
   if (keyPoints.length === 0) {
     keyPoints.push('Mercado operando sem grandes catalisadores');
-    keyPoints.push('Monitorar fluxo institucional para definição de tendência');
+    keyPoints.push('Diferencial de juros EUA-Japão sustenta fluxo de carry trade');
+  }
+
+  // Add carry trade educational context when risk is present
+  if (carryTradeRisk === 'medium') {
+    keyPoints.push('💡 Carry Trade: Iene forte pode forçar liquidação de posições em tech');
   }
 
   return {
     title,
     sentiment,
-    keyPoints: keyPoints.slice(0, 5),
+    keyPoints: keyPoints.slice(0, 6),
     signals,
   };
 }
