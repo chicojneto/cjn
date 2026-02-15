@@ -462,7 +462,7 @@ export function DailyChecklist() {
   return (
     <div 
       ref={containerRef} 
-      className={`${isFullscreen ? 'bg-background p-4 overflow-auto' : ''}`}
+      className={`checklist-enlarged ${isFullscreen ? 'bg-background p-4 overflow-auto' : ''}`}
     >
       <Card className={`border-border/50 bg-background ${isFullscreen ? 'h-full flex flex-col' : ''}`}>
         {/* Terminal Header */}

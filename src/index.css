@@ -354,3 +354,10 @@
     font-variant-numeric: tabular-nums;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHECKLIST ENLARGED - Scoped font increase for correlation analysis
+   ═══════════════════════════════════════════════════════════════════════ */
+.checklist-enlarged {
+  font-size: 110%;
+}
