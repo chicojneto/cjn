@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { MacroScenarioCard } from '@/components/dashboard/MacroScenarioCard';
 import { GlobalMarketsPanel } from '@/components/dashboard/GlobalMarketsPanel';
 import { NewsFeed } from '@/components/dashboard/NewsFeed';
-import { MacroFrameworkBanner } from '@/components/dashboard/MacroFrameworkBanner';
 import { useAutoFetchNews } from '@/hooks/useAutoFetchNews';
 import { useEventAlerts } from '@/hooks/useEventAlerts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -44,11 +43,6 @@ export default function Dashboard() {
           </p>
         </div>
       </motion.div>
-
-      {/* Macro Framework Banner */}
-      <motion.section variants={item}>
-        <MacroFrameworkBanner />
-      </motion.section>
 
       {/* Macro Scenario Card */}
       <motion.section variants={item}>
