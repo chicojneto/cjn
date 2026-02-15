@@ -1,4 +1,4 @@
-import { Coffee, Activity, Newspaper, Calendar, BookOpen, TrendingUp, Tv, BarChart3, Settings } from 'lucide-react';
+import { Coffee, Activity, Newspaper, Calendar, BookOpen, TrendingUp, Tv, BarChart3, Settings, Map } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
@@ -23,6 +23,7 @@ const mainNavItems = [
 ];
 
 const analysisNavItems = [
+  { title: 'Mapa Macro', url: '/mapa-macro', icon: Map },
   { title: 'Modo TV', url: '/checklist', icon: Tv },
   { title: 'Estratégias', url: '/estrategias', icon: BookOpen },
   { title: 'Long/Short', url: '/longshort', icon: TrendingUp },

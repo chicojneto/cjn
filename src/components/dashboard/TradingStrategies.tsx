@@ -189,6 +189,35 @@ const strategies = [
       '→ USD/JPY romper 140: LIQUIDAR posições de risco',
       '→ 2+ pernas stopadas: tese errada, fechar TUDO'
     ]
+  },
+  {
+    id: 10,
+    title: 'Rotação Setorial por Ciclo (PDF)',
+    icon: Globe,
+    color: 'text-sky-400',
+    bgColor: 'bg-sky-500/20',
+    steps: [
+      '📊 FRAMEWORK: PIB → INFLAÇÃO → JUROS → GRÁFICO',
+      '',
+      'PIB acelerando + Inflação controlada (GOLDILOCKS):',
+      '→ LONG ações, small caps, cíclicos, emergentes',
+      '→ SHORT dólar, renda fixa longa',
+      '',
+      'PIB acelerando + Inflação subindo (SUPERAQUECIMENTO):',
+      '→ LONG commodities, bancos, energia, dólar',
+      '→ SHORT tech/growth, small caps, bonds longos',
+      '',
+      'PIB desacelerando + Inflação caindo (DESACELERAÇÃO):',
+      '→ LONG bonds, utilities, saúde, renda fixa',
+      '→ SHORT cíclicos, commodities, small caps',
+      '',
+      'PIB fraco + Inflação alta (ESTAGFLAÇÃO):',
+      '→ LONG ouro, dólar, commodities duras, cash',
+      '→ SHORT ações em geral, bonds longos, emergentes',
+      '',
+      '⚠️ Juros subindo: favorece bancos/seguradoras. Evite tech.',
+      '⚠️ Juros caindo: favorece bolsa, small caps, risco.'
+    ]
   }
 ];
 
@@ -253,7 +282,7 @@ export function TradingStrategies() {
             </Badge>
             {selectedStrategy.id >= 7 && (
               <Badge className="text-[10px] bg-red-500/20 text-red-400 border-red-500/30">
-                NOVO
+                {selectedStrategy.id === 10 ? 'PDF' : 'NOVO'}
               </Badge>
             )}
           </div>
