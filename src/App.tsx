@@ -11,6 +11,7 @@ import Calendario from "./pages/Calendario";
 import CheckList from "./pages/CheckList";
 import Estrategias from "./pages/Estrategias";
 import LongShort from "./pages/LongShort";
+import MapaMacro from "./pages/MapaMacro";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 
@@ -56,6 +57,11 @@ const App = () => (
           <Route path="/longshort" element={
             <AppLayout>
               <LongShort />
+            </AppLayout>
+          } />
+          <Route path="/mapa-macro" element={
+            <AppLayout>
+              <MapaMacro />
             </AppLayout>
           } />
           <Route path="/configuracoes" element={
