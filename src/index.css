@@ -38,21 +38,21 @@
     --accent: 0 0% 70%;
     --accent-foreground: 0 0% 5%;
 
-    /* Destructive - Muted Rose (subtle) */
-    --destructive: 0 25% 45%;
+    /* Destructive - Vivid Red (highlighted) */
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Success - Muted Sage (subtle) */
-    --success: 150 15% 45%;
+    /* Success - Vivid Green (highlighted) */
+    --success: 145 65% 48%;
     --success-foreground: 0 0% 100%;
 
     /* Warning - Muted Sand */
     --warning: 40 20% 55%;
     --warning-foreground: 0 0% 5%;
 
-    /* Market Colors - Very Subtle */
-    --bullish: 150 12% 50%;
-    --bearish: 0 18% 48%;
+    /* Market Colors - Highlighted */
+    --bullish: 145 60% 50%;
+    --bearish: 0 70% 55%;
     --neutral: 0 0% 45%;
 
     /* Borders & Input */
@@ -110,7 +110,7 @@
     --muted-foreground: 0 0% 50%;
     --accent: 0 0% 70%;
     --accent-foreground: 0 0% 5%;
-    --destructive: 0 25% 45%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 18%;
     --input: 0 0% 14%;
