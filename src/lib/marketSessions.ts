@@ -157,7 +157,7 @@ export function nextOpenAndClose(now: Date) {
       }
     }
   }
-  return { nextOpen, nextClose };
+  return { nextOpen: bestOpen, nextClose: bestClose };
 }
 
 // ──────────────────────────────────────────────────────────
