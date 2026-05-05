@@ -1,4 +1,4 @@
-import { Coffee, Activity, Newspaper, Calendar, BookOpen, TrendingUp, Tv, BarChart3, Settings, Map } from 'lucide-react';
+import { Coffee, Activity, Calendar, BookOpen, TrendingUp, Tv, BarChart3, Settings } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
@@ -18,12 +18,10 @@ import {
 const mainNavItems = [
   { title: 'Cenário Macro', url: '/', icon: Activity },
   { title: 'Mercados', url: '/mercados', icon: BarChart3 },
-  { title: 'Notícias', url: '/noticias', icon: Newspaper },
   { title: 'Calendário', url: '/calendario', icon: Calendar },
 ];
 
 const analysisNavItems = [
-  { title: 'Mapa Macro', url: '/mapa-macro', icon: Map },
   { title: 'Modo TV', url: '/checklist', icon: Tv },
   { title: 'Estratégias', url: '/estrategias', icon: BookOpen },
   { title: 'Long/Short', url: '/longshort', icon: TrendingUp },
