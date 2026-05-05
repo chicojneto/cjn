@@ -1,6 +1,8 @@
 import { type SessionDef, isSessionActive } from '@/lib/marketSessions';
 import { Building2, Clock, MapPin, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTimezone } from '@/contexts/TimezoneContext';
+import { convertHHMMFromBRT } from '@/lib/timezones';
 
 interface Props {
   session: SessionDef;
@@ -12,7 +14,10 @@ export function SessionRegionCard({ session }: Props) {
     const id = setInterval(() => setNow(new Date()), 30_000);
     return () => clearInterval(id);
   }, []);
+  const { tz } = useTimezone();
   const active = isSessionActive(session, now);
+  const openTz = convertHHMMFromBRT(session.openBRT, tz.iana, now);
+  const closeTz = convertHHMMFromBRT(session.closeBRT, tz.iana, now);
 
   return (
     <div className="border border-border bg-card hover:border-foreground/40 transition-colors">
