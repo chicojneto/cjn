@@ -14,6 +14,9 @@ import {
 import { WorldMapDots } from '@/components/macro/WorldMapDots';
 import { SessionsTimeline24h } from '@/components/macro/SessionsTimeline24h';
 import { SessionRegionCard } from '@/components/macro/SessionRegionCard';
+import { NextSessionEvents } from '@/components/macro/NextSessionEvents';
+import { ForexStatusBar } from '@/components/macro/ForexStatusBar';
+import { LiquidityIndicator } from '@/components/macro/LiquidityIndicator';
 
 const container = {
   hidden: { opacity: 0 },
