@@ -130,7 +130,7 @@ export interface NextEvent {
   totalSeconds: number;
 }
 
-export function nextOpenAndClose(now: Date): { nextOpen: NextEvent | null; nextClose: NextEvent | null } {
+export function nextOpenAndClose(now: Date) {
   const cur = nowBRTMinutes(now);
   const sec = now.getUTCSeconds();
   let bestOpen: NextEvent | null = null;
