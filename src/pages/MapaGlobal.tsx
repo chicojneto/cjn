@@ -14,6 +14,9 @@ import {
 import { WorldMapDots } from '@/components/macro/WorldMapDots';
 import { SessionsTimeline24h } from '@/components/macro/SessionsTimeline24h';
 import { SessionRegionCard } from '@/components/macro/SessionRegionCard';
+import { NextSessionEvents } from '@/components/macro/NextSessionEvents';
+import { ForexStatusBar } from '@/components/macro/ForexStatusBar';
+import { LiquidityIndicator } from '@/components/macro/LiquidityIndicator';
 
 const container = {
   hidden: { opacity: 0 },
@@ -106,6 +109,21 @@ export default function MapaGlobal() {
           sub="Próximo rollover operacional às 18:00 BRT."
           mono
         />
+      </motion.section>
+
+      {/* Forex 24h Status */}
+      <motion.section variants={item}>
+        <ForexStatusBar />
+      </motion.section>
+
+      {/* Next open / next close countdown */}
+      <motion.section variants={item}>
+        <NextSessionEvents />
+      </motion.section>
+
+      {/* Liquidity + Golden Window */}
+      <motion.section variants={item}>
+        <LiquidityIndicator />
       </motion.section>
 
       {/* World Map */}
