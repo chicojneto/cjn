@@ -42,6 +42,7 @@ function EventCard({
   label,
   sessionLabel,
   time,
+  tzLabel,
   countdown,
   highlight,
 }: {
@@ -49,6 +50,7 @@ function EventCard({
   label: string;
   sessionLabel: string;
   time: string;
+  tzLabel: string;
   countdown: string;
   highlight?: boolean;
 }) {
@@ -62,7 +64,7 @@ function EventCard({
         {sessionLabel}
       </div>
       <div className="text-[11px] font-mono text-muted-foreground mt-0.5">
-        às {time} BRT
+        às {time} {tzLabel}
       </div>
       <div className="mt-3 pt-3 border-t border-border">
         <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
