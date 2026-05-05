@@ -124,9 +124,22 @@ export default function MapaGlobal() {
           <SessionRegionCard key={s.id} session={s} />
         ))}
       </motion.section>
+
+      {/* Footer note */}
+      <motion.section variants={item}>
+        <div className="border border-border bg-muted/20 p-4 flex items-start gap-3">
+          <div className="shrink-0 w-6 h-6 border border-border bg-background flex items-center justify-center text-[11px] font-mono text-muted-foreground">
+            ⓘ
+          </div>
+          <p className="text-xs font-mono text-muted-foreground leading-relaxed uppercase tracking-wider">
+            Horários em BRT / UTC-3. A regra semanal considera fechamento a partir de sexta 18:00 e reabertura no domingo 18:00 em São Paulo.
+          </p>
+        </div>
+      </motion.section>
     </motion.div>
   );
 }
+
 
 function KpiCard({
   icon,
