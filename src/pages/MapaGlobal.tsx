@@ -3,13 +3,10 @@ import { motion } from 'framer-motion';
 import { Globe2, Clock, Activity, Layers, RefreshCw } from 'lucide-react';
 import {
   SESSIONS,
-  brtDateString,
-  brtTimeString,
   countOverlaps,
   formatHMS,
   isSessionActive,
   minutesUntilNextRollover,
-  nowBRTMinutes,
 } from '@/lib/marketSessions';
 import { WorldMapDots } from '@/components/macro/WorldMapDots';
 import { SessionsTimeline24h } from '@/components/macro/SessionsTimeline24h';
@@ -17,6 +14,9 @@ import { SessionRegionCard } from '@/components/macro/SessionRegionCard';
 import { NextSessionEvents } from '@/components/macro/NextSessionEvents';
 import { ForexStatusBar } from '@/components/macro/ForexStatusBar';
 import { LiquidityIndicator } from '@/components/macro/LiquidityIndicator';
+import { TimezoneSelector } from '@/components/macro/TimezoneSelector';
+import { useTimezone } from '@/contexts/TimezoneContext';
+import { convertHHMMFromBRT, formatClockInTz, formatDateInTz, formatUtcOffset } from '@/lib/timezones';
 
 const container = {
   hidden: { opacity: 0 },
@@ -34,12 +34,16 @@ export default function MapaGlobal() {
     return () => clearInterval(id);
   }, []);
 
+  const { tz } = useTimezone();
   const activeSessions = SESSIONS.filter((s) => isSessionActive(s, now));
   const overlaps = countOverlaps(now);
   const rolloverMin = minutesUntilNextRollover(now);
-  const cur = nowBRTMinutes(now);
   const rolloverSec = (rolloverMin * 60) - now.getUTCSeconds();
   const rollover = formatHMS(rolloverSec > 0 ? rolloverSec : rolloverSec + 86400);
+  const rolloverInTz = convertHHMMFromBRT('18:00', tz.iana, now);
+  const clock = formatClockInTz(tz.iana, now);
+  const dateLabel = formatDateInTz(tz.iana, now);
+  const offset = formatUtcOffset(tz.iana, now);
 
   return (
     <motion.div
@@ -50,18 +54,21 @@ export default function MapaGlobal() {
     >
       {/* Hero */}
       <motion.section variants={item} className="border border-border bg-card p-6">
-        <div className="flex items-start gap-4 mb-6">
-          <div className="shrink-0 w-14 h-14 border border-border bg-muted/30 flex items-center justify-center">
-            <Globe2 className="h-6 w-6 text-foreground" />
+        <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
+          <div className="flex items-start gap-4">
+            <div className="shrink-0 w-14 h-14 border border-border bg-muted/30 flex items-center justify-center">
+              <Globe2 className="h-6 w-6 text-foreground" />
+            </div>
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold tracking-tight text-foreground uppercase">
+                Mapa Global
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Sessões globais do mercado — exibição em {tz.label} ({offset}).
+              </p>
+            </div>
           </div>
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground uppercase">
-              Mapa Global
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Sessões globais do mercado em horário de Brasília.
-            </p>
-          </div>
+          <TimezoneSelector />
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -74,9 +81,9 @@ export default function MapaGlobal() {
               Hora Local
             </div>
             <div className="text-2xl font-bold font-mono text-foreground tabular-nums">
-              {brtTimeString(now)}
+              {clock}
             </div>
-            <div className="text-[10px] font-mono text-muted-foreground">BRT / UTC-3</div>
+            <div className="text-[10px] font-mono text-muted-foreground">{tz.label} / {offset}</div>
           </div>
         </div>
       </motion.section>
@@ -85,9 +92,9 @@ export default function MapaGlobal() {
       <motion.section variants={item} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <KpiCard
           icon={<Clock className="h-3.5 w-3.5" />}
-          label="Horário BRT"
-          value={brtTimeString(now)}
-          sub={brtDateString(now)}
+          label={`Horário ${tz.label}`}
+          value={clock}
+          sub={dateLabel}
         />
         <KpiCard
           icon={<Activity className="h-3.5 w-3.5" />}
@@ -106,7 +113,7 @@ export default function MapaGlobal() {
           icon={<RefreshCw className="h-3.5 w-3.5" />}
           label="Rollover"
           value={rollover}
-          sub="Próximo rollover operacional às 18:00 BRT."
+          sub={`Próximo rollover às ${rolloverInTz} ${tz.label}.`}
           mono
         />
       </motion.section>
@@ -150,7 +157,7 @@ export default function MapaGlobal() {
             ⓘ
           </div>
           <p className="text-xs font-mono text-muted-foreground leading-relaxed uppercase tracking-wider">
-            Horários em BRT / UTC-3. A regra semanal considera fechamento a partir de sexta 18:00 e reabertura no domingo 18:00 em São Paulo.
+            Horários exibidos em {tz.label} ({offset}). A regra semanal considera fechamento a partir de sexta 18:00 e reabertura no domingo 18:00 em São Paulo (BRT).
           </p>
         </div>
       </motion.section>

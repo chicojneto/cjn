@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
 import { formatHMS, nextOpenAndClose } from '@/lib/marketSessions';
+import { useTimezone } from '@/contexts/TimezoneContext';
+import { convertHHMMFromBRT } from '@/lib/timezones';
 
 export function NextSessionEvents() {
   const [now, setNow] = useState(new Date());
@@ -9,6 +11,7 @@ export function NextSessionEvents() {
     return () => clearInterval(id);
   }, []);
 
+  const { tz } = useTimezone();
   const { nextOpen, nextClose } = nextOpenAndClose(now);
 
   return (
@@ -17,14 +20,16 @@ export function NextSessionEvents() {
         icon={<ArrowUpFromLine className="h-3.5 w-3.5" />}
         label="Próxima Abertura"
         sessionLabel={nextOpen?.session.label ?? '—'}
-        time={nextOpen?.session.openBRT ?? '—'}
+        time={nextOpen ? convertHHMMFromBRT(nextOpen.session.openBRT, tz.iana, now) : '—'}
+        tzLabel={tz.label}
         countdown={nextOpen ? formatHMS(Math.max(0, nextOpen.totalSeconds)) : '—'}
       />
       <EventCard
         icon={<ArrowDownToLine className="h-3.5 w-3.5" />}
         label="Próximo Fechamento"
         sessionLabel={nextClose?.session.label ?? '—'}
-        time={nextClose?.session.closeBRT ?? '—'}
+        time={nextClose ? convertHHMMFromBRT(nextClose.session.closeBRT, tz.iana, now) : '—'}
+        tzLabel={tz.label}
         countdown={nextClose ? formatHMS(Math.max(0, nextClose.totalSeconds)) : '—'}
         highlight
       />
@@ -37,6 +42,7 @@ function EventCard({
   label,
   sessionLabel,
   time,
+  tzLabel,
   countdown,
   highlight,
 }: {
@@ -44,6 +50,7 @@ function EventCard({
   label: string;
   sessionLabel: string;
   time: string;
+  tzLabel: string;
   countdown: string;
   highlight?: boolean;
 }) {
@@ -57,7 +64,7 @@ function EventCard({
         {sessionLabel}
       </div>
       <div className="text-[11px] font-mono text-muted-foreground mt-0.5">
-        às {time} BRT
+        às {time} {tzLabel}
       </div>
       <div className="mt-3 pt-3 border-t border-border">
         <div className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">

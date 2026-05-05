@@ -1,9 +1,11 @@
-import { SESSIONS, nowBRTMinutes, toMinutes } from '@/lib/marketSessions';
+import { SESSIONS, toMinutes } from '@/lib/marketSessions';
 import { useEffect, useState } from 'react';
+import { useTimezone } from '@/contexts/TimezoneContext';
+import { convertHHMMFromBRT, nowMinutesInTz } from '@/lib/timezones';
 
 /**
  * 24h timeline of all market sessions, monochrome.
- * Shows each session as a horizontal bar across 0-24h BRT.
+ * Renders the time axis in the user's selected timezone.
  */
 export function SessionsTimeline24h() {
   const [now, setNow] = useState(new Date());
@@ -12,7 +14,8 @@ export function SessionsTimeline24h() {
     return () => clearInterval(id);
   }, []);
 
-  const cur = nowBRTMinutes(now);
+  const { tz } = useTimezone();
+  const cur = nowMinutesInTz(tz.iana, now);
   const curPct = (cur / 1440) * 100;
   const curHHMM = `${String(Math.floor(cur / 60)).padStart(2, '0')}:${String(cur % 60).padStart(2, '0')}`;
 
@@ -20,7 +23,7 @@ export function SessionsTimeline24h() {
     <div className="border border-border bg-card p-4">
       <div className="flex items-center gap-2 mb-4 text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
         <span>◴</span>
-        Linha do tempo 24h (BRT / UTC-3)
+        Linha do tempo 24h ({tz.label})
       </div>
 
       {/* Legend */}
@@ -43,9 +46,18 @@ export function SessionsTimeline24h() {
 
         {/* Bars */}
         <div className="relative pt-3 space-y-2">
-          {SESSIONS.map((s) => (
-            <SessionBar key={s.id} open={s.openBRT} close={s.closeBRT} label={s.label.split(' ')[0]} />
-          ))}
+          {SESSIONS.map((s) => {
+            const openTz = convertHHMMFromBRT(s.openBRT, tz.iana, now);
+            const closeTz = convertHHMMFromBRT(s.closeBRT, tz.iana, now);
+            return (
+              <SessionBar
+                key={s.id}
+                open={openTz}
+                close={closeTz}
+                label={s.label.split(' ')[0]}
+              />
+            );
+          })}
 
           {/* Now line */}
           <div

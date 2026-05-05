@@ -13,15 +13,17 @@ import LongShort from "./pages/LongShort";
 import MapaGlobal from "./pages/MapaGlobal";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
+import { TimezoneProvider } from "./contexts/TimezoneContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+    <TimezoneProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
         <Routes>
           <Route path="/" element={
             <AppLayout>
@@ -67,7 +69,8 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
-    </TooltipProvider>
+      </TooltipProvider>
+    </TimezoneProvider>
   </QueryClientProvider>
 );
 
