@@ -1,4 +1,4 @@
-import { Coffee, LayoutDashboard, Newspaper, Calendar, BookOpen, TrendingUp, ClipboardCheck, BarChart3, Settings, Map, X } from 'lucide-react';
+import { Coffee, LayoutDashboard, Calendar, BookOpen, TrendingUp, ClipboardCheck, BarChart3, Settings, X } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -13,12 +13,10 @@ interface MobileNavProps {
 const mainNavItems = [
   { title: 'Dashboard', url: '/', icon: LayoutDashboard },
   { title: 'Mercados', url: '/mercados', icon: BarChart3 },
-  { title: 'Notícias', url: '/noticias', icon: Newspaper },
   { title: 'Calendário', url: '/calendario', icon: Calendar },
 ];
 
 const analysisNavItems = [
-  { title: 'Mapa Macro', url: '/mapa-macro', icon: Map },
   { title: 'Check List', url: '/checklist', icon: ClipboardCheck },
   { title: 'Estratégias', url: '/estrategias', icon: BookOpen },
   { title: 'Long/Short', url: '/longshort', icon: TrendingUp },
