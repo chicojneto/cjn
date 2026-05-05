@@ -54,11 +54,16 @@ export function SessionRegionCard({ session }: Props) {
       <div className="p-4 space-y-4">
         <div>
           <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-1">
-            <Clock className="h-3 w-3" /> Horário (BRT / UTC-3)
+            <Clock className="h-3 w-3" /> Horário ({tz.label})
           </div>
           <div className="text-2xl font-bold font-mono text-foreground">
-            {session.openBRT} – {session.closeBRT}
+            {openTz} – {closeTz}
           </div>
+          {tz.id !== 'brt' && (
+            <div className="text-[10px] font-mono text-muted-foreground mt-1 uppercase tracking-wider">
+              {session.openBRT} – {session.closeBRT} BRT
+            </div>
+          )}
         </div>
 
         <div>
