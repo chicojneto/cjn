@@ -111,6 +111,21 @@ export default function MapaGlobal() {
         />
       </motion.section>
 
+      {/* Forex 24h Status */}
+      <motion.section variants={item}>
+        <ForexStatusBar />
+      </motion.section>
+
+      {/* Next open / next close countdown */}
+      <motion.section variants={item}>
+        <NextSessionEvents />
+      </motion.section>
+
+      {/* Liquidity + Golden Window */}
+      <motion.section variants={item}>
+        <LiquidityIndicator />
+      </motion.section>
+
       {/* World Map */}
       <motion.section variants={item}>
         <WorldMapDots />
