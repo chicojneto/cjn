@@ -157,7 +157,7 @@ export default function MapaGlobal() {
             ⓘ
           </div>
           <p className="text-xs font-mono text-muted-foreground leading-relaxed uppercase tracking-wider">
-            Horários em BRT / UTC-3. A regra semanal considera fechamento a partir de sexta 18:00 e reabertura no domingo 18:00 em São Paulo.
+            Horários exibidos em {tz.label} ({offset}). A regra semanal considera fechamento a partir de sexta 18:00 e reabertura no domingo 18:00 em São Paulo (BRT).
           </p>
         </div>
       </motion.section>
