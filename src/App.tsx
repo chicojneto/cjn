@@ -53,6 +53,11 @@ const App = () => (
               <LongShort />
             </AppLayout>
           } />
+          <Route path="/mapa-global" element={
+            <AppLayout>
+              <MapaGlobal />
+            </AppLayout>
+          } />
           <Route path="/configuracoes" element={
             <AppLayout>
               <Configuracoes />
