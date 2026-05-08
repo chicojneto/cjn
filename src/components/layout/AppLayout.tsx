@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { NavLink } from 'react-router-dom';
 import { MacroPulseBar } from '@/components/dashboard/MacroPulseBar';
+import { MarketTicker } from './MarketTicker';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -106,6 +107,9 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
         </header>
 
+        {/* Mobile Market Ticker */}
+        <MarketTicker />
+
         {/* Mobile Macro Pulse Bar */}
         <MacroPulseBar />
 
@@ -172,6 +176,9 @@ export function AppLayout({ children }: AppLayoutProps) {
               </div>
             </div>
           </header>
+
+          {/* Desktop Market Ticker */}
+          <MarketTicker />
 
           {/* Desktop Macro Pulse Bar */}
           <MacroPulseBar />
