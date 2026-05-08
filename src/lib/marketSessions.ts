@@ -85,13 +85,29 @@ export function isSessionActive(session: SessionDef, now: Date): boolean {
   const cur = nowBRTMinutes(now);
   const open = toMinutes(session.openBRT);
   const close = toMinutes(session.closeBRT);
-  const day = now.getUTCDay(); // 0 Sun, 6 Sat (use UTC reference; close enough)
-  if (day === 0 || day === 6) return false;
+  // BRT-shifted weekday (0 Sun .. 6 Sat)
+  const brtDay = new Date(now.getTime() - 3 * 3600_000).getUTCDay();
+
   if (open < close) {
+    // Same-day session — closed on BRT weekend
+    if (brtDay === 0 || brtDay === 6) return false;
     return cur >= open && cur < close;
   }
-  // wraps midnight (e.g. 18:00 -> 06:00)
-  return cur >= open || cur < close;
+
+  // Wraps midnight (e.g. Asia 18:00 → 06:00 BRT).
+  // The trading day belongs to the *next* calendar day in the local region,
+  // so we must exclude the BRT evenings/mornings that map to a weekend there.
+  if (cur >= open) {
+    // Evening portion → belongs to next day in Asia.
+    // Exclude Fri evening (→ Sat Asia) and Sat evening (→ Sun Asia).
+    return brtDay !== 5 && brtDay !== 6;
+  }
+  if (cur < close) {
+    // Early-morning portion → started previous evening in BRT.
+    // Exclude Sat morning (started Fri eve) and Sun morning (started Sat eve).
+    return brtDay !== 6 && brtDay !== 0;
+  }
+  return false;
 }
 
 export function minutesUntilNextRollover(now: Date): number {
