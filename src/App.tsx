@@ -27,6 +27,11 @@ const App = () => (
         <Routes>
           <Route path="/" element={
             <AppLayout>
+              <MapaGlobal />
+            </AppLayout>
+          } />
+          <Route path="/dashboard" element={
+            <AppLayout>
               <Dashboard />
             </AppLayout>
           } />

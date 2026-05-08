@@ -11,13 +11,13 @@ interface MobileNavProps {
 }
 
 const mainNavItems = [
-  { title: 'Dashboard', url: '/', icon: LayoutDashboard },
+  { title: 'Mapa Global', url: '/', icon: Globe2 },
+  { title: 'Cenário Macro', url: '/dashboard', icon: LayoutDashboard },
   { title: 'Mercados', url: '/mercados', icon: BarChart3 },
   { title: 'Calendário', url: '/calendario', icon: Calendar },
 ];
 
 const analysisNavItems = [
-  { title: 'Mapa Global', url: '/mapa-global', icon: Globe2 },
   { title: 'Check List', url: '/checklist', icon: ClipboardCheck },
   { title: 'Estratégias', url: '/estrategias', icon: BookOpen },
   { title: 'Long/Short', url: '/longshort', icon: TrendingUp },
