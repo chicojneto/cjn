@@ -16,13 +16,13 @@ import {
 } from '@/components/ui/sidebar';
 
 const mainNavItems = [
-  { title: 'Cenário Macro', url: '/', icon: Activity },
+  { title: 'Mapa Global', url: '/', icon: Globe2 },
+  { title: 'Cenário Macro', url: '/dashboard', icon: Activity },
   { title: 'Mercados', url: '/mercados', icon: BarChart3 },
   { title: 'Calendário', url: '/calendario', icon: Calendar },
 ];
 
 const analysisNavItems = [
-  { title: 'Mapa Global', url: '/mapa-global', icon: Globe2 },
   { title: 'Modo TV', url: '/checklist', icon: Tv },
   { title: 'Estratégias', url: '/estrategias', icon: BookOpen },
   { title: 'Long/Short', url: '/longshort', icon: TrendingUp },
