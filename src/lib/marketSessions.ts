@@ -6,6 +6,7 @@ export type SessionId = 'asia' | 'middle_east' | 'europe' | 'americas';
 export interface SessionDef {
   id: SessionId;
   label: string;
+  subtitle: string;
   cities: string[];
   exchanges: string[];
   // BRT hours (24h)
@@ -14,48 +15,58 @@ export interface SessionDef {
   // x position on the world map (0-100%)
   mapX: number;
   mapY: number;
+  // Accent color (HSL components, e.g. "165 70% 45%")
+  accent: string;
 }
 
 export const SESSIONS: SessionDef[] = [
   {
     id: 'asia',
     label: 'Ásia / Oceania',
+    subtitle: 'Sydney, Tóquio e China continental',
     cities: ['Wellington', 'Sydney', 'Tóquio', 'Hong Kong', 'Shanghai', 'Singapore', 'Mumbai'],
     exchanges: ['JPX', 'HKEX', 'SSE', 'SGX', 'NSE', 'BSE'],
     openBRT: '18:00',
     closeBRT: '06:00',
     mapX: 82,
     mapY: 48,
+    accent: '165 70% 48%',
   },
   {
     id: 'middle_east',
     label: 'Oriente Médio',
+    subtitle: 'Dubai, Riyadh e Golfo',
     cities: ['Dubai', 'Riyadh'],
     exchanges: ['Tadawul', 'DFM'],
     openBRT: '02:30',
     closeBRT: '09:00',
     mapX: 60,
     mapY: 52,
+    accent: '212 90% 60%',
   },
   {
     id: 'europe',
     label: 'Europa',
+    subtitle: 'Londres, Frankfurt e Zurique',
     cities: ['Londres', 'Frankfurt', 'Paris', 'Zurique', 'Milão'],
     exchanges: ['LSE', 'XETRA', 'Euronext', 'SIX'],
     openBRT: '04:00',
     closeBRT: '13:30',
     mapX: 50,
     mapY: 40,
+    accent: '270 75% 65%',
   },
   {
     id: 'americas',
     label: 'Américas',
+    subtitle: 'B3, NYSE, NASDAQ e Canadá',
     cities: ['New York', 'Chicago', 'Toronto', 'São Paulo'],
     exchanges: ['NYSE', 'NASDAQ', 'CME', 'TSX', 'B3'],
     openBRT: '10:00',
     closeBRT: '17:00',
     mapX: 28,
     mapY: 45,
+    accent: '24 90% 58%',
   },
 ];
 
