@@ -158,27 +158,34 @@ export interface NextEvent {
 }
 
 export function nextOpenAndClose(now: Date) {
-  const cur = nowBRTMinutes(now);
-  const sec = now.getUTCSeconds();
   let bestOpen: NextEvent | null = null;
   let bestClose: NextEvent | null = null;
+  // Scan minute-by-minute over the next 8 days to find the next valid
+  // open/close transition for each session, respecting weekends.
+  const HORIZON = 8 * 1440; // minutes
+  const STEP = 1; // minute
+  const sec = now.getUTCSeconds();
   for (const s of SESSIONS) {
-    const o = toMinutes(s.openBRT);
-    const c = toMinutes(s.closeBRT);
-    const active = isSessionActive(s, now);
-    if (!active) {
-      // minutes until open
-      const diff = ((o - cur) % 1440 + 1440) % 1440;
-      const total = diff * 60 - sec;
+    const activeNow = isSessionActive(s, now);
+    let foundOpen: number | null = null;
+    let foundClose: number | null = null;
+    let prevActive = activeNow;
+    for (let m = STEP; m <= HORIZON; m += STEP) {
+      const t = new Date(now.getTime() + m * 60_000);
+      const act = isSessionActive(s, t);
+      if (!prevActive && act && foundOpen === null) foundOpen = m;
+      if (prevActive && !act && foundClose === null) foundClose = m;
+      prevActive = act;
+      if (foundOpen !== null && foundClose !== null) break;
+    }
+    if (!activeNow && foundOpen !== null) {
+      const total = foundOpen * 60 - sec;
       if (!bestOpen || total < bestOpen.totalSeconds) {
         bestOpen = { session: s, type: 'open', totalSeconds: total };
       }
-    } else {
-      // minutes until close (handle wrap)
-      let diff: number;
-      if (o < c) diff = c - cur;
-      else diff = cur < c ? c - cur : (1440 - cur) + c;
-      const total = diff * 60 - sec;
+    }
+    if (activeNow && foundClose !== null) {
+      const total = foundClose * 60 - sec;
       if (!bestClose || total < bestClose.totalSeconds) {
         bestClose = { session: s, type: 'close', totalSeconds: total };
       }
