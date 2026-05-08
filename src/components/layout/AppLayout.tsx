@@ -6,11 +6,9 @@ import { AppSidebar } from './AppSidebar';
 import { MobileNav } from './MobileNav';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { useDeviceType } from '@/hooks/useDeviceType';
-import { Menu, RefreshCw, Bell, Search, Coffee } from 'lucide-react';
+import { Menu, RefreshCw, Search, Coffee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { useAlerts } from '@/hooks/useAlerts';
 import { NavLink } from 'react-router-dom';
 import { MacroPulseBar } from '@/components/dashboard/MacroPulseBar';
 
@@ -21,8 +19,6 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   const { isMobile, isTablet } = useDeviceType();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const { data: alerts } = useAlerts(true);
-  const unreadCount = alerts?.length || 0;
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -106,15 +102,6 @@ export function AppLayout({ children }: AppLayoutProps) {
               >
                 <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               </Button>
-              
-              <Button variant="ghost" size="icon" className="relative h-9 w-9">
-                <Bell className="h-4 w-4" />
-                {unreadCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-4 min-w-4 p-0 flex items-center justify-center text-[9px] bg-destructive border-2 border-background">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </Badge>
-                )}
-              </Button>
             </div>
           </div>
         </header>
@@ -166,7 +153,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <div className="relative w-full">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input 
-                    placeholder="Buscar ativos, notícias..."
+                    placeholder="Buscar ativos..."
                     className="pl-10 bg-secondary/50 border-border/50 focus:border-primary/50 focus:ring-primary/20"
                   />
                 </div>
@@ -181,15 +168,6 @@ export function AppLayout({ children }: AppLayoutProps) {
                   className="h-9 w-9 hover:bg-muted/50"
                 >
                   <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                </Button>
-                
-                <Button variant="ghost" size="icon" className="relative h-9 w-9 hover:bg-muted/50">
-                  <Bell className="h-4 w-4" />
-                  {unreadCount > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-5 min-w-5 p-0 flex items-center justify-center text-[10px] bg-destructive border-2 border-background">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </Badge>
-                  )}
                 </Button>
               </div>
             </div>
