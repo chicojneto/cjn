@@ -130,7 +130,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-mesh">
         <AppSidebar />
-        <SidebarInset className="flex flex-col flex-1">
+        <SidebarInset className="flex flex-col flex-1 min-w-0">
           {/* Desktop Header */}
           <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50">
             <div className="flex items-center justify-between h-16 px-4 lg:px-6">
