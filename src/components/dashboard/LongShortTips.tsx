@@ -219,7 +219,6 @@ const assetTips: AssetTip[] = [
     ],
     alerts: [
       'CONCENTRAÇÃO EXTREMA: 6 ações AI = 30% do S&P 500',
-      'S&P 500: 6.798 (05/fev) - negativo no ano (-0.7%)',
       'BTC = canário - se BTC cair >10%, NQ/S&P seguem'
     ]
   },
@@ -378,9 +377,6 @@ export function LongShortTips() {
               <TrendingDown className="h-4 w-4 text-red-500" />
             </div>
             Dicas Long/Short
-            <Badge className="text-[10px] bg-amber-500/20 text-amber-400 border-amber-500/30">
-              FEV/2026
-            </Badge>
           </CardTitle>
           
           <DropdownMenu>
@@ -440,7 +436,7 @@ export function LongShortTips() {
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 space-y-1">
             <div className="flex items-center gap-2 mb-2">
               <AlertTriangle className="h-4 w-4 text-amber-400" />
-              <span className="text-xs font-semibold text-amber-400">ALERTAS FEV/2026</span>
+              <span className="text-xs font-semibold text-amber-400">ALERTAS</span>
             </div>
             {selectedAsset.alerts.map((alert, index) => (
               <p key={index} className="text-xs text-amber-300/80">
