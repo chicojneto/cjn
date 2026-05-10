@@ -108,7 +108,6 @@ export function AppLayout({ children }: AppLayoutProps) {
 
         {/* Mobile Macro Pulse Bar */}
         <MacroPulseBar />
-        <MacroPulseBar />
 
         <motion.main 
           className="flex-1 p-3 sm:p-4 overflow-auto scrollbar-thin"
@@ -175,7 +174,6 @@ export function AppLayout({ children }: AppLayoutProps) {
           </header>
 
           {/* Desktop Macro Pulse Bar */}
-          <MacroPulseBar />
           <MacroPulseBar />
 
           <motion.main 
