@@ -70,7 +70,8 @@ export function MarketTable({
             transition={{ duration: 0.2, delay: idx * 0.02 }}
             onClick={() => onSelect?.(quote.symbol)}
             className={cn(
-              "flex items-center justify-between px-3 py-2 transition-all duration-200",
+              "flex items-center justify-between px-3 py-2 transition-all duration-200 bg-card",
+              columns === 2 && "border-b border-border/10",
               onSelect && "cursor-pointer",
               selectedSymbol === quote.symbol 
                 ? "bg-primary/10 border-l-2 border-l-primary" 
