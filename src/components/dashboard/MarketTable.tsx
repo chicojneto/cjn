@@ -57,7 +57,7 @@ export function MarketTable({
       {/* Content */}
       <div className={cn(
         "divide-y divide-border/10 scrollbar-thin",
-        compact ? "max-h-[280px]" : "max-h-[350px]",
+        tall ? "max-h-[760px]" : compact ? "max-h-[280px]" : "max-h-[350px]",
         "overflow-y-auto"
       )}>
         {quotes.map((quote, idx) => (
