@@ -58,9 +58,9 @@ export function MarketTable({
       
       {/* Content */}
       <div className={cn(
-        "divide-y divide-border/10 scrollbar-thin",
+        "scrollbar-thin overflow-y-auto",
+        columns === 2 ? "grid grid-cols-2 gap-x-px bg-border/10" : "divide-y divide-border/10",
         tall ? "max-h-[760px]" : compact ? "max-h-[280px]" : "max-h-[350px]",
-        "overflow-y-auto"
       )}>
         {quotes.map((quote, idx) => (
           <motion.div
