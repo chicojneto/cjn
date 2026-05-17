@@ -101,13 +101,13 @@ export default function Mercados() {
             return (
               <div
                 key={title}
-                className={featured ? 'md:col-span-2 lg:col-span-2 xl:col-span-2 lg:row-span-2' : ''}
+                className={featured ? 'md:col-span-2 lg:col-span-3 xl:col-span-3' : ''}
               >
                 <MarketTable
                   title={title}
                   quotes={quotes}
                   compact={!featured}
-                  tall={featured}
+                  columns={featured ? 2 : 1}
                   showTime={false}
                 />
               </div>

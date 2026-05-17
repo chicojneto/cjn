@@ -22,6 +22,7 @@ interface MarketTableProps {
   showTime?: boolean;
   compact?: boolean;
   tall?: boolean;
+  columns?: 1 | 2;
 }
 
 export function MarketTable({ 
@@ -32,6 +33,7 @@ export function MarketTable({
   showTime = true,
   compact = false,
   tall = false,
+  columns = 1,
 }: MarketTableProps) {
   const formatTime = () => {
     const now = new Date();
@@ -56,9 +58,9 @@ export function MarketTable({
       
       {/* Content */}
       <div className={cn(
-        "divide-y divide-border/10 scrollbar-thin",
+        "scrollbar-thin overflow-y-auto",
+        columns === 2 ? "grid grid-cols-2 gap-x-px bg-border/10" : "divide-y divide-border/10",
         tall ? "max-h-[760px]" : compact ? "max-h-[280px]" : "max-h-[350px]",
-        "overflow-y-auto"
       )}>
         {quotes.map((quote, idx) => (
           <motion.div
@@ -68,7 +70,8 @@ export function MarketTable({
             transition={{ duration: 0.2, delay: idx * 0.02 }}
             onClick={() => onSelect?.(quote.symbol)}
             className={cn(
-              "flex items-center justify-between px-3 py-2 transition-all duration-200",
+              "flex items-center justify-between px-3 py-2 transition-all duration-200 bg-card",
+              columns === 2 && "border-b border-border/10",
               onSelect && "cursor-pointer",
               selectedSymbol === quote.symbol 
                 ? "bg-primary/10 border-l-2 border-l-primary" 
