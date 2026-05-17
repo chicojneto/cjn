@@ -21,6 +21,7 @@ interface MarketTableProps {
   selectedSymbol?: string | null;
   showTime?: boolean;
   compact?: boolean;
+  tall?: boolean;
 }
 
 export function MarketTable({ 
@@ -29,7 +30,8 @@ export function MarketTable({
   onSelect, 
   selectedSymbol,
   showTime = true,
-  compact = false 
+  compact = false,
+  tall = false,
 }: MarketTableProps) {
   const formatTime = () => {
     const now = new Date();
