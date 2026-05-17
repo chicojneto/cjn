@@ -13,6 +13,25 @@ interface Ticker {
 }
 
 const PANELS: Record<string, Ticker[]> = {
+  'Pré Abertura B3': [
+    { symbol: 'DXY',      name: 'Índice Dólar',       yahoo: 'DX-Y.NYB',  flag: '💵' },
+    { symbol: 'VIX',      name: 'Volatilidade',       yahoo: '^VIX',      flag: '📊' },
+    { symbol: 'USD/BRL',  name: 'Dólar/Real',         yahoo: 'BRL=X',     flag: '🇧🇷' },
+    { symbol: 'EWZ',      name: 'ETF Brasil',         yahoo: 'EWZ',       flag: '🇧🇷' },
+    { symbol: 'VALE',     name: 'Vale ADR',           yahoo: 'VALE',      flag: '🇧🇷' },
+    { symbol: 'PBR',      name: 'Petrobras ADR',      yahoo: 'PBR',       flag: '🇧🇷' },
+    { symbol: 'ITUB',     name: 'Itaú ADR',           yahoo: 'ITUB',      flag: '🇧🇷' },
+    { symbol: 'BBD',      name: 'Bradesco ADR',       yahoo: 'BBD',       flag: '🇧🇷' },
+    { symbol: 'DI1F2028', name: 'DI Jan/2028',        yahoo: 'DI1F28.SA', flag: '🇧🇷' },
+    { symbol: 'DI1F2029', name: 'DI Jan/2029',        yahoo: 'DI1F29.SA', flag: '🇧🇷' },
+    { symbol: 'TIO1!',    name: 'Minério de Ferro',   yahoo: 'TIO=F',     flag: '⛏️' },
+    { symbol: 'BRENT',    name: 'Petróleo Brent',     yahoo: 'BZ=F',      flag: '🛢️' },
+    { symbol: 'COPPER',   name: 'Cobre',              yahoo: 'HG=F',      flag: '🟫' },
+    { symbol: 'HK50',     name: 'Hang Seng HK',       yahoo: '^HSI',      flag: '🇭🇰' },
+    { symbol: 'CHINA 50', name: 'China A50',          yahoo: 'FXI',       flag: '🇨🇳' },
+    { symbol: 'STOXX50',  name: 'Euro Stoxx 50',      yahoo: '^STOXX50E', flag: '🇪🇺' },
+    { symbol: 'JP225',    name: 'Nikkei 225',         yahoo: '^N225',     flag: '🇯🇵' },
+  ],
   'Índices Acionários - B3': [
     { symbol: 'IBOV',     name: 'Ibovespa',           yahoo: '^BVSP',     flag: '🇧🇷' },
     { symbol: 'BOVA11',   name: 'ETF Ibovespa',       yahoo: 'BOVA11.SA', flag: '🇧🇷' },
