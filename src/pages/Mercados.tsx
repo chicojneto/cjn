@@ -7,6 +7,7 @@ import { MarketTable } from '@/components/dashboard/MarketTable';
 import { supabase } from '@/integrations/supabase/client';
 
 const PANEL_ORDER = [
+  'Pré Abertura B3',
   'Índices Acionários - B3',
   'Commodities',
   'Cesta DXY',
