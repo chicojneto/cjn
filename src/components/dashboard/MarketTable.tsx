@@ -21,6 +21,7 @@ interface MarketTableProps {
   selectedSymbol?: string | null;
   showTime?: boolean;
   compact?: boolean;
+  tall?: boolean;
 }
 
 export function MarketTable({ 
@@ -29,7 +30,8 @@ export function MarketTable({
   onSelect, 
   selectedSymbol,
   showTime = true,
-  compact = false 
+  compact = false,
+  tall = false,
 }: MarketTableProps) {
   const formatTime = () => {
     const now = new Date();
@@ -55,7 +57,7 @@ export function MarketTable({
       {/* Content */}
       <div className={cn(
         "divide-y divide-border/10 scrollbar-thin",
-        compact ? "max-h-[280px]" : "max-h-[350px]",
+        tall ? "max-h-[760px]" : compact ? "max-h-[280px]" : "max-h-[350px]",
         "overflow-y-auto"
       )}>
         {quotes.map((quote, idx) => (

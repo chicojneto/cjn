@@ -92,19 +92,25 @@ export default function Mercados() {
       ) : (
         <motion.div
           variants={item}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-min"
         >
           {PANEL_ORDER.map((title) => {
             const quotes = panels?.[title] || [];
             if (!quotes.length) return null;
+            const featured = title === 'Pré Abertura B3';
             return (
-              <MarketTable
+              <div
                 key={title}
-                title={title}
-                quotes={quotes}
-                compact
-                showTime={false}
-              />
+                className={featured ? 'md:col-span-2 lg:col-span-2 xl:col-span-2 lg:row-span-2' : ''}
+              >
+                <MarketTable
+                  title={title}
+                  quotes={quotes}
+                  compact={!featured}
+                  tall={featured}
+                  showTime={false}
+                />
+              </div>
             );
           })}
         </motion.div>
