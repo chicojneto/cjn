@@ -22,6 +22,7 @@ interface MarketTableProps {
   showTime?: boolean;
   compact?: boolean;
   tall?: boolean;
+  columns?: 1 | 2;
 }
 
 export function MarketTable({ 
@@ -32,6 +33,7 @@ export function MarketTable({
   showTime = true,
   compact = false,
   tall = false,
+  columns = 1,
 }: MarketTableProps) {
   const formatTime = () => {
     const now = new Date();
