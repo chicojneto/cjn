@@ -260,8 +260,8 @@ export function TradingStrategies() {
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 bg-background border-border">
-              {strategies.map((strategy) => {
+            <DropdownMenuContent align="end" className="w-72 bg-background border-border">
+              {visibleStrategies.map((strategy) => {
                 const Icon = strategy.icon;
                 return (
                   <DropdownMenuItem
@@ -275,11 +275,26 @@ export function TradingStrategies() {
                     <div className={cn('p-1.5 rounded-md', strategy.bgColor)}>
                       <Icon className={cn('h-4 w-4', strategy.color)} />
                     </div>
-                    <span className="text-sm">{strategy.title}</span>
+                    <span className="text-sm flex-1">{strategy.title}</span>
+                    <UpdatedStamp date={strategy.updated} />
                   </DropdownMenuItem>
                 );
               })}
+              {archivedCount > 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowOld((v) => !v);
+                  }}
+                  className="w-full px-2 py-1.5 text-left text-xs text-muted-foreground hover:text-foreground"
+                >
+                  {showOld ? 'ocultar antigos' : `mostrar antigos (${archivedCount})`}
+                </button>
+              )}
             </DropdownMenuContent>
+
           </DropdownMenu>
         </div>
       </CardHeader>
