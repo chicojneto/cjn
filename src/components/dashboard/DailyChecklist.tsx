@@ -5,6 +5,8 @@ import { useMarketCorrelations, CorrelationAnalysis, BrazilRatesData, DIFutureCo
 import { Button } from '@/components/ui/button';
 import { useDiCurve, analyzeManualCurve, DI_FIELDS } from '@/hooks/useDiCurve';
 import { ManualStamp } from '@/components/shared/ManualStamp';
+import { useRegimeDoDia } from '@/hooks/useRegimeDoDia';
+import { viesToBias } from '@/lib/regimeDoDia';
 
 interface MarketIndicator {
   label: string;
@@ -317,6 +319,8 @@ const AUTO_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
 
 export function DailyChecklist() {
   const { data, isLoading, error, refetch, isFetching } = useMarketCorrelations();
+  const { regime: dia } = useRegimeDoDia();
+  const winBiasDia = viesToBias(dia.viesWIN);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState(15 * 60); // 15 minutes in seconds
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -487,7 +491,7 @@ export function DailyChecklist() {
             <div className="flex items-center gap-2">
               {/* Bias Summary in Header */}
               <div className="hidden lg:flex items-center gap-1 flex-wrap">
-                <BiasIndicator bias={data.winBias} label="WIN" />
+                <BiasIndicator bias={winBiasDia} label="WIN" />
                 <BiasIndicator bias={data.wdoBias} label="WDO" />
                 <BiasIndicator bias={data.goldBias} label="OURO" />
                 <BiasIndicator bias={data.sp500Bias || 'neutral'} label="S&P" />
@@ -524,7 +528,7 @@ export function DailyChecklist() {
         <CardContent className={`p-2 ${isFullscreen ? 'flex-1 overflow-auto' : ''}`}>
           {/* Mobile Bias */}
           <div className="lg:hidden flex flex-wrap gap-1 mb-2">
-            <BiasIndicator bias={data.winBias} label="WIN" />
+            <BiasIndicator bias={winBiasDia} label="WIN" />
             <BiasIndicator bias={data.wdoBias} label="WDO" />
             <BiasIndicator bias={data.goldBias} label="OURO" />
             <BiasIndicator bias={data.sp500Bias || 'neutral'} label="S&P" />
@@ -588,14 +592,14 @@ export function DailyChecklist() {
             
             <div className={`${isFullscreen ? 'xl:flex-1' : 'lg:flex-1'} min-w-0`}>
               <SignalsPanel 
-                winSignals={data.winSignals}
+                winSignals={dia.motivos}
                 wdoSignals={data.wdoSignals}
                 goldSignals={data.goldSignals}
                 sp500Signals={data.sp500Signals || []}
                 nasdaqSignals={data.nasdaqSignals || []}
                 eurUsdSignals={data.eurUsdSignals || []}
                 gbpUsdSignals={data.gbpUsdSignals || []}
-                winBias={data.winBias}
+                winBias={winBiasDia}
                 wdoBias={data.wdoBias}
                 goldBias={data.goldBias}
                 sp500Bias={data.sp500Bias || 'neutral'}

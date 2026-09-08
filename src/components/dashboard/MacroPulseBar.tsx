@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, Activity, Globe, AlertTriangle, Clock } from 'lucide-react';
 import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
+import { useRegimeDoDia } from '@/hooks/useRegimeDoDia';
+import type { ViesWIN } from '@/lib/regimeDoDia';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -55,26 +57,26 @@ function PulseIndicator({ label, value, change, changeValue = 0, alertLevel, com
   );
 }
 
-function RiskSentiment({ sentiment }: { sentiment: 'risk-on' | 'risk-off' | 'neutral' }) {
+function WinBiasBadge({ vies }: { vies: ViesWIN }) {
   const config = {
-    'risk-on': { 
-      label: 'RISK-ON', 
+    alta: {
+      label: 'ALTA',
       color: 'text-success bg-success/10 border-success/30',
-      icon: TrendingUp
+      icon: TrendingUp,
     },
-    'risk-off': { 
-      label: 'RISK-OFF', 
+    baixa: {
+      label: 'BAIXA',
       color: 'text-destructive bg-destructive/10 border-destructive/30',
-      icon: AlertTriangle
+      icon: TrendingDown,
     },
-    neutral: { 
-      label: 'NEUTRO', 
+    neutro: {
+      label: 'NEUTRO',
       color: 'text-warning bg-warning/10 border-warning/30',
-      icon: Minus
+      icon: Minus,
     },
-  };
+  } as const;
 
-  const { label, color, icon: Icon } = config[sentiment];
+  const { label, color, icon: Icon } = config[vies];
 
   return (
     <div className={cn(
@@ -82,10 +84,11 @@ function RiskSentiment({ sentiment }: { sentiment: 'risk-on' | 'risk-off' | 'neu
       color
     )}>
       <Icon className="h-3.5 w-3.5" />
-      {label}
+      WIN {label}
     </div>
   );
 }
+
 
 function SessionIndicator() {
   const hour = new Date().getHours();
@@ -149,44 +152,10 @@ function getVixLevel(vix: number): 'low' | 'medium' | 'high' {
   return 'high';
 }
 
-function getRiskSentiment(data: ReturnType<typeof useMarketCorrelations>['data']): 'risk-on' | 'risk-off' | 'neutral' {
-  if (!data) return 'neutral';
-  
-  let score = 0;
-  
-  // VIX analysis
-  if (data.vix) {
-    if (data.vix.price < 15) score += 2;
-    else if (data.vix.price > 25) score -= 2;
-    if (data.vix.changePercent < -5) score += 1;
-    else if (data.vix.changePercent > 5) score -= 1;
-  }
-  
-  // DXY analysis (strong dollar = risk-off)
-  if (data.dxy) {
-    if (data.dxy.changePercent > 0.5) score -= 1;
-    else if (data.dxy.changePercent < -0.5) score += 1;
-  }
-  
-  // US 10Y Yields
-  if (data.us10y) {
-    if (data.us10y.changePercent > 2) score -= 1;
-    else if (data.us10y.changePercent < -2) score += 1;
-  }
-  
-  // S&P 500 Futures
-  if (data.sp500Futures) {
-    if (data.sp500Futures.changePercent > 0.5) score += 1;
-    else if (data.sp500Futures.changePercent < -0.5) score -= 1;
-  }
-  
-  if (score >= 2) return 'risk-on';
-  if (score <= -2) return 'risk-off';
-  return 'neutral';
-}
-
 export function MacroPulseBar() {
   const { data, isLoading } = useMarketCorrelations();
+  const { regime } = useRegimeDoDia();
+
 
   if (isLoading) {
     return (
@@ -202,7 +171,7 @@ export function MacroPulseBar() {
     );
   }
 
-  const riskSentiment = getRiskSentiment(data);
+  
 
   return (
     <motion.div 
@@ -247,8 +216,8 @@ export function MacroPulseBar() {
         
         <div className="h-6 w-px bg-border/50 mx-1" />
         
-        {/* Risk Sentiment */}
-        <RiskSentiment sentiment={riskSentiment} />
+        {/* Viés WIN (fonte única: calcularRegimeDoDia) */}
+        <WinBiasBadge vies={regime.viesWIN} />
         
         <div className="h-6 w-px bg-border/50 mx-1" />
         

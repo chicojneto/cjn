@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, AlertCircle, CheckCircle, AlertTriangle, Info, Zap } from 'lucide-react';
 import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
+import { useRegimeDoDia } from '@/hooks/useRegimeDoDia';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -283,6 +284,7 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
 
 export function MacroScenarioCard() {
   const { data, isLoading, error } = useMarketCorrelations();
+  const { regime: dia } = useRegimeDoDia();
 
   if (isLoading) {
     return (
@@ -329,6 +331,14 @@ export function MacroScenarioCard() {
   }
 
   const scenario = generateDailyScenario(data);
+  const sentiment: 'risk-on' | 'risk-off' | 'neutral' =
+    dia.regime === 'risk-on' ? 'risk-on' : dia.regime === 'risk-off' ? 'risk-off' : 'neutral';
+  const titulo =
+    dia.viesWIN === 'alta'
+      ? 'Viés de ALTA para o WIN'
+      : dia.viesWIN === 'baixa'
+      ? 'Viés de BAIXA para o WIN'
+      : 'Viés NEUTRO para o WIN';
 
   const sentimentConfig = {
     'risk-on': {
@@ -351,7 +361,7 @@ export function MacroScenarioCard() {
     },
   };
 
-  const sentimentStyle = sentimentConfig[scenario.sentiment];
+  const sentimentStyle = sentimentConfig[sentiment];
   const SentimentIcon = sentimentStyle.icon;
 
   return (
@@ -383,7 +393,7 @@ export function MacroScenarioCard() {
           {/* Title Section */}
           <div className="px-3 py-3 border-b border-border/30 bg-card/30">
             <h4 className="text-base font-bold text-foreground">
-              {scenario.title}
+              {titulo}
             </h4>
           </div>
 
@@ -393,7 +403,7 @@ export function MacroScenarioCard() {
               📋 PONTOS-CHAVE
             </div>
             <div className="space-y-1.5">
-              {scenario.keyPoints.map((point, idx) => (
+              {dia.motivos.map((point, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, x: -10 }}
