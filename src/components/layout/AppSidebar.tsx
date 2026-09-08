@@ -1,5 +1,6 @@
-import { Coffee, Activity, Calendar, BookOpen, TrendingUp, Tv, BarChart3, Settings, Globe2, NotebookPen, Radar } from 'lucide-react';
+import { Activity, Calendar, BookOpen, TrendingUp, Tv, BarChart3, Settings, Globe2, NotebookPen, Radar } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { CoffeeCandleMark, Wordmark } from '@/components/brand/Logo';
 import { cn } from '@/lib/utils';
 import {
   Sidebar,

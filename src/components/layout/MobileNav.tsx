@@ -1,5 +1,6 @@
-import { Coffee, LayoutDashboard, Calendar, BookOpen, TrendingUp, ClipboardCheck, BarChart3, Settings, Globe2, NotebookPen, Radar, X } from 'lucide-react';
+import { LayoutDashboard, Calendar, BookOpen, TrendingUp, ClipboardCheck, BarChart3, Settings, Globe2, NotebookPen, Radar, X } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { CoffeeCandleMark, Wordmark } from '@/components/brand/Logo';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -52,18 +53,13 @@ export function MobileNav({ open, onOpenChange }: MobileNavProps) {
         <SheetHeader className="border-b border-sidebar-border p-4">
           <div className="flex items-center justify-between">
             <NavLink to="/" className="flex items-center gap-3" onClick={handleNavClick}>
-              <div className="relative">
-                <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center shadow-lg">
-                  <Coffee className="h-5 w-5 text-accent-foreground" />
-                </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-primary rounded-full border-2 border-sidebar animate-pulse" />
-              </div>
+              <CoffeeCandleMark className="h-7 w-7 text-brand shrink-0" />
               <div className="flex flex-col">
-                <SheetTitle className="text-sm font-bold text-sidebar-foreground text-left">
-                  PullBack<span className="text-accent">Com</span>Café
+                <SheetTitle className="text-left text-[17px] font-medium">
+                  <Wordmark />
                 </SheetTitle>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  Portal de Investimentos
+                <span className="text-xs text-muted-foreground">
+                  Macro e pré-market
                 </span>
               </div>
             </NavLink>
