@@ -361,7 +361,7 @@ export function MacroScenarioCard() {
     },
   };
 
-  const sentimentStyle = sentimentConfig[scenario.sentiment];
+  const sentimentStyle = sentimentConfig[sentiment];
   const SentimentIcon = sentimentStyle.icon;
 
   return (
@@ -393,7 +393,7 @@ export function MacroScenarioCard() {
           {/* Title Section */}
           <div className="px-3 py-3 border-b border-border/30 bg-card/30">
             <h4 className="text-base font-bold text-foreground">
-              {scenario.title}
+              {titulo}
             </h4>
           </div>
 
@@ -403,7 +403,7 @@ export function MacroScenarioCard() {
               📋 PONTOS-CHAVE
             </div>
             <div className="space-y-1.5">
-              {scenario.keyPoints.map((point, idx) => (
+              {dia.motivos.map((point, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, x: -10 }}
