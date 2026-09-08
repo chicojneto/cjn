@@ -2,127 +2,131 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   PULLBACK COM CAFÉ - FINTECH MODERNA DESIGN SYSTEM
+   pipsncoffee — design system
+   Warm charcoal surfaces, amber brand, desaturated market colors.
+   No gradients, no glows, no neon, no colored shadows.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @layer base {
   :root {
-    /* Core Colors - Monochrome Minimal Theme */
-    --background: 0 0% 4%;
-    --foreground: 0 0% 95%;
+    /* Raw brand palette */
+    --bg: #15130F;
+    --surface: #1E1B16;
+    --surface-2: #26221C;
+    --hairline: rgba(255, 255, 255, 0.08);
+    --text: #EDE7DD;
+    --text-2: #A39B8E;
+    --text-3: #6E675C;
+    --brand-hex: #C8913A;
+    --brand-soft: rgba(200, 145, 58, 0.14);
+    --up-hex: #4FA37F;
+    --down-hex: #C9584F;
+    --up-soft: rgba(79, 163, 127, 0.14);
+    --down-soft: rgba(201, 88, 79, 0.14);
+    --warn-hex: #D9A441;
 
-    /* Card - Subtle elevation */
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 95%;
+    /* Semantic tokens (HSL for tailwind) */
+    --background: 40 17% 7%;
+    --foreground: 38 31% 90%;
 
-    /* Popover */
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 95%;
+    --card: 38 15% 10%;
+    --card-foreground: 38 31% 90%;
 
-    /* Primary - Clean White/Gray */
-    --primary: 0 0% 85%;
-    --primary-foreground: 0 0% 5%;
+    --popover: 36 15% 13%;
+    --popover-foreground: 38 31% 90%;
 
-    /* Secondary */
-    --secondary: 0 0% 14%;
-    --secondary-foreground: 0 0% 95%;
+    --primary: 37 56% 51%;
+    --primary-foreground: 40 17% 7%;
 
-    /* Muted */
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 50%;
+    --secondary: 36 15% 13%;
+    --secondary-foreground: 38 31% 90%;
 
-    /* Accent - Soft Gray */
-    --accent: 0 0% 70%;
-    --accent-foreground: 0 0% 5%;
+    --muted: 36 15% 13%;
+    --muted-foreground: 37 10% 60%;
 
-    /* Destructive - Vivid Red (highlighted) */
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 0 0% 100%;
+    --accent: 37 56% 51%;
+    --accent-foreground: 40 17% 7%;
 
-    /* Success - Vivid Green (highlighted) */
-    --success: 145 65% 48%;
-    --success-foreground: 0 0% 100%;
+    --destructive: 4 53% 55%;
+    --destructive-foreground: 38 31% 90%;
 
-    /* Warning - Muted Sand */
-    --warning: 40 20% 55%;
-    --warning-foreground: 0 0% 5%;
+    --success: 154 35% 47%;
+    --success-foreground: 40 17% 7%;
 
-    /* Market Colors - Highlighted */
-    --bullish: 145 60% 50%;
-    --bearish: 0 70% 55%;
-    --neutral: 0 0% 45%;
+    --warning: 39 67% 55%;
+    --warning-foreground: 40 17% 7%;
 
-    /* Borders & Input */
-    --border: 0 0% 18%;
-    --input: 0 0% 14%;
-    --ring: 0 0% 70%;
+    --bullish: 154 35% 47%;
+    --bearish: 4 53% 55%;
+    --neutral: 37 9% 40%;
 
-    --radius: 0.75rem;
+    --border: 38 12% 18%;
+    --input: 38 12% 18%;
+    --ring: 37 56% 51%;
 
-    /* Sidebar */
-    --sidebar-background: 0 0% 6%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 0 0% 85%;
-    --sidebar-primary-foreground: 0 0% 5%;
-    --sidebar-accent: 0 0% 12%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 0 0% 70%;
+    --radius: 0.875rem;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 85%), hsl(0 0% 70%));
-    --gradient-accent: linear-gradient(135deg, hsl(0 0% 70%), hsl(0 0% 55%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 10%) 0%, hsl(0 0% 6%) 100%);
-    --gradient-glass: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
-    --gradient-glow: 0 4px 40px hsl(0 0% 50% / 0.1);
-    --gradient-success: linear-gradient(135deg, hsl(150 15% 45%), hsl(150 15% 35%));
-    --gradient-destructive: linear-gradient(135deg, hsl(0 25% 45%), hsl(0 25% 35%));
+    --sidebar-background: 40 17% 7%;
+    --sidebar-foreground: 38 31% 90%;
+    --sidebar-primary: 37 56% 51%;
+    --sidebar-primary-foreground: 40 17% 7%;
+    --sidebar-accent: 36 15% 13%;
+    --sidebar-accent-foreground: 38 31% 90%;
+    --sidebar-border: 38 12% 18%;
+    --sidebar-ring: 37 56% 51%;
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 4px 12px hsl(0 0% 0% / 0.4);
-    --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.5);
-    --shadow-xl: 0 16px 48px hsl(0 0% 0% / 0.6);
-    --shadow-glow: 0 0 30px hsl(0 0% 50% / 0.1);
-    --shadow-glow-accent: 0 0 30px hsl(0 0% 60% / 0.1);
+    /* Flat surfaces instead of gradients (kept for legacy references) */
+    --gradient-primary: hsl(var(--primary));
+    --gradient-accent: hsl(var(--accent));
+    --gradient-card: hsl(var(--card));
+    --gradient-glass: hsl(var(--card));
+    --gradient-glow: none;
+    --gradient-success: hsl(var(--success));
+    --gradient-destructive: hsl(var(--destructive));
 
-    /* Fonts */
-    --font-display: 'Plus Jakarta Sans', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    /* No shadows in this system */
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-xl: none;
+    --shadow-glow: none;
+    --shadow-glow-accent: none;
+
+    --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   }
 
   .dark {
-    /* Same as :root - Monochrome Minimal */
-    --background: 0 0% 4%;
-    --foreground: 0 0% 95%;
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 0 0% 85%;
-    --primary-foreground: 0 0% 5%;
-    --secondary: 0 0% 14%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 50%;
-    --accent: 0 0% 70%;
-    --accent-foreground: 0 0% 5%;
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 18%;
-    --input: 0 0% 14%;
-    --ring: 0 0% 70%;
-    --sidebar-background: 0 0% 6%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 0 0% 85%;
-    --sidebar-primary-foreground: 0 0% 5%;
-    --sidebar-accent: 0 0% 12%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 0 0% 70%;
+    --background: 40 17% 7%;
+    --foreground: 38 31% 90%;
+    --card: 38 15% 10%;
+    --card-foreground: 38 31% 90%;
+    --popover: 36 15% 13%;
+    --popover-foreground: 38 31% 90%;
+    --primary: 37 56% 51%;
+    --primary-foreground: 40 17% 7%;
+    --secondary: 36 15% 13%;
+    --secondary-foreground: 38 31% 90%;
+    --muted: 36 15% 13%;
+    --muted-foreground: 37 10% 60%;
+    --accent: 37 56% 51%;
+    --accent-foreground: 40 17% 7%;
+    --destructive: 4 53% 55%;
+    --destructive-foreground: 38 31% 90%;
+    --border: 38 12% 18%;
+    --input: 38 12% 18%;
+    --ring: 37 56% 51%;
+    --sidebar-background: 40 17% 7%;
+    --sidebar-foreground: 38 31% 90%;
+    --sidebar-primary: 37 56% 51%;
+    --sidebar-primary-foreground: 40 17% 7%;
+    --sidebar-accent: 36 15% 13%;
+    --sidebar-accent-foreground: 38 31% 90%;
+    --sidebar-border: 38 12% 18%;
+    --sidebar-ring: 37 56% 51%;
   }
 }
 
@@ -134,141 +138,146 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.5;
   }
 
-  .font-mono {
+  /* Only two weights across the whole product */
+  strong,
+  b,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-bold,
+  .font-semibold,
+  .font-extrabold,
+  .font-black {
+    font-weight: 500;
+  }
+
+  .font-mono,
+  code,
+  pre,
+  kbd,
+  samp {
     font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
   }
 }
 
 @layer components {
-  /* ═══════════════════════════════════════════════════════════════════════
-     GLASS MORPHISM COMPONENTS
-     ═══════════════════════════════════════════════════════════════════════ */
-  
-  .glass-card {
-    @apply bg-card/60 backdrop-blur-xl border border-border/50 rounded-xl;
-    background: var(--gradient-glass);
-    box-shadow: var(--shadow-md);
+  /* ── Surfaces ──────────────────────────────────────────────────────────── */
+  .glass-card,
+  .glass-panel,
+  .data-card {
+    background: hsl(var(--card));
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: none;
+    backdrop-filter: none;
+    transition: background-color 180ms ease, border-color 180ms ease;
   }
 
   .glass-card-elevated {
-    @apply bg-card/80 backdrop-blur-xl border border-border/40 rounded-xl;
-    background: linear-gradient(145deg, hsl(222 47% 12% / 0.9) 0%, hsl(222 47% 8% / 0.9) 100%);
-    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.05);
+    background: hsl(var(--popover));
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    box-shadow: none;
+    backdrop-filter: none;
   }
 
-  .glass-panel {
-    @apply bg-card/40 backdrop-blur-lg border border-border/30 rounded-lg;
+  .data-card:hover,
+  .glass-card:hover {
+    background: hsl(var(--popover));
   }
 
-  /* ═══════════════════════════════════════════════════════════════════════
-     GLOW EFFECTS
-     ═══════════════════════════════════════════════════════════════════════ */
-  
-  .glow-text {
-    text-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+  .data-card-compact {
+    background: hsl(var(--card));
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    padding: 14px;
+    transition: background-color 150ms ease;
   }
 
+  /* ── Legacy effect classes, intentionally neutralized ─────────────────── */
+  .glow-text,
   .glow-text-accent {
-    text-shadow: 0 0 20px hsl(var(--accent) / 0.5);
+    text-shadow: none;
   }
 
-  .glow-border {
-    box-shadow: var(--shadow-glow);
+  .glow-border,
+  .glow-border-accent,
+  .hover-glow,
+  .hover-glow:hover,
+  .hover-lift,
+  .hover-lift:hover {
+    box-shadow: none;
+    transform: none;
   }
 
-  .glow-border-accent {
-    box-shadow: var(--shadow-glow-accent);
+  .hover-lift {
+    transition: background-color 180ms ease, border-color 180ms ease;
   }
 
-  /* ═══════════════════════════════════════════════════════════════════════
-     ANIMATED BACKGROUNDS
-     ═══════════════════════════════════════════════════════════════════════ */
-  
-  .bg-gradient-mesh {
-    background: 
-      radial-gradient(circle at 10% 20%, hsl(172 66% 50% / 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 90% 80%, hsl(45 93% 58% / 0.05) 0%, transparent 40%),
-      hsl(var(--background));
-  }
-
+  .bg-gradient-mesh,
   .bg-gradient-radial {
-    background: radial-gradient(ellipse at center, hsl(222 47% 10%) 0%, hsl(var(--background)) 70%);
+    background: hsl(var(--background));
   }
 
-  /* ═══════════════════════════════════════════════════════════════════════
-     MARKET INDICATORS
-     ═══════════════════════════════════════════════════════════════════════ */
-  
-  .pulse-dot {
-    @apply relative;
-  }
-
+  /* ── Market indicators ─────────────────────────────────────────────────── */
   .pulse-dot::before {
-    content: '';
-    @apply absolute w-2 h-2 rounded-full bg-primary animate-ping;
+    content: none;
   }
 
   .pulse-dot::after {
     content: '';
-    @apply absolute w-2 h-2 rounded-full bg-primary;
+    @apply absolute w-2 h-2 rounded-full;
+    background: hsl(var(--muted-foreground));
   }
 
   .live-indicator {
-    @apply flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/30;
+    @apply inline-flex items-center gap-2 px-2.5 py-1 rounded-md;
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    font-size: 13px;
   }
 
-  .live-indicator::before {
-    content: '';
-    @apply w-2 h-2 rounded-full bg-primary animate-pulse;
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════════
-     MARKET COLORS
-     ═══════════════════════════════════════════════════════════════════════ */
-  
   .bullish {
-    @apply text-success;
+    color: hsl(var(--bullish));
   }
 
   .bearish {
-    @apply text-destructive;
+    color: hsl(var(--bearish));
   }
 
   .neutral {
-    @apply text-muted-foreground;
+    color: hsl(var(--muted-foreground));
   }
 
   .impact-high {
-    @apply bg-destructive/15 text-destructive border-destructive/30;
+    background: var(--down-soft);
+    color: hsl(var(--destructive));
+    border-color: var(--hairline);
   }
 
   .impact-medium {
-    @apply bg-warning/15 text-warning border-warning/30;
+    background: var(--brand-soft);
+    color: hsl(var(--warning));
+    border-color: var(--hairline);
   }
 
   .impact-low {
-    @apply bg-muted/50 text-muted-foreground border-muted;
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    border-color: var(--hairline);
   }
 
-  /* ═══════════════════════════════════════════════════════════════════════
-     TICKER & ANIMATIONS
-     ═══════════════════════════════════════════════════════════════════════ */
-  
-  .ticker-scroll {
-    animation: ticker 30s linear infinite;
-  }
-
-  @keyframes ticker {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════════
-     SCROLLBAR
-     ═══════════════════════════════════════════════════════════════════════ */
-  
+  /* ── Scrollbars ────────────────────────────────────────────────────────── */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -297,67 +306,77 @@
     border-radius: 3px;
   }
 
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground));
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════════
-     HOVER EFFECTS
-     ═══════════════════════════════════════════════════════════════════════ */
-  
-  .hover-lift {
-    @apply transition-all duration-300;
-  }
-
-  .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  .hover-glow {
-    @apply transition-all duration-300;
-  }
-
-  .hover-glow:hover {
-    box-shadow: var(--shadow-glow);
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════════
-     DATA CARDS
-     ═══════════════════════════════════════════════════════════════════════ */
-  
-  .data-card {
-    @apply bg-card/50 backdrop-blur-sm border border-border/40 rounded-xl p-4;
-    @apply hover:border-primary/30 hover:bg-card/70 transition-all duration-300;
-  }
-
-  .data-card-compact {
-    @apply bg-card/30 backdrop-blur-sm border border-border/30 rounded-lg p-3;
-    @apply hover:border-primary/20 hover:bg-card/50 transition-all duration-200;
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════════
-     STAT DISPLAY
-     ═══════════════════════════════════════════════════════════════════════ */
-  
+  /* ── Stats ─────────────────────────────────────────────────────────────── */
   .stat-value {
-    @apply text-2xl font-bold tracking-tight;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
   }
 
   .stat-label {
-    @apply text-xs font-medium text-muted-foreground uppercase tracking-wider;
+    font-size: 13px;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+    text-transform: none;
+    letter-spacing: 0;
   }
 
   .stat-change {
-    @apply text-sm font-mono font-semibold;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   CHECKLIST ENLARGED - Scoped font increase for correlation analysis
-   ═══════════════════════════════════════════════════════════════════════ */
+@layer utilities {
+  /* Sentence case everywhere: no shouting labels */
+  .uppercase {
+    text-transform: none;
+  }
+
+  .tracking-wider,
+  .tracking-widest {
+    letter-spacing: 0;
+  }
+
+  .text-brand {
+    color: var(--brand-hex);
+  }
+
+  .bg-brand-soft {
+    background: var(--brand-soft);
+  }
+
+  .text-up {
+    color: var(--up-hex);
+  }
+
+  .text-down {
+    color: var(--down-hex);
+  }
+
+  .bg-up-soft {
+    background: var(--up-soft);
+  }
+
+  .bg-down-soft {
+    background: var(--down-soft);
+  }
+
+  /* No decorative motion */
+  .animate-pulse,
+  .animate-ping,
+  .animate-bounce,
+  .animate-float,
+  .animate-shimmer,
+  .animate-pulse-glow {
+    animation: none !important;
+  }
+}
+
 .checklist-enlarged {
   font-size: 110%;
 }
