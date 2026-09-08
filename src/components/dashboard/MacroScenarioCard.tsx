@@ -77,10 +77,13 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
 
   // USD/JPY & Carry Trade Analysis
   if (data.usdJpy) {
-    const yenStrengthening = data.usdJpy.changePercent < -0.5; // USD/JPY falling = Yen strengthening
-    const yenWeakening = data.usdJpy.changePercent > 0.5;
-    const severeYenStrength = data.usdJpy.changePercent < -1.5;
-    
+    // Variação só é utilizável se passou na verificação de sanidade
+    const jpySuspicious = (data.usdJpy as any).isSuspicious === true
+      || !Number.isFinite(data.usdJpy.changePercent);
+    const yenStrengthening = !jpySuspicious && data.usdJpy.changePercent < -0.5; // USD/JPY falling = Yen strengthening
+    const yenWeakening = !jpySuspicious && data.usdJpy.changePercent > 0.5;
+    const severeYenStrength = !jpySuspicious && data.usdJpy.changePercent < -1.5;
+
     if (severeYenStrength) {
       keyPoints.push(`⚠️ ALERTA CARRY TRADE: Iene forte (${data.usdJpy.changePercent.toFixed(2)}%) - risco de unwinding em tech stocks`);
       bearishScore += 4;
@@ -93,11 +96,13 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
       keyPoints.push(`Iene enfraquecido favorece fluxo de carry trade para tech stocks`);
       bullishScore += 1;
     }
-    
+
     signals.push({
       label: 'USD/JPY',
       status: yenStrengthening ? 'bearish' : yenWeakening ? 'bullish' : 'neutral',
-      description: `${data.usdJpy.price.toFixed(2)} (${data.usdJpy.changePercent > 0 ? '+' : ''}${data.usdJpy.changePercent.toFixed(2)}%)`,
+      description: jpySuspicious
+        ? `${data.usdJpy.price.toFixed(2)} (— dado suspeito)`
+        : `${data.usdJpy.price.toFixed(2)} (${data.usdJpy.changePercent > 0 ? '+' : ''}${data.usdJpy.changePercent.toFixed(2)}%)`,
     });
   }
 
