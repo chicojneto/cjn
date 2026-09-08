@@ -1,4 +1,4 @@
-import { Coffee, LayoutDashboard, Calendar, BookOpen, TrendingUp, ClipboardCheck, BarChart3, Settings, Globe2, X } from 'lucide-react';
+import { Coffee, LayoutDashboard, Calendar, BookOpen, TrendingUp, ClipboardCheck, BarChart3, Settings, Globe2, NotebookPen, X } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -19,6 +19,7 @@ const mainNavItems = [
 
 const analysisNavItems = [
   { title: 'Check List', url: '/checklist', icon: ClipboardCheck },
+  { title: 'Playbook', url: '/playbook', icon: NotebookPen },
   { title: 'Estratégias', url: '/estrategias', icon: BookOpen },
   { title: 'Long/Short', url: '/longshort', icon: TrendingUp },
 ];

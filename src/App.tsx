@@ -9,6 +9,7 @@ import Mercados from "./pages/Mercados";
 import Calendario from "./pages/Calendario";
 import CheckList from "./pages/CheckList";
 import Estrategias from "./pages/Estrategias";
+import Playbook from "./pages/Playbook";
 import LongShort from "./pages/LongShort";
 import MapaGlobal from "./pages/MapaGlobal";
 import Configuracoes from "./pages/Configuracoes";
@@ -48,6 +49,11 @@ const App = () => (
           <Route path="/checklist" element={
             <AppLayout>
               <CheckList />
+            </AppLayout>
+          } />
+          <Route path="/playbook" element={
+            <AppLayout>
+              <Playbook />
             </AppLayout>
           } />
           <Route path="/estrategias" element={

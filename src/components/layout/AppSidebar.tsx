@@ -1,4 +1,4 @@
-import { Coffee, Activity, Calendar, BookOpen, TrendingUp, Tv, BarChart3, Settings, Globe2 } from 'lucide-react';
+import { Coffee, Activity, Calendar, BookOpen, TrendingUp, Tv, BarChart3, Settings, Globe2, NotebookPen } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
@@ -24,6 +24,7 @@ const mainNavItems = [
 
 const analysisNavItems = [
   { title: 'Modo TV', url: '/checklist', icon: Tv },
+  { title: 'Playbook', url: '/playbook', icon: NotebookPen },
   { title: 'Estratégias', url: '/estrategias', icon: BookOpen },
   { title: 'Long/Short', url: '/longshort', icon: TrendingUp },
 ];
