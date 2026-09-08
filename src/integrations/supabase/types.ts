@@ -124,6 +124,45 @@ export type Database = {
         }
         Relationships: []
       }
+      di_curve_manual: {
+        Row: {
+          cdi: number | null
+          created_at: string
+          di_jan27: number | null
+          di_jan28: number | null
+          di_jan29: number | null
+          di_jan30: number | null
+          di_jan31: number | null
+          di_jan33: number | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          cdi?: number | null
+          created_at?: string
+          di_jan27?: number | null
+          di_jan28?: number | null
+          di_jan29?: number | null
+          di_jan30?: number | null
+          di_jan31?: number | null
+          di_jan33?: number | null
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          cdi?: number | null
+          created_at?: string
+          di_jan27?: number | null
+          di_jan28?: number | null
+          di_jan29?: number | null
+          di_jan30?: number | null
+          di_jan31?: number | null
+          di_jan33?: number | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       economic_events: {
         Row: {
           actual_value: string | null
