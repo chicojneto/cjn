@@ -235,6 +235,10 @@ const strategies = [
 
 export function TradingStrategies() {
   const [selectedStrategy, setSelectedStrategy] = useState(strategies[0]);
+  const [showOld, setShowOld] = useState(false);
+
+  const archivedCount = strategies.filter((s) => isArchived(s.updated)).length;
+  const visibleStrategies = showOld ? strategies : strategies.filter((s) => !isArchived(s.updated));
 
   const SelectedIcon = selectedStrategy.icon;
 
