@@ -49,7 +49,7 @@ export function DiCurveEditor() {
     }
 
     const query = row?.id
-      ? supabase.from('di_curve_manual').update(payload).eq('id', row.id)
+      ? supabase.from('di_curve_manual').update(payload as never).eq('id', row.id)
       : supabase.from('di_curve_manual').insert(payload as never);
 
     const { error } = await query;
