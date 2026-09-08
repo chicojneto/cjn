@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { TrendingUp, TrendingDown, ChevronDown, DollarSign, Coins, BarChart3, Fuel, Flame, AlertTriangle } from 'lucide-react';
+import { TrendingUp, TrendingDown, ChevronDown, DollarSign, Coins, BarChart3, Fuel, Flame, AlertTriangle, CheckCircle2, Circle, PenLine } from 'lucide-react';
+import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
+import { evaluateConditions, summarize, type EvaluatedCondition } from '@/lib/longShortConditions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -364,8 +366,78 @@ const categoryColors = {
   commodities: 'bg-amber-500/20 text-amber-400',
 };
 
+const PRIORITY_IDS = ['win', 'wdo', 'xauusd', 'nasdaq', 'spx'];
+
+function ConditionList({
+  items,
+  tone,
+}: {
+  items: EvaluatedCondition[];
+  tone: 'long' | 'short';
+}) {
+  return (
+    <ul className="space-y-1.5">
+      {items.map((c, index) => {
+        const isNew = c.text.startsWith('[NOVO]');
+        const Icon = c.status === 'met' ? CheckCircle2 : c.status === 'unmet' ? Circle : PenLine;
+        const iconClass =
+          c.status === 'met'
+            ? tone === 'long'
+              ? 'text-green-500'
+              : 'text-red-500'
+            : c.status === 'unmet'
+            ? 'text-muted-foreground/40'
+            : 'text-muted-foreground/60';
+        return (
+          <li key={index} className="text-sm flex items-start gap-2">
+            <Icon
+              className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${iconClass}`}
+              aria-label={c.status === 'met' ? 'condição atendida' : c.status === 'unmet' ? 'condição não atendida' : 'avaliação manual'}
+            />
+            <span className={isNew ? 'text-amber-400' : c.status === 'met' ? 'text-foreground' : 'text-muted-foreground'}>
+              {c.text}
+              {c.detail && (
+                <span className="ml-1.5 font-mono text-xs text-muted-foreground">{c.detail}</span>
+              )}
+              {c.status === 'manual' && (
+                <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted-foreground/70">manual</span>
+              )}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 export function LongShortTips() {
-  const [selectedAsset, setSelectedAsset] = useState<AssetTip>(assetTips[0]);
+  const [selectedAsset, setSelectedAsset] = useState<AssetTip>(
+    assetTips.find((a) => a.id === 'win') ?? assetTips[0]
+  );
+  const [showOthers, setShowOthers] = useState(false);
+  const { data } = useMarketCorrelations();
+
+  const priorityTips = PRIORITY_IDS
+    .map((id) => assetTips.find((a) => a.id === id))
+    .filter((a): a is AssetTip => Boolean(a));
+  const otherTips = assetTips.filter((a) => !PRIORITY_IDS.includes(a.id));
+
+  const longConds = evaluateConditions(selectedAsset.long, data);
+  const shortConds = evaluateConditions(selectedAsset.short, data);
+  const longSummary = summarize(longConds);
+  const shortSummary = summarize(shortConds);
+
+  const renderItem = (tip: AssetTip) => (
+    <DropdownMenuItem key={tip.id} onClick={() => setSelectedAsset(tip)} className="cursor-pointer">
+      <tip.icon className="h-4 w-4 mr-2" />
+      <span className="flex-1">{tip.symbol}</span>
+      {selectedAsset.id === tip.id && (
+        <Badge variant="secondary" className="text-xs">
+          Ativo
+        </Badge>
+      )}
+    </DropdownMenuItem>
+  );
 
   return (
     <Card className="border-border/30 bg-card/50">
@@ -388,35 +460,24 @@ export function LongShortTips() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-popover z-50">
-              <ScrollArea className="h-[300px]">
-                {Object.entries(
-                  assetTips.reduce((acc, tip) => {
-                    if (!acc[tip.category]) acc[tip.category] = [];
-                    acc[tip.category].push(tip);
-                    return acc;
-                  }, {} as Record<string, AssetTip[]>)
-                ).map(([category, tips]) => (
-                  <div key={category}>
-                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase">
-                      {categoryLabels[category as keyof typeof categoryLabels]}
-                    </div>
-                    {tips.map((tip) => (
-                      <DropdownMenuItem
-                        key={tip.id}
-                        onClick={() => setSelectedAsset(tip)}
-                        className="cursor-pointer"
-                      >
-                        <tip.icon className="h-4 w-4 mr-2" />
-                        <span className="flex-1">{tip.symbol}</span>
-                        {selectedAsset.id === tip.id && (
-                          <Badge variant="secondary" className="text-xs">
-                            Ativo
-                          </Badge>
-                        )}
-                      </DropdownMenuItem>
-                    ))}
-                  </div>
-                ))}
+              <ScrollArea className="max-h-[320px]">
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase">
+                  Principais
+                </div>
+                {priorityTips.map(renderItem)}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowOthers((v) => !v);
+                  }}
+                  className="w-full flex items-center justify-between px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase hover:text-foreground"
+                >
+                  Outros
+                  <ChevronDown className={`h-3 w-3 transition-transform ${showOthers ? 'rotate-180' : ''}`} />
+                </button>
+                {showOthers && otherTips.map(renderItem)}
               </ScrollArea>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -448,37 +509,31 @@ export function LongShortTips() {
 
         {/* Long Tips */}
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <TrendingUp className="h-4 w-4 text-green-500" />
             <span className="text-sm font-semibold text-green-500">LONG {selectedAsset.symbol}</span>
+            <span className="font-mono text-xs text-muted-foreground">
+              {longSummary.met} de {longSummary.total} condições ativas
+              {longSummary.manual > 0 && ` · ${longSummary.manual} manuais`}
+            </span>
           </div>
           <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
-            <ul className="space-y-1">
-              {selectedAsset.long.map((tip, index) => (
-                <li key={index} className={`text-sm flex items-start gap-2 ${tip.startsWith('[NOVO]') ? 'text-amber-400' : 'text-muted-foreground'}`}>
-                  <span className="text-green-500 mt-1">•</span>
-                  {tip}
-                </li>
-              ))}
-            </ul>
+            <ConditionList items={longConds} tone="long" />
           </div>
         </div>
 
         {/* Short Tips */}
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <TrendingDown className="h-4 w-4 text-red-500" />
             <span className="text-sm font-semibold text-red-500">SHORT {selectedAsset.symbol}</span>
+            <span className="font-mono text-xs text-muted-foreground">
+              {shortSummary.met} de {shortSummary.total} condições ativas
+              {shortSummary.manual > 0 && ` · ${shortSummary.manual} manuais`}
+            </span>
           </div>
           <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-3">
-            <ul className="space-y-1">
-              {selectedAsset.short.map((tip, index) => (
-                <li key={index} className={`text-sm flex items-start gap-2 ${tip.startsWith('[NOVO]') ? 'text-amber-400' : 'text-muted-foreground'}`}>
-                  <span className="text-red-500 mt-1">•</span>
-                  {tip}
-                </li>
-              ))}
-            </ul>
+            <ConditionList items={shortConds} tone="short" />
           </div>
         </div>
       </CardContent>
