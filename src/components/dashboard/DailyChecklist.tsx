@@ -121,27 +121,32 @@ function DIContractRow({ di }: { di: DIFutureContract }) {
 }
 
 function BrazilRatesPanel({ brazilRates }: { brazilRates: BrazilRatesData }) {
-  const shortTermDI = brazilRates.diFutures?.filter(di => di.category === 'short_term') || [];
-  const oneYearDI = brazilRates.diFutures?.filter(di => di.category === 'one_year') || [];
-  const macroDI = brazilRates.diFutures?.filter(di => di.category === 'macro') || [];
+  const { data: curve } = useDiCurve();
+  const analysis = analyzeManualCurve(curve ?? null);
+  const rows = curve
+    ? DI_FIELDS.map((f) => ({ label: f.label, value: curve[f.key] as number | null })).filter(
+        (r) => typeof r.value === 'number' && isFinite(r.value as number)
+      )
+    : [];
 
   return (
     <div className="border border-border/50 bg-card/30 h-full flex flex-col">
-      <div className="px-3 py-2 border-b bg-green-500/20 text-green-400 border-green-500/50">
+      <div className="px-3 py-2 border-b bg-green-500/20 text-green-400 border-green-500/50 flex items-center justify-between gap-2">
         <h4 className="text-xs font-bold uppercase tracking-wider">🇧🇷 JUROS BRASIL</h4>
+        <ManualStamp updatedAt={curve?.updated_at} />
       </div>
       <div className="flex-1 overflow-auto">
-        {/* CDI */}
-        {brazilRates.cdi && (
+        {/* CDI (manual) */}
+        {typeof curve?.cdi === 'number' && (
           <div className="flex items-center justify-between py-1.5 px-2 border-b border-border/30 hover:bg-muted/20">
             <span className="text-xs font-medium text-muted-foreground">Taxa CDI</span>
             <div className="flex items-center gap-2 font-mono">
-              <span className="text-sm font-semibold text-foreground">{brazilRates.cdi.value.toFixed(2)}%</span>
+              <span className="text-sm font-semibold text-foreground">{curve.cdi.toFixed(2)}%</span>
               <span className="text-[10px] text-muted-foreground">a.a.</span>
             </div>
           </div>
         )}
-        
+
         {/* CDS Brasil */}
         {brazilRates.cdsBrazil && (
           <div className="flex items-center justify-between py-1.5 px-2 border-b border-border/30 hover:bg-muted/20">
@@ -156,62 +161,46 @@ function BrazilRatesPanel({ brazilRates }: { brazilRates: BrazilRatesData }) {
             </div>
           </div>
         )}
-        
-        {/* DI Curto Prazo - Day Trade */}
-        {shortTermDI.length > 0 && (
-          <>
-            <div className="px-2 py-1 bg-blue-500/10 border-b border-border/30">
-              <span className="text-[10px] font-bold text-blue-400 uppercase">📈 DI CURTO PRAZO (Day Trade)</span>
+
+        {/* Curva DI (manual) */}
+        <div className="px-2 py-1 bg-blue-500/10 border-b border-border/30 flex items-center justify-between">
+          <span className="text-[10px] font-bold text-blue-400 uppercase">📈 CURVA DI</span>
+          <ManualStamp updatedAt={curve?.updated_at} />
+        </div>
+        {rows.length === 0 ? (
+          <div className="px-2 py-3 text-[10px] text-muted-foreground">
+            Sem dados. Preencha a Curva DI em Configurações.
+          </div>
+        ) : (
+          rows.map((r) => (
+            <div key={r.label} className="flex items-center justify-between py-1.5 px-2 border-b border-border/30 hover:bg-muted/20">
+              <span className="text-[11px] font-mono font-semibold text-foreground">{r.label}</span>
+              <span className="text-xs font-mono font-semibold text-foreground">{(r.value as number).toFixed(2)}%</span>
             </div>
-            {shortTermDI.map((di, idx) => (
-              <DIContractRow key={idx} di={di} />
-            ))}
-          </>
+          ))
         )}
-        
-        {/* DI 1 Ano - Copom */}
-        {oneYearDI.length > 0 && (
-          <>
-            <div className="px-2 py-1 bg-amber-500/10 border-b border-border/30">
-              <span className="text-[10px] font-bold text-amber-400 uppercase">📊 DI 1 ANO (Expectativas Copom)</span>
-            </div>
-            {oneYearDI.map((di, idx) => (
-              <DIContractRow key={idx} di={di} />
-            ))}
-          </>
-        )}
-        
-        {/* Vértices Macro */}
-        {macroDI.length > 0 && (
-          <>
-            <div className="px-2 py-1 bg-purple-500/10 border-b border-border/30">
-              <span className="text-[10px] font-bold text-purple-400 uppercase">🏛️ VÉRTICES MACRO (Risco Fiscal)</span>
-            </div>
-            {macroDI.map((di, idx) => (
-              <DIContractRow key={idx} di={di} />
-            ))}
-          </>
-        )}
-        
+
         {/* Análise da Curva */}
-        {brazilRates.curveAnalysis && (
+        {analysis && (
           <>
             <div className="px-2 py-1 bg-muted/30 border-b border-border/30">
               <span className="text-[10px] font-bold text-muted-foreground uppercase">📐 INCLINAÇÃO DA CURVA</span>
             </div>
             <div className="px-2 py-2 border-b border-border/30">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] text-muted-foreground">Spread (Longo - Curto)</span>
+                <span className="text-[10px] text-muted-foreground">
+                  Spread ({analysis.longLabel} − {analysis.shortLabel})
+                </span>
                 <span className={`text-xs font-mono font-bold ${
-                  brazilRates.curveAnalysis.inclination === 'positive' ? 'text-amber-400' :
-                  brazilRates.curveAnalysis.inclination === 'negative' ? 'text-emerald-400' :
+                  analysis.inclination === 'positive' ? 'text-amber-400' :
+                  analysis.inclination === 'negative' ? 'text-emerald-400' :
                   'text-muted-foreground'
                 }`}>
-                  {brazilRates.curveAnalysis.spread > 0 ? '+' : ''}{(brazilRates.curveAnalysis.spread * 100).toFixed(0)} bps
+                  {analysis.spread > 0 ? '+' : ''}{(analysis.spread * 100).toFixed(0)} bps
                 </span>
               </div>
               <p className="text-[10px] text-muted-foreground/80 leading-relaxed">
-                {brazilRates.curveAnalysis.signal}
+                {analysis.signal}
               </p>
             </div>
           </>
