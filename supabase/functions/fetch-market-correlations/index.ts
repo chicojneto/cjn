@@ -114,44 +114,20 @@ const SYMBOLS: Record<string, { yahoo: string; name: string }> = {
 };
 
 async function fetchQuoteFromYahoo(key: string, config: { yahoo: string; name: string }): Promise<MarketData | null> {
-  try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(config.yahoo)}?interval=1d&range=5d`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      },
-    });
-    
-    if (!response.ok) {
-      console.log(`Yahoo failed for ${key}: ${response.status}`);
-      return null;
-    }
-    
-    const data = await response.json();
-    const result = data.chart?.result?.[0];
-    
-    if (!result) return null;
-    
-    const meta = result.meta;
-    const price = meta.regularMarketPrice;
-    const previousClose = meta.previousClose || meta.chartPreviousClose;
-    const change = price - previousClose;
-    const changePercent = (change / previousClose) * 100;
-    
-    return {
-      symbol: config.yahoo,
-      name: config.name,
-      price,
-      change,
-      changePercent,
-      isPositive: change > 0,
-      timestamp: new Date().toISOString(),
-    };
-  } catch (error) {
-    console.error(`Yahoo error for ${key}:`, error);
-    return null;
-  }
+  const d = await fetchDailyChange(config.yahoo, classifyYahoo(config.yahoo));
+  if (!d) return null;
+
+  return {
+    symbol: config.yahoo,
+    name: config.name,
+    price: d.price,
+    change: d.isSuspicious ? 0 : d.change,
+    changePercent: d.isSuspicious ? 0 : d.changePercent,
+    isPositive: !d.isSuspicious && d.change > 0,
+    isSuspicious: d.isSuspicious,
+    referenceDate: d.referenceDate,
+    timestamp: new Date().toISOString(),
+  } as MarketData;
 }
 
 // B3 Month Codes for DI Futures
