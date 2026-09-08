@@ -73,7 +73,7 @@ export default function MapaGlobal() {
 
         <div className="flex flex-wrap items-center gap-3">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-foreground bg-foreground text-background font-mono text-xs uppercase tracking-widest">
-            <span className="inline-block w-1.5 h-1.5 bg-background animate-pulse" />
+            <span className="inline-block w-1.5 h-1.5 bg-background " />
             Ao Vivo
           </div>
           <div className="border border-border bg-muted/20 px-4 py-2">

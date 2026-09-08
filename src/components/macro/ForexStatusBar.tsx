@@ -31,7 +31,7 @@ export function ForexStatusBar() {
               : 'border-border bg-muted/30 text-muted-foreground'
           }`}>
             <span className={`inline-block w-1.5 h-1.5 ${
-              status.isOpen ? 'bg-background animate-pulse' : 'bg-muted-foreground/50'
+              status.isOpen ? 'bg-background ' : 'bg-muted-foreground/50'
             }`} />
             {status.isOpen ? 'Aberto' : 'Fechado'}
           </span>

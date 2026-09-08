@@ -55,16 +55,16 @@ function MarketSection({
 }) {
   const headerColors = {
     default: 'bg-muted/30 border-border/50',
-    blue: 'bg-blue-500/10 border-blue-500/30',
-    amber: 'bg-amber-500/10 border-amber-500/30',
-    green: 'bg-green-500/10 border-green-500/30',
+    blue: 'bg-muted/10 border-border',
+    amber: 'bg-warning/10 border-warning/30',
+    green: 'bg-success/10 border-success/30',
   };
 
   const titleColors = {
     default: 'text-foreground',
-    blue: 'text-blue-400',
-    amber: 'text-amber-400',
-    green: 'text-green-400',
+    blue: 'text-muted-foreground',
+    amber: 'text-warning',
+    green: 'text-success',
   };
 
   if (isLoading) {

@@ -88,11 +88,11 @@ export default function PreMarket() {
   const status = data ? STATUS_MAP[data.status] ?? STATUS_MAP.moderado : null;
 
   return (
-    <div style={{ background: '#0f1420' }} className="min-h-full -m-4 p-6 font-mono text-slate-200 md:-m-6 md:p-8">
+    <div style={{ background: '#0f1420' }} className="min-h-full -m-4 p-6 font-mono text-muted-foreground md:-m-6 md:p-8">
       <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold tracking-[0.18em] text-slate-100">PRÉ-MARKET</h1>
-          <p className="text-[11px] tracking-widest text-slate-500">
+          <h1 className="text-xl font-bold tracking-[0.18em] text-muted-foreground">PRÉ-MARKET</h1>
+          <p className="text-[11px] tracking-widest text-muted-foreground">
             RADAR 6L · VARIAÇÃO OVERNIGHT
             {data ? ` · ${new Date(data.geradoEm).toLocaleTimeString('pt-BR')}` : ''}
           </p>
@@ -109,7 +109,7 @@ export default function PreMarket() {
       </header>
 
       {erro && (
-        <div className="mb-4 border border-red-900/60 bg-red-950/30 px-4 py-3 text-xs text-red-300">{erro}</div>
+        <div className="mb-4 border border-destructive/60 bg-destructive/30 px-4 py-3 text-xs text-destructive">{erro}</div>
       )}
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
@@ -128,7 +128,7 @@ export default function PreMarket() {
                 boxShadow: c.destaque ? '0 0 0 1px rgba(14,124,91,0.35)' : undefined,
               }}
             >
-              <div className="text-[10px] tracking-widest text-slate-500">{c.label}</div>
+              <div className="text-[10px] tracking-widest text-muted-foreground">{c.label}</div>
               <div className="mt-1 flex items-baseline gap-1 text-lg font-bold tabular-nums" style={{ color }}>
                 {has ? (
                   <>
@@ -155,11 +155,11 @@ export default function PreMarket() {
       )}
 
       {loading && !data && (
-        <div className="mt-5 text-[11px] tracking-widest text-slate-500">CARREGANDO RADAR…</div>
+        <div className="mt-5 text-[11px] tracking-widest text-muted-foreground">CARREGANDO RADAR…</div>
       )}
 
       <section className="mt-8">
-        <h2 className="mb-3 text-sm font-bold tracking-[0.18em] text-slate-100">MAPA GEX</h2>
+        <h2 className="mb-3 text-sm font-bold tracking-[0.18em] text-muted-foreground">MAPA GEX</h2>
         <div className="mb-4 flex gap-2">
           {TABS.map((t) => (
             <button

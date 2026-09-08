@@ -31,11 +31,11 @@ const num = (v: number | null | undefined, dec = 0) =>
 function LevelCard({ titulo, nivel, refNome, cor }: { titulo: string; nivel: Nivel | null; refNome: string; cor: string }) {
   return (
     <div className="border px-4 py-3" style={{ background: '#141b2b', borderColor: '#1f2937' }}>
-      <div className="text-[10px] tracking-widest text-slate-500">{titulo}</div>
+      <div className="text-[10px] tracking-widest text-muted-foreground">{titulo}</div>
       <div className="mt-1 text-2xl font-bold tabular-nums" style={{ color: cor }}>
         {nivel?.ref != null ? num(nivel.ref) : nivel ? num(nivel.strike, 2) : '—'}
       </div>
-      <div className="text-[10px] tracking-widest text-slate-500">
+      <div className="text-[10px] tracking-widest text-muted-foreground">
         {nivel?.ref != null ? `${refNome} · strike ${num(nivel.strike, 2)}` : refNome}
       </div>
     </div>
@@ -90,11 +90,11 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
       : '';
 
   if (loading && !data) {
-    return <div className="py-10 text-center text-[11px] tracking-widest text-slate-500">CARREGANDO MAPA GEX…</div>;
+    return <div className="py-10 text-center text-[11px] tracking-widest text-muted-foreground">CARREGANDO MAPA GEX…</div>;
   }
   if (erro) {
     return (
-      <div className="flex items-center justify-between border border-red-900/60 bg-red-950/30 px-4 py-3 text-xs text-red-300">
+      <div className="flex items-center justify-between border border-destructive/60 bg-destructive/30 px-4 py-3 text-xs text-destructive">
         {erro}
         <button onClick={load} className="flex items-center gap-1 tracking-widest">
           <RefreshCw className="h-3 w-3" /> TENTAR
@@ -108,7 +108,7 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3 border px-4 py-3" style={{ background: '#141b2b', borderColor: '#1f2937' }}>
         <div>
-          <div className="text-[10px] tracking-widest text-slate-500">
+          <div className="text-[10px] tracking-widest text-muted-foreground">
             GEX LÍQUIDO · {data.und} · SPOT {num(data.spot, 2)}
           </div>
           <div className="text-2xl font-bold tabular-nums" style={{ color: positivo ? GREEN : RED }}>
@@ -129,7 +129,7 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
           <button
             onClick={load}
             disabled={loading}
-            className="border px-2.5 py-2 text-slate-400 disabled:opacity-50"
+            className="border px-2.5 py-2 text-muted-foreground disabled:opacity-50"
             style={{ borderColor: '#1f2937' }}
             aria-label="Atualizar"
           >
@@ -147,7 +147,7 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
       <div className="overflow-x-auto border" style={{ background: '#141b2b', borderColor: '#1f2937' }}>
         <table className="w-full text-xs tabular-nums">
           <thead>
-            <tr className="text-[10px] tracking-widest text-slate-500">
+            <tr className="text-[10px] tracking-widest text-muted-foreground">
               <th className="px-3 py-2 text-left">STRIKE</th>
               <th className="px-3 py-2 text-right">~{data.refNome}</th>
               <th className="px-3 py-2 text-right">OI CALL</th>
@@ -168,14 +168,14 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
                     background: isCall ? 'rgba(14,124,91,0.14)' : isPut ? 'rgba(190,45,55,0.14)' : undefined,
                   }}
                 >
-                  <td className="px-3 py-2 text-left text-slate-200">
+                  <td className="px-3 py-2 text-left text-muted-foreground">
                     {num(l.strike, 2)}
                     {isCall && <span className="ml-2 text-[9px] tracking-widest" style={{ color: GREEN }}>CALL WALL</span>}
                     {isPut && <span className="ml-2 text-[9px] tracking-widest" style={{ color: RED }}>PUT WALL</span>}
                   </td>
-                  <td className="px-3 py-2 text-right text-slate-300">{l.ref != null ? num(l.ref) : '—'}</td>
-                  <td className="px-3 py-2 text-right text-slate-400">{num(l.oiCall)}</td>
-                  <td className="px-3 py-2 text-right text-slate-400">{num(l.oiPut)}</td>
+                  <td className="px-3 py-2 text-right text-muted-foreground">{l.ref != null ? num(l.ref) : '—'}</td>
+                  <td className="px-3 py-2 text-right text-muted-foreground">{num(l.oiCall)}</td>
+                  <td className="px-3 py-2 text-right text-muted-foreground">{num(l.oiPut)}</td>
                   <td className="px-3 py-2 text-right font-bold" style={{ color: l.gexM >= 0 ? GREEN : RED }}>
                     {l.gexM > 0 ? '+' : ''}
                     {num(l.gexM, 1)}
@@ -191,20 +191,20 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
         <div className="border px-4 py-4" style={{ background: '#141b2b', borderColor: ACCENT }}>
           <div className="text-[10px] tracking-widest" style={{ color: GREEN }}>CONVERSÃO PARA O WIN</div>
           <div className="mt-3 flex flex-wrap items-end gap-3">
-            <label className="text-[10px] tracking-widest text-slate-500">
+            <label className="text-[10px] tracking-widest text-muted-foreground">
               FECHAMENTO DO WIN D-1
               <input
                 type="number"
                 value={winClose}
                 onChange={(e) => setWinClose(e.target.value)}
                 placeholder="140000"
-                className="mt-1 block w-44 border bg-[#0f1420] px-3 py-2 font-mono text-sm text-slate-100 outline-none"
+                className="mt-1 block w-44 border bg-[#0f1420] px-3 py-2 font-mono text-sm text-muted-foreground outline-none"
                 style={{ borderColor: '#1f2937' }}
               />
             </label>
             {offset != null && (
-              <div className="text-[10px] tracking-widest text-slate-500">
-                OFFSET <span className="text-sm font-bold text-slate-200">{offset > 0 ? '+' : ''}{num(offset)}</span>
+              <div className="text-[10px] tracking-widest text-muted-foreground">
+                OFFSET <span className="text-sm font-bold text-muted-foreground">{offset > 0 ? '+' : ''}{num(offset)}</span>
               </div>
             )}
           </div>
@@ -218,13 +218,13 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
                   { t: 'CALL WALL WIN', v: conv(data.callWall), c: GREEN },
                 ].map((x) => (
                   <div key={x.t} className="border px-3 py-2" style={{ borderColor: '#1f2937' }}>
-                    <div className="text-[10px] tracking-widest text-slate-500">{x.t}</div>
+                    <div className="text-[10px] tracking-widest text-muted-foreground">{x.t}</div>
                     <div className="text-xl font-bold tabular-nums" style={{ color: x.c }}>{x.v != null ? num(x.v) : '—'}</div>
                   </div>
                 ))}
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                <code className="flex-1 overflow-x-auto whitespace-nowrap border bg-[#0f1420] px-3 py-2 text-xs text-slate-300" style={{ borderColor: '#1f2937' }}>
+                <code className="flex-1 overflow-x-auto whitespace-nowrap border bg-[#0f1420] px-3 py-2 text-xs text-muted-foreground" style={{ borderColor: '#1f2937' }}>
                   {linha}
                 </code>
                 <button
@@ -243,7 +243,7 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
         </div>
       )}
 
-      <div className="text-[10px] tracking-widest text-slate-600">
+      <div className="text-[10px] tracking-widest text-muted-foreground">
         {data.aviso} · GERADO EM {new Date(data.geradoEm).toLocaleString('pt-BR')}
       </div>
     </div>

@@ -62,7 +62,7 @@ export function LiquidityIndicator() {
                 Ativa
               </div>
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-foreground bg-foreground text-background text-[10px] font-mono uppercase tracking-wider">
-                <span className="inline-block w-1.5 h-1.5 bg-background animate-pulse" />
+                <span className="inline-block w-1.5 h-1.5 bg-background " />
                 Pico
               </span>
             </div>

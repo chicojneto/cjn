@@ -83,7 +83,7 @@ function SessionMarker({ session, active }: { session: SessionDef; active: boole
   return (
     <g>
       {active && (
-        <circle cx={cx} cy={cy} r={4} fill={colorSoft} className="animate-ping" />
+        <circle cx={cx} cy={cy} r={4} fill={colorSoft} className="" />
       )}
       <circle cx={cx} cy={cy} r={1.6} fill={active ? color : 'hsl(var(--muted-foreground) / 0.5)'} />
       <circle

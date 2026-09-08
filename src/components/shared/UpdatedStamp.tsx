@@ -6,7 +6,7 @@ export function UpdatedStamp({ date, className }: { date: string; className?: st
     <span
       className={cn(
         'font-mono text-[10px] whitespace-nowrap',
-        isStale(date) ? 'text-orange-400' : 'text-muted-foreground/70',
+        isStale(date) ? 'text-muted-foreground' : 'text-muted-foreground/70',
         className
       )}
     >

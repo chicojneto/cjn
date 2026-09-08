@@ -15,9 +15,9 @@ const dayTradeRules: TradeRule[] = [
   {
     category: 'REGRA DE OURO',
     icon: Shield,
-    color: 'text-amber-400',
-    bgColor: 'bg-amber-500/10',
-    borderColor: 'border-amber-500/30',
+    color: 'text-warning',
+    bgColor: 'bg-warning/10',
+    borderColor: 'border-warning/30',
     rules: [
       'PIB, Inflação e Juros NÃO são indicadores técnicos',
       'Eles criam o PANO DE FUNDO do movimento',
@@ -27,9 +27,9 @@ const dayTradeRules: TradeRule[] = [
   {
     category: 'EM DIA DE DADO (CPI, PIB, IPCA, NFP)',
     icon: Clock,
-    color: 'text-blue-400',
-    bgColor: 'bg-blue-500/10',
-    borderColor: 'border-blue-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border',
     rules: [
       'NÃO antecipe o dado',
       'Espere o primeiro impulso (1-3 min)',
@@ -41,9 +41,9 @@ const dayTradeRules: TradeRule[] = [
   {
     category: 'ÍNDICE DEFINE A MARÉ',
     icon: TrendingUp,
-    color: 'text-emerald-400',
-    bgColor: 'bg-emerald-500/10',
-    borderColor: 'border-emerald-500/30',
+    color: 'text-success',
+    bgColor: 'bg-success/10',
+    borderColor: 'border-success/30',
     rules: [
       'Índice em alta → favorece compras, risco menor',
       'Índice em queda → prefira vendas, seletividade máxima',
@@ -57,9 +57,9 @@ const swingTradeRules: TradeRule[] = [
   {
     category: 'CHECKLIST PRÉ-ENTRADA',
     icon: Shield,
-    color: 'text-purple-400',
-    bgColor: 'bg-purple-500/10',
-    borderColor: 'border-purple-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border',
     rules: [
       '✓ PIB em aceleração ou estabilização?',
       '✓ Inflação caindo ou controlada?',
@@ -71,9 +71,9 @@ const swingTradeRules: TradeRule[] = [
   {
     category: 'ROTAÇÃO SETORIAL',
     icon: Repeat,
-    color: 'text-cyan-400',
-    bgColor: 'bg-cyan-500/10',
-    borderColor: 'border-cyan-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border',
     rules: [
       'PIB acelerando → Ações, small caps, cíclicos',
       'PIB desacelerando → Defensivos, dólar, renda fixa',
@@ -85,9 +85,9 @@ const swingTradeRules: TradeRule[] = [
   {
     category: 'ERROS FATAIS',
     icon: AlertTriangle,
-    color: 'text-red-400',
-    bgColor: 'bg-red-500/10',
-    borderColor: 'border-red-500/30',
+    color: 'text-destructive',
+    bgColor: 'bg-destructive/10',
+    borderColor: 'border-destructive/30',
     rules: [
       '✕ Operar o número em vez da expectativa',
       '✕ Ignorar inflação no contexto do PIB',
@@ -104,8 +104,8 @@ export function MacroTradeRules() {
     <div className="space-y-4">
       {/* Day Trade Rules */}
       <div className="border border-border/50 bg-background">
-        <div className="py-2 px-3 border-b border-amber-500/50 bg-amber-500/20">
-          <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-amber-400">
+        <div className="py-2 px-3 border-b border-warning/50 bg-warning/20">
+          <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-warning">
             ⚡ REGRAS DAY TRADE — MACRO
           </h3>
         </div>
@@ -141,8 +141,8 @@ export function MacroTradeRules() {
 
       {/* Swing Trade Rules */}
       <div className="border border-border/50 bg-background">
-        <div className="py-2 px-3 border-b border-cyan-500/50 bg-cyan-500/20">
-          <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-cyan-400">
+        <div className="py-2 px-3 border-b border-border bg-muted/20">
+          <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-muted-foreground">
             📈 REGRAS SWING TRADE — MACRO
           </h3>
         </div>

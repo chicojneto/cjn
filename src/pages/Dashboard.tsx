@@ -92,7 +92,7 @@ function MarketStatusBar() {
         >
           <span
             className={`inline-block h-1.5 w-1.5 rounded-full ${
-              s.isOpen ? 'bg-success animate-pulse' : 'bg-muted-foreground/40'
+              s.isOpen ? 'bg-success ' : 'bg-muted-foreground/40'
             }`}
           />
           {s.emoji} {s.label}

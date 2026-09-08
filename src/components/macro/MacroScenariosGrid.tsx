@@ -25,9 +25,9 @@ const scenarios: MacroScenario[] = [
     name: 'GOLDILOCKS',
     icon: Sun,
     condition: 'PIB sobe + Inflação controlada',
-    color: 'text-emerald-400',
-    bgColor: 'bg-emerald-500/10',
-    borderColor: 'border-emerald-500/30',
+    color: 'text-success',
+    bgColor: 'bg-success/10',
+    borderColor: 'border-success/30',
     pib: 'Acelerado',
     inflacao: 'Controlada / Caindo',
     juros: 'Estáveis ou caindo',
@@ -41,9 +41,9 @@ const scenarios: MacroScenario[] = [
     name: 'SUPERAQUECIMENTO',
     icon: Flame,
     condition: 'PIB sobe + Inflação sobe',
-    color: 'text-orange-400',
-    bgColor: 'bg-orange-500/10',
-    borderColor: 'border-orange-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border',
     pib: 'Acelerado',
     inflacao: 'Subindo',
     juros: 'Subindo (BC intervém)',
@@ -57,9 +57,9 @@ const scenarios: MacroScenario[] = [
     name: 'DESACELERAÇÃO',
     icon: Snowflake,
     condition: 'PIB cai + Inflação cai',
-    color: 'text-blue-400',
-    bgColor: 'bg-blue-500/10',
-    borderColor: 'border-blue-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border',
     pib: 'Desacelerado',
     inflacao: 'Caindo',
     juros: 'Espaço para cortes',
@@ -73,9 +73,9 @@ const scenarios: MacroScenario[] = [
     name: 'ESTAGFLAÇÃO',
     icon: AlertTriangle,
     condition: 'PIB cai + Inflação sobe',
-    color: 'text-red-400',
-    bgColor: 'bg-red-500/10',
-    borderColor: 'border-red-500/30',
+    color: 'text-destructive',
+    bgColor: 'bg-destructive/10',
+    borderColor: 'border-destructive/30',
     pib: 'Fraco / Negativo',
     inflacao: 'Alta / Persistente',
     juros: 'Altos por mais tempo',
@@ -91,8 +91,8 @@ export function MacroScenariosGrid() {
     <div className="space-y-4">
       {/* Header */}
       <div className="border border-border/50 bg-background">
-        <div className="py-2 px-3 border-b border-purple-500/50 bg-purple-500/20">
-          <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-purple-400">
+        <div className="py-2 px-3 border-b border-border bg-muted/20">
+          <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-muted-foreground">
             🎯 CENÁRIOS COMBINADOS
           </h3>
         </div>
@@ -148,13 +148,13 @@ export function MacroScenariosGrid() {
                 {/* Favors / Avoids */}
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <div className="text-[9px] font-mono font-bold text-emerald-400 uppercase mb-1">✓ FAVORECE</div>
+                    <div className="text-[9px] font-mono font-bold text-success uppercase mb-1">✓ FAVORECE</div>
                     {scenario.favors.map((f, i) => (
                       <div key={i} className="text-[10px] font-mono text-foreground/70">• {f}</div>
                     ))}
                   </div>
                   <div>
-                    <div className="text-[9px] font-mono font-bold text-red-400 uppercase mb-1">✕ EVITAR</div>
+                    <div className="text-[9px] font-mono font-bold text-destructive uppercase mb-1">✕ EVITAR</div>
                     {scenario.avoids.map((a, i) => (
                       <div key={i} className="text-[10px] font-mono text-foreground/70">• {a}</div>
                     ))}
@@ -164,11 +164,11 @@ export function MacroScenariosGrid() {
                 {/* Trade Rules */}
                 <div className="space-y-1.5">
                   <div className={cn('p-2 border', scenario.borderColor, 'bg-card/20')}>
-                    <div className="text-[9px] font-mono font-bold text-amber-400 uppercase">DAY TRADE</div>
+                    <div className="text-[9px] font-mono font-bold text-warning uppercase">DAY TRADE</div>
                     <div className="text-[10px] font-mono text-foreground/70">{scenario.dayTrade}</div>
                   </div>
                   <div className={cn('p-2 border', scenario.borderColor, 'bg-card/20')}>
-                    <div className="text-[9px] font-mono font-bold text-cyan-400 uppercase">SWING TRADE</div>
+                    <div className="text-[9px] font-mono font-bold text-muted-foreground uppercase">SWING TRADE</div>
                     <div className="text-[10px] font-mono text-foreground/70">{scenario.swingTrade}</div>
                   </div>
                 </div>

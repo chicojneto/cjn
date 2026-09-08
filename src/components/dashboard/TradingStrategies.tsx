@@ -32,8 +32,8 @@ const strategies = [
     title: 'Análise Multi-Indicador Forex',
     updated: '2026-08-05',
     icon: TrendingUp,
-    color: 'text-blue-400',
-    bgColor: 'bg-blue-500/20',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/20',
     steps: [
       'Identifique o par que deseja operar',
       'Verifique DXY: direção e níveis (high-90s = mínimas 3 anos)',
@@ -52,8 +52,8 @@ const strategies = [
     title: 'Sentimento de Risco (Risk-On/Off)',
     updated: '2026-08-05',
     icon: AlertTriangle,
-    color: 'text-amber-400',
-    bgColor: 'bg-amber-500/20',
+    color: 'text-warning',
+    bgColor: 'bg-warning/20',
     steps: [
       'RISK-ON confirmado:',
       '→ VIX < 15 + S&P subindo + Yields estáveis',
@@ -74,8 +74,8 @@ const strategies = [
     title: 'Commodities Energéticas',
     updated: '2026-08-05',
     icon: Flame,
-    color: 'text-orange-400',
-    bgColor: 'bg-orange-500/20',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/20',
     steps: [
       'Verifique: Relatório EIA, decisões OPEC+, dados China',
       'ALERTA IRÃ: Tensões EUA-Irã = fator geopolítico #1',
@@ -92,8 +92,8 @@ const strategies = [
     title: 'Commodities Agrícolas',
     updated: '2026-08-05',
     icon: Wheat,
-    color: 'text-green-400',
-    bgColor: 'bg-green-500/20',
+    color: 'text-success',
+    bgColor: 'bg-success/20',
     steps: [
       'Verifique: DXY, clima nas regiões produtoras, relatórios USDA',
       'Para Café/Açúcar (Brasil): monitore Real (BRL), clima Brasil',
@@ -105,8 +105,8 @@ const strategies = [
     title: 'WIN (Ibovespa Futuro)',
     updated: '2026-08-05',
     icon: BarChart3,
-    color: 'text-purple-400',
-    bgColor: 'bg-purple-500/20',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/20',
     steps: [
       'Confira: S&P 500, commodities (petróleo, minério), China (HK50)',
       'Fluxo gringo: monitorar EWZ (ETF Brasil NY) diariamente',
@@ -124,8 +124,8 @@ const strategies = [
     title: 'WDO (Dólar Futuro)',
     updated: '2026-08-05',
     icon: DollarSign,
-    color: 'text-emerald-400',
-    bgColor: 'bg-emerald-500/20',
+    color: 'text-success',
+    bgColor: 'bg-success/20',
     steps: [
       'Confira: DXY, S&P 500 (inverso), commodities (inverso)',
       'Dólar/Real: R$5.20-5.30, menor em 2 anos',
@@ -142,8 +142,8 @@ const strategies = [
     title: 'Contingência Geopolítica',
     updated: '2026-08-05',
     icon: Globe,
-    color: 'text-red-400',
-    bgColor: 'bg-red-500/20',
+    color: 'text-destructive',
+    bgColor: 'bg-destructive/20',
     steps: [
       'PRÉ-PROGRAMAR ordens para evento Irã:',
       '→ Compra Ouro',
@@ -162,8 +162,8 @@ const strategies = [
     title: 'Monitoramento de Crédito',
     updated: '2026-08-05',
     icon: CreditCard,
-    color: 'text-cyan-400',
-    bgColor: 'bg-cyan-500/20',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/20',
     steps: [
       'CRÉDITO ANTECEDE BOLSA em 2-3 meses',
       '',
@@ -183,8 +183,8 @@ const strategies = [
     title: 'Regras de Risco Dinâmico',
     updated: '2026-08-05',
     icon: Shield,
-    color: 'text-rose-400',
-    bgColor: 'bg-rose-500/20',
+    color: 'text-destructive',
+    bgColor: 'bg-destructive/20',
     steps: [
       '📊 SIZING POR VIX:',
       '→ VIX > 20: sizing x0.7',
@@ -205,8 +205,8 @@ const strategies = [
     title: 'Rotação Setorial por Ciclo (PDF)',
     updated: '2026-08-05',
     icon: Globe,
-    color: 'text-sky-400',
-    bgColor: 'bg-sky-500/20',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/20',
     steps: [
       '📊 FRAMEWORK: PIB → INFLAÇÃO → JUROS → GRÁFICO',
       '',
@@ -333,9 +333,9 @@ export function TradingStrategies() {
                       isArrow
                         ? 'bg-primary/10 border-primary/30 pl-6'
                         : step.startsWith('[RISCO]')
-                        ? 'bg-amber-500/10 border-amber-500/30'
+                        ? 'bg-warning/10 border-warning/30'
                         : isAlert
-                        ? 'bg-rose-500/10 border-rose-500/30'
+                        ? 'bg-destructive/10 border-destructive/30'
                         : 'bg-secondary/30 border-border/30'
                     )}
                   >
@@ -348,8 +348,8 @@ export function TradingStrategies() {
                       <p className={cn(
                         'text-sm',
                         isArrow && 'text-primary font-medium',
-                        step.includes('DECISÃO') && 'font-semibold text-green-400',
-                        step.startsWith('[RISCO]') && 'text-amber-400',
+                        step.includes('DECISÃO') && 'font-semibold text-success',
+                        step.startsWith('[RISCO]') && 'text-warning',
                         (step.includes('LONG') || step.includes('SHORT')) && 'font-medium'
                       )}>
                         {step}

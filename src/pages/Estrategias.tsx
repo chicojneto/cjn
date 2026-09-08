@@ -46,12 +46,12 @@ export default function Estrategias() {
 
       {/* Dica de Ouro (única, no topo da página) */}
       <motion.div variants={item}>
-        <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+        <div className="p-3 rounded-lg bg-warning/10 border border-warning/30">
           <div className="flex items-start gap-2">
-            <Lightbulb className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+            <Lightbulb className="h-4 w-4 text-warning shrink-0 mt-0.5" />
             <div>
               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <p className="text-xs font-semibold text-amber-400">DICA DE OURO</p>
+                <p className="text-xs font-semibold text-warning">DICA DE OURO</p>
                 <UpdatedStamp date={GOLDEN_TIP_DATE} />
               </div>
               <p className="text-xs text-muted-foreground">
