@@ -45,48 +45,16 @@ async function fetchQuoteFromYahoo(config: IndexConfig): Promise<any> {
   const yahooSymbol = yahooSymbols[config.symbol];
   if (!yahooSymbol) return null;
   
-  try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=5d`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      },
-    });
-    
-    if (!response.ok) {
-      console.log(`Yahoo failed for ${config.symbol}: ${response.status}`);
-      return null;
-    }
-    
-    const data = await response.json();
-    const result = data.chart?.result?.[0];
-    
-    if (!result) return null;
-    
-    const meta = result.meta;
-    const price = meta.regularMarketPrice;
-    const previousClose = meta.previousClose || meta.chartPreviousClose;
-    const change = price - previousClose;
-    const changePercent = (change / previousClose) * 100;
-    
-    return {
-      symbol: config.symbol,
-      name: config.name,
-      price: price,
-      priceFormatted: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      change: change >= 0 ? `+${change.toFixed(2)}` : change.toFixed(2),
-      changeValue: change,
-      changePercent: changePercent >= 0 ? `+${changePercent.toFixed(2)}%` : `${changePercent.toFixed(2)}%`,
-      changePercentValue: changePercent,
-      previousClose: previousClose,
-      isPositive: change > 0,
-      isNegative: change < 0,
-    };
-  } catch (error) {
-    console.error(`Yahoo error for ${config.symbol}:`, error);
-    return null;
-  }
+  const d = await fetchDailyChange(yahooSymbol, classifyYahoo(yahooSymbol));
+  if (!d) return null;
+
+  return {
+    symbol: config.symbol,
+    name: config.name,
+    price: d.price,
+    priceFormatted: d.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+    ...formatChangeFields(d),
+  };
 }
 
 async function saveQuoteToDatabase(supabase: any, quote: any): Promise<void> {
