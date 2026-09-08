@@ -22,8 +22,29 @@ function bsGamma(spot: number, strike: number, t: number, iv: number): number {
   return Math.exp(-0.5 * d1 * d1) / (Math.sqrt(2 * Math.PI) * spot * iv * Math.sqrt(t));
 }
 
+// Yahoo exige cookie + crumb nas rotas v7 (options). Camada de transporte apenas.
+let auth: { cookie: string; crumb: string } | null = null;
+async function yahooAuth() {
+  if (auth) return auth;
+  const r = await fetch("https://fc.yahoo.com", UA);
+  const cookie = (r.headers.get("set-cookie") ?? "").split(";")[0];
+  const cr = await fetch("https://query1.finance.yahoo.com/v1/test/getcrumb", {
+    headers: { ...UA.headers, cookie },
+  });
+  auth = { cookie, crumb: (await cr.text()).trim() };
+  return auth;
+}
+
 async function yahooJson(url: string) {
-  const r = await fetch(url, UA);
+  let r = await fetch(url, UA);
+  if (r.status === 401 || r.status === 403) {
+    auth = null;
+    const a = await yahooAuth();
+    const sep = url.includes("?") ? "&" : "?";
+    r = await fetch(`${url}${sep}crumb=${encodeURIComponent(a.crumb)}`, {
+      headers: { ...UA.headers, cookie: a.cookie },
+    });
+  }
   if (!r.ok) throw new Error(`Yahoo ${r.status}: ${url}`);
   return await r.json();
 }
