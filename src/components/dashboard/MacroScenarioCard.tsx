@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, AlertCircle, CheckCircle, AlertTriangle, Info, Zap } from 'lucide-react';
 import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
+import { useRegimeDoDia } from '@/hooks/useRegimeDoDia';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -283,6 +284,7 @@ function generateDailyScenario(data: ReturnType<typeof useMarketCorrelations>['d
 
 export function MacroScenarioCard() {
   const { data, isLoading, error } = useMarketCorrelations();
+  const { regime: dia } = useRegimeDoDia();
 
   if (isLoading) {
     return (
@@ -329,6 +331,14 @@ export function MacroScenarioCard() {
   }
 
   const scenario = generateDailyScenario(data);
+  const sentiment: 'risk-on' | 'risk-off' | 'neutral' =
+    dia.regime === 'risk-on' ? 'risk-on' : dia.regime === 'risk-off' ? 'risk-off' : 'neutral';
+  const titulo =
+    dia.viesWIN === 'alta'
+      ? 'Viés de ALTA para o WIN'
+      : dia.viesWIN === 'baixa'
+      ? 'Viés de BAIXA para o WIN'
+      : 'Viés NEUTRO para o WIN';
 
   const sentimentConfig = {
     'risk-on': {
