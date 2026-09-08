@@ -1,5 +1,6 @@
-import { Coffee, Activity, Calendar, BookOpen, TrendingUp, Tv, BarChart3, Settings, Globe2, NotebookPen, Radar } from 'lucide-react';
+import { Activity, Calendar, BookOpen, TrendingUp, Tv, BarChart3, Settings, Globe2, NotebookPen, Radar } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { CoffeeCandleMark, Wordmark } from '@/components/brand/Logo';
 import { cn } from '@/lib/utils';
 import {
   Sidebar,
@@ -44,19 +45,12 @@ export function AppSidebar() {
     >
       <SidebarHeader className="border-b border-sidebar-border p-4">
         <NavLink to="/" className="flex items-center gap-3 group">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center shadow-lg group-hover:shadow-glow-accent transition-all duration-300">
-              <Coffee className="h-5 w-5 text-accent-foreground" />
-            </div>
-            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-primary rounded-full border-2 border-sidebar animate-pulse" />
-          </div>
+          <CoffeeCandleMark className="h-7 w-7 text-brand shrink-0" />
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="text-sm font-bold text-sidebar-foreground">
-                PullBack<span className="text-accent">Com</span>Café
-              </span>
-              <span className="text-[10px] text-muted-foreground font-mono">
-                Portal de Investimentos
+              <Wordmark className="text-[17px]" />
+              <span className="text-xs text-muted-foreground">
+                Macro e pré-market
               </span>
             </div>
           )}

@@ -43,9 +43,9 @@ export function DiCurvePanel() {
               <span
                 className={`text-xs font-mono font-bold ${
                   analysis.inclination === 'positive'
-                    ? 'text-amber-400'
+                    ? 'text-warning'
                     : analysis.inclination === 'negative'
-                    ? 'text-emerald-400'
+                    ? 'text-success'
                     : 'text-muted-foreground'
                 }`}
               >

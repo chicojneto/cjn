@@ -27,9 +27,9 @@ function formatIndicator(data: CorrelationAnalysis['dxy'], decimals = 2): Market
 
 function BiasIndicator({ bias, label }: { bias: 'bullish' | 'bearish' | 'neutral'; label: string }) {
   const biasConfig = {
-    bullish: { icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/20 border-emerald-500/50', text: 'COMPRA' },
-    bearish: { icon: TrendingDown, color: 'text-red-400', bg: 'bg-red-500/20 border-red-500/50', text: 'VENDA' },
-    neutral: { icon: Minus, color: 'text-yellow-400', bg: 'bg-yellow-500/20 border-yellow-500/50', text: 'NEUTRO' },
+    bullish: { icon: TrendingUp, color: 'text-success', bg: 'bg-success/20 border-success/50', text: 'COMPRA' },
+    bearish: { icon: TrendingDown, color: 'text-destructive', bg: 'bg-destructive/20 border-destructive/50', text: 'VENDA' },
+    neutral: { icon: Minus, color: 'text-warning', bg: 'bg-warning/20 border-warning/50', text: 'NEUTRO' },
   };
   
   const config = biasConfig[bias];
@@ -52,7 +52,7 @@ function TerminalRow({ indicator }: { indicator: MarketIndicator }) {
         <span className="text-sm font-semibold text-foreground">{indicator.value}</span>
         <span className={`text-xs font-bold min-w-[60px] text-right ${
           indicator.isPositive === null ? 'text-muted-foreground' :
-          indicator.isPositive ? 'text-emerald-400' : 'text-red-400'
+          indicator.isPositive ? 'text-success' : 'text-destructive'
         }`}>
           {indicator.change}
         </span>
@@ -72,9 +72,9 @@ function TerminalPanel({
 }) {
   const headerStyles = {
     default: 'bg-muted/50 text-muted-foreground border-border/50',
-    'highlight-blue': 'bg-blue-500/20 text-blue-400 border-blue-500/50',
-    'highlight-amber': 'bg-amber-500/20 text-amber-400 border-amber-500/50',
-    'highlight-green': 'bg-green-500/20 text-green-400 border-green-500/50',
+    'highlight-blue': 'bg-muted/20 text-muted-foreground border-border',
+    'highlight-amber': 'bg-warning/20 text-warning border-warning/50',
+    'highlight-green': 'bg-success/20 text-success border-success/50',
   };
 
   return (
@@ -94,9 +94,9 @@ function TerminalPanel({
 function DIContractRow({ di }: { di: DIFutureContract }) {
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'short_term': return 'text-blue-400';
-      case 'one_year': return 'text-amber-400';
-      case 'macro': return 'text-purple-400';
+      case 'short_term': return 'text-muted-foreground';
+      case 'one_year': return 'text-warning';
+      case 'macro': return 'text-muted-foreground';
       default: return 'text-muted-foreground';
     }
   };
@@ -115,7 +115,7 @@ function DIContractRow({ di }: { di: DIFutureContract }) {
       <div className="flex items-center gap-2 font-mono">
         <span className="text-xs font-semibold text-foreground">{di.rate.toFixed(2)}%</span>
         <span className={`text-[10px] font-bold min-w-[40px] text-right ${
-          di.change > 0 ? 'text-red-400' : di.change < 0 ? 'text-emerald-400' : 'text-muted-foreground'
+          di.change > 0 ? 'text-destructive' : di.change < 0 ? 'text-success' : 'text-muted-foreground'
         }`}>
           {di.change > 0 ? '+' : ''}{(di.change * 100).toFixed(0)} bps
         </span>
@@ -135,7 +135,7 @@ function BrazilRatesPanel({ brazilRates }: { brazilRates: BrazilRatesData }) {
 
   return (
     <div className="border border-border/50 bg-card/30 h-full flex flex-col">
-      <div className="px-3 py-2 border-b bg-green-500/20 text-green-400 border-green-500/50 flex items-center justify-between gap-2">
+      <div className="px-3 py-2 border-b bg-success/20 text-success border-success/50 flex items-center justify-between gap-2">
         <h4 className="text-xs font-bold uppercase tracking-wider">🇧🇷 JUROS BRASIL</h4>
         <ManualStamp updatedAt={curve?.updated_at} />
       </div>
@@ -158,7 +158,7 @@ function BrazilRatesPanel({ brazilRates }: { brazilRates: BrazilRatesData }) {
             <div className="flex items-center gap-3 font-mono">
               <span className="text-sm font-semibold text-foreground">{brazilRates.cdsBrazil.value.toFixed(0)} bps</span>
               <span className={`text-xs font-bold min-w-[50px] text-right ${
-                brazilRates.cdsBrazil.changePercent > 0 ? 'text-red-400' : 'text-emerald-400'
+                brazilRates.cdsBrazil.changePercent > 0 ? 'text-destructive' : 'text-success'
               }`}>
                 {brazilRates.cdsBrazil.changePercent > 0 ? '+' : ''}{brazilRates.cdsBrazil.changePercent.toFixed(2)}%
               </span>
@@ -167,8 +167,8 @@ function BrazilRatesPanel({ brazilRates }: { brazilRates: BrazilRatesData }) {
         )}
 
         {/* Curva DI (manual) */}
-        <div className="px-2 py-1 bg-blue-500/10 border-b border-border/30 flex items-center justify-between">
-          <span className="text-[10px] font-bold text-blue-400 uppercase">📈 CURVA DI</span>
+        <div className="px-2 py-1 bg-muted/10 border-b border-border/30 flex items-center justify-between">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase">📈 CURVA DI</span>
           <ManualStamp updatedAt={curve?.updated_at} />
         </div>
         {rows.length === 0 ? (
@@ -196,8 +196,8 @@ function BrazilRatesPanel({ brazilRates }: { brazilRates: BrazilRatesData }) {
                   Spread ({analysis.longLabel} − {analysis.shortLabel})
                 </span>
                 <span className={`text-xs font-mono font-bold ${
-                  analysis.inclination === 'positive' ? 'text-amber-400' :
-                  analysis.inclination === 'negative' ? 'text-emerald-400' :
+                  analysis.inclination === 'positive' ? 'text-warning' :
+                  analysis.inclination === 'negative' ? 'text-success' :
                   'text-muted-foreground'
                 }`}>
                   {analysis.spread > 0 ? '+' : ''}{(analysis.spread * 100).toFixed(0)} bps
@@ -246,7 +246,7 @@ function SignalsPanel({
   gbpUsdBias: 'bullish' | 'bearish' | 'neutral';
 }) {
   const getColor = (bias: 'bullish' | 'bearish' | 'neutral') => {
-    return bias === 'bullish' ? 'text-emerald-400' : bias === 'bearish' ? 'text-red-400' : 'text-yellow-400';
+    return bias === 'bullish' ? 'text-success' : bias === 'bearish' ? 'text-destructive' : 'text-warning';
   };
 
   const getBiasLabel = (bias: 'bullish' | 'bearish' | 'neutral') => {
@@ -277,7 +277,7 @@ function SignalsPanel({
 
   return (
     <div className="border border-border/50 bg-card/30 h-full flex flex-col">
-      <div className="px-3 py-2 border-b bg-yellow-500/20 text-yellow-400 border-yellow-500/50">
+      <div className="px-3 py-2 border-b bg-warning/20 text-warning border-warning/50">
         <h4 className="text-xs font-bold uppercase tracking-wider">📊 ANÁLISE DE CORRELAÇÕES</h4>
       </div>
       <div className="flex-1 overflow-auto p-2">
@@ -401,8 +401,8 @@ export function DailyChecklist() {
         </CardHeader>
         <CardContent className="p-4">
           <div className="text-center py-8">
-            <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-3">
-              <RefreshCw className="h-6 w-6 text-amber-400" />
+            <div className="w-12 h-12 rounded-full bg-warning/20 flex items-center justify-center mx-auto mb-3">
+              <RefreshCw className="h-6 w-6 text-warning" />
             </div>
             <p className="text-sm text-muted-foreground mb-1 font-mono">Aguardando dados do mercado...</p>
             <p className="text-xs text-muted-foreground/70 mb-4">Rate limit ativo. Tentando novamente em breve.</p>
@@ -472,7 +472,7 @@ export function DailyChecklist() {
               <div className={`flex items-center gap-2 font-mono text-muted-foreground ${isFullscreen ? 'text-xs' : 'text-[10px]'}`}>
                 <span className="hidden sm:inline">Atualizado: {lastUpdate.toLocaleTimeString('pt-BR')}</span>
                 <span className={`px-2 py-1 rounded-md flex items-center gap-1.5 ${
-                  countdown <= 60 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-muted/50 border border-border/50'
+                  countdown <= 60 ? 'bg-warning/20 text-warning border border-warning/30' : 'bg-muted/50 border border-border/50'
                 }`}>
                   {isFetching ? (
                     <span className="flex items-center gap-1">

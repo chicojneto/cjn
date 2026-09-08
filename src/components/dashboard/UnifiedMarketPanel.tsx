@@ -121,12 +121,12 @@ function calculateTrend(current: number, previous: number | null): 'up' | 'down'
 
 // Category definitions
 const CATEGORIES = {
-  myAssets: { title: 'Meus Ativos', icon: Briefcase, color: 'text-amber-400' },
-  indices: { title: 'Índices', icon: BarChart3, color: 'text-blue-400' },
-  yields: { title: 'Juros EUA', icon: DollarSign, color: 'text-purple-400' },
-  volatility: { title: 'Volatilidade', icon: Activity, color: 'text-red-400' },
-  currencies: { title: 'Moedas', icon: DollarSign, color: 'text-green-400' },
-  commodities: { title: 'Commodities', icon: Wheat, color: 'text-orange-400' },
+  myAssets: { title: 'Meus Ativos', icon: Briefcase, color: 'text-warning' },
+  indices: { title: 'Índices', icon: BarChart3, color: 'text-muted-foreground' },
+  yields: { title: 'Juros EUA', icon: DollarSign, color: 'text-muted-foreground' },
+  volatility: { title: 'Volatilidade', icon: Activity, color: 'text-destructive' },
+  currencies: { title: 'Moedas', icon: DollarSign, color: 'text-success' },
+  commodities: { title: 'Commodities', icon: Wheat, color: 'text-muted-foreground' },
 } as const;
 
 const INDICES_MAPPING: Record<string, keyof typeof CATEGORIES> = {
@@ -320,9 +320,9 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
             variant="outline" 
             className={cn(
               'text-[10px] px-1.5',
-              asset.category === 'Commodity' && 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-              asset.category === 'Forex' && 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-              asset.category === 'Índice' && 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+              asset.category === 'Commodity' && 'bg-warning/20 text-warning border-warning/30',
+              asset.category === 'Forex' && 'bg-muted/20 text-muted-foreground border-border',
+              asset.category === 'Índice' && 'bg-muted/20 text-muted-foreground border-border',
             )}
           >
             {asset.category}
@@ -403,7 +403,7 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
         <div className="flex items-center gap-2">
           <div className="relative">
             <Activity className="h-5 w-5 text-primary" />
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-primary rounded-full animate-pulse" />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-primary rounded-full " />
           </div>
           <CardTitle className="text-lg">Painel de Mercados</CardTitle>
         </div>

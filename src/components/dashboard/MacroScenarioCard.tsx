@@ -289,8 +289,8 @@ export function MacroScenarioCard() {
   if (isLoading) {
     return (
       <div className="border border-border/50 bg-background">
-        <div className="py-2 px-3 border-b border-amber-500/50 bg-amber-500/20">
-          <h3 className="text-sm font-mono flex items-center gap-2 text-amber-400 font-bold uppercase tracking-wider">
+        <div className="py-2 px-3 border-b border-warning/50 bg-warning/20">
+          <h3 className="text-sm font-mono flex items-center gap-2 text-warning font-bold uppercase tracking-wider">
             <Zap className="h-4 w-4" />
             CENÁRIO MACRO DO DIA
           </h3>
@@ -314,8 +314,8 @@ export function MacroScenarioCard() {
   if (error || !data) {
     return (
       <div className="border border-border/50 bg-background">
-        <div className="py-2 px-3 border-b border-amber-500/50 bg-amber-500/20">
-          <h3 className="text-sm font-mono flex items-center gap-2 text-amber-400 font-bold uppercase tracking-wider">
+        <div className="py-2 px-3 border-b border-warning/50 bg-warning/20">
+          <h3 className="text-sm font-mono flex items-center gap-2 text-warning font-bold uppercase tracking-wider">
             <Zap className="h-4 w-4" />
             CENÁRIO MACRO DO DIA
           </h3>
@@ -342,20 +342,20 @@ export function MacroScenarioCard() {
 
   const sentimentConfig = {
     'risk-on': {
-      bg: 'bg-emerald-500/20 border-emerald-500/50',
-      text: 'text-emerald-400',
+      bg: 'bg-success/20 border-success/50',
+      text: 'text-success',
       icon: TrendingUp,
       label: 'RISK-ON'
     },
     'risk-off': {
-      bg: 'bg-red-500/20 border-red-500/50',
-      text: 'text-red-400',
+      bg: 'bg-destructive/20 border-destructive/50',
+      text: 'text-destructive',
       icon: TrendingDown,
       label: 'RISK-OFF'
     },
     neutral: {
-      bg: 'bg-yellow-500/20 border-yellow-500/50',
-      text: 'text-yellow-400',
+      bg: 'bg-warning/20 border-warning/50',
+      text: 'text-warning',
       icon: Minus,
       label: 'NEUTRO'
     },
@@ -372,9 +372,9 @@ export function MacroScenarioCard() {
     >
       <div className="border border-border/50 bg-background">
         {/* Terminal-style header */}
-        <div className="py-2 px-3 border-b border-amber-500/50 bg-amber-500/20">
+        <div className="py-2 px-3 border-b border-warning/50 bg-warning/20">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-mono flex items-center gap-2 text-amber-400 font-bold uppercase tracking-wider">
+            <h3 className="text-sm font-mono flex items-center gap-2 text-warning font-bold uppercase tracking-wider">
               <Zap className="h-4 w-4" />
               CENÁRIO MACRO DO DIA
             </h3>
@@ -411,7 +411,7 @@ export function MacroScenarioCard() {
                   transition={{ delay: idx * 0.05 }}
                   className="flex items-start gap-2"
                 >
-                  <span className="text-amber-400 mt-0.5 text-xs">•</span>
+                  <span className="text-warning mt-0.5 text-xs">•</span>
                   <p className="text-xs text-foreground/90 leading-relaxed font-mono">
                     {point}
                   </p>

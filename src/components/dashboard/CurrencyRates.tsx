@@ -70,14 +70,14 @@ export function CurrencyRates() {
   }, []);
 
   const getTrendIcon = (quote: CurrencyQuote) => {
-    if (quote.isPositive) return <TrendingUp className="h-4 w-4 text-emerald-400" />;
-    if (quote.isNegative) return <TrendingDown className="h-4 w-4 text-red-400" />;
+    if (quote.isPositive) return <TrendingUp className="h-4 w-4 text-success" />;
+    if (quote.isNegative) return <TrendingDown className="h-4 w-4 text-destructive" />;
     return <Minus className="h-4 w-4 text-muted-foreground" />;
   };
 
   const getChangeColor = (quote: CurrencyQuote) => {
-    if (quote.isPositive) return 'text-emerald-400';
-    if (quote.isNegative) return 'text-red-400';
+    if (quote.isPositive) return 'text-success';
+    if (quote.isNegative) return 'text-destructive';
     return 'text-muted-foreground';
   };
 

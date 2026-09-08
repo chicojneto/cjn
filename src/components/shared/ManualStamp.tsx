@@ -11,7 +11,7 @@ export function ManualStamp({ updatedAt, className = '' }: { updatedAt?: string 
   const stale = isStale(updatedAt);
   return (
     <span
-      className={`text-[9px] font-mono uppercase ${stale ? 'text-orange-400' : 'text-muted-foreground'} ${className}`}
+      className={`text-[9px] font-mono uppercase ${stale ? 'text-muted-foreground' : 'text-muted-foreground'} ${className}`}
       title={new Date(updatedAt).toLocaleString('pt-BR')}
     >
       {formatManualStamp(updatedAt)}

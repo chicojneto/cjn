@@ -226,7 +226,7 @@ export function MacroPulseBar() {
         
         {/* Live indicator */}
         <div className="ml-auto flex items-center gap-1.5 text-[10px] text-muted-foreground">
-          <Activity className="h-3 w-3 text-primary animate-pulse" />
+          <Activity className="h-3 w-3 text-primary " />
           <span className="font-mono">LIVE</span>
         </div>
       </div>

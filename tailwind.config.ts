@@ -14,18 +14,18 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       fontSize: {
-        'xs': ['0.875rem', { lineHeight: '1.25rem' }],
-        'sm': ['1rem', { lineHeight: '1.5rem' }],
-        'base': ['1.125rem', { lineHeight: '1.75rem' }],
-        'lg': ['1.25rem', { lineHeight: '1.875rem' }],
-        'xl': ['1.375rem', { lineHeight: '2rem' }],
-        '2xl': ['1.625rem', { lineHeight: '2.25rem' }],
-        '3xl': ['2rem', { lineHeight: '2.5rem' }],
-        '4xl': ['2.5rem', { lineHeight: '3rem' }],
+        'xs': ['0.8125rem', { lineHeight: '1.125rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['0.9375rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.0625rem', { lineHeight: '1.5rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.625rem' }],
+        '2xl': ['1.375rem', { lineHeight: '1.75rem' }],
+        '3xl': ['1.5rem', { lineHeight: '1.875rem' }],
+        '4xl': ['1.75rem', { lineHeight: '2.125rem' }],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -72,6 +72,19 @@ export default {
         bullish: "hsl(var(--bullish))",
         bearish: "hsl(var(--bearish))",
         neutral: "hsl(var(--neutral))",
+        brand: {
+          DEFAULT: "#C8913A",
+          soft: "rgba(200,145,58,0.14)",
+        },
+        up: {
+          DEFAULT: "#4FA37F",
+          soft: "rgba(79,163,127,0.14)",
+        },
+        down: {
+          DEFAULT: "#C9584F",
+          soft: "rgba(201,88,79,0.14)",
+        },
+        warn: "#D9A441",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -89,10 +102,10 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        'glow': '0 0 30px hsl(var(--primary) / 0.2)',
-        'glow-accent': '0 0 30px hsl(var(--accent) / 0.2)',
-        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.3)',
-        'elevated': '0 8px 30px -4px rgba(0, 0, 0, 0.4)',
+        'glow': 'none',
+        'glow-accent': 'none',
+        'soft': 'none',
+        'elevated': 'none',
       },
       keyframes: {
         "accordion-down": {

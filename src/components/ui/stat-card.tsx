@@ -72,8 +72,8 @@ export function StatCard({
       {/* Background gradient */}
       <div className={cn(
         "absolute inset-0 opacity-0 transition-opacity duration-300",
-        isPositive && "bg-gradient-to-br from-success/5 to-transparent group-hover:opacity-100",
-        isNegative && "bg-gradient-to-br from-destructive/5 to-transparent group-hover:opacity-100"
+        isPositive && "bg-card from-success/5 to-transparent group-hover:opacity-100",
+        isNegative && "bg-card from-destructive/5 to-transparent group-hover:opacity-100"
       )} />
 
       <div className="relative flex items-start justify-between">

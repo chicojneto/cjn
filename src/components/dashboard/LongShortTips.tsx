@@ -369,9 +369,9 @@ const categoryLabels = {
 };
 
 const categoryColors = {
-  forex: 'bg-blue-500/20 text-blue-400',
-  indices: 'bg-purple-500/20 text-purple-400',
-  commodities: 'bg-amber-500/20 text-amber-400',
+  forex: 'bg-muted/20 text-muted-foreground',
+  indices: 'bg-muted/20 text-muted-foreground',
+  commodities: 'bg-warning/20 text-warning',
 };
 
 const PRIORITY_IDS = ['win', 'wdo', 'xauusd', 'nasdaq', 'spx'];
@@ -392,8 +392,8 @@ function ConditionList({
         const iconClass =
           c.status === 'met'
             ? tone === 'long'
-              ? 'text-green-500'
-              : 'text-red-500'
+              ? 'text-success'
+              : 'text-destructive'
             : c.status === 'unmet'
             ? 'text-muted-foreground/40'
             : 'text-muted-foreground/60';
@@ -468,8 +468,8 @@ export function LongShortTips() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <div className="flex items-center gap-1">
-              <TrendingUp className="h-4 w-4 text-green-500" />
-              <TrendingDown className="h-4 w-4 text-red-500" />
+              <TrendingUp className="h-4 w-4 text-success" />
+              <TrendingDown className="h-4 w-4 text-destructive" />
             </div>
             Dicas Long/Short
           </CardTitle>
@@ -527,13 +527,13 @@ export function LongShortTips() {
 
         {/* Alerts Section */}
         {visibleAlerts.length > 0 && (
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 space-y-1">
+          <div className="bg-warning/10 border border-warning/30 rounded-lg p-3 space-y-1">
             <div className="flex items-center gap-2 mb-2">
-              <AlertTriangle className="h-4 w-4 text-amber-400" />
-              <span className="text-xs font-semibold text-amber-400">ALERTAS</span>
+              <AlertTriangle className="h-4 w-4 text-warning" />
+              <span className="text-xs font-semibold text-warning">ALERTAS</span>
             </div>
             {visibleAlerts.map((alert, index) => (
-              <p key={index} className="text-xs text-amber-300/80">
+              <p key={index} className="text-xs text-warning/80">
                 {alert.text}
                 <UpdatedStamp date={alert.updated} className="ml-2" />
               </p>
@@ -544,14 +544,14 @@ export function LongShortTips() {
         {/* Long Tips */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <TrendingUp className="h-4 w-4 text-green-500" />
-            <span className="text-sm font-semibold text-green-500">LONG {selectedAsset.symbol}</span>
+            <TrendingUp className="h-4 w-4 text-success" />
+            <span className="text-sm font-semibold text-success">LONG {selectedAsset.symbol}</span>
             <span className="font-mono text-xs text-muted-foreground">
               {longSummary.met} de {longSummary.total} condições ativas
               {longSummary.manual > 0 && ` · ${longSummary.manual} manuais`}
             </span>
           </div>
-          <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3">
+          <div className="bg-success/5 border border-success/20 rounded-lg p-3">
             <ConditionList items={longConds} tone="long" />
           </div>
         </div>
@@ -559,14 +559,14 @@ export function LongShortTips() {
         {/* Short Tips */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <TrendingDown className="h-4 w-4 text-red-500" />
-            <span className="text-sm font-semibold text-red-500">SHORT {selectedAsset.symbol}</span>
+            <TrendingDown className="h-4 w-4 text-destructive" />
+            <span className="text-sm font-semibold text-destructive">SHORT {selectedAsset.symbol}</span>
             <span className="font-mono text-xs text-muted-foreground">
               {shortSummary.met} de {shortSummary.total} condições ativas
               {shortSummary.manual > 0 && ` · ${shortSummary.manual} manuais`}
             </span>
           </div>
-          <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-3">
+          <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-3">
             <ConditionList items={shortConds} tone="short" />
           </div>
         </div>

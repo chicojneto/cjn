@@ -8,49 +8,49 @@ const layers = [
     icon: Activity,
     label: 'PIB',
     sublabel: 'Ritmo',
-    color: 'text-blue-400',
-    bgColor: 'bg-blue-500/10',
-    borderColor: 'border-blue-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border',
   },
   {
     icon: Thermometer,
     label: 'Inflação',
     sublabel: 'Temperatura',
-    color: 'text-orange-400',
-    bgColor: 'bg-orange-500/10',
-    borderColor: 'border-orange-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border',
   },
   {
     icon: Landmark,
     label: 'Juros',
     sublabel: 'Decisão',
-    color: 'text-purple-400',
-    bgColor: 'bg-purple-500/10',
-    borderColor: 'border-purple-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border',
   },
   {
     icon: BarChart3,
     label: 'Gráfico',
     sublabel: 'Fluxo',
-    color: 'text-emerald-400',
-    bgColor: 'bg-emerald-500/10',
-    borderColor: 'border-emerald-500/30',
+    color: 'text-success',
+    bgColor: 'bg-success/10',
+    borderColor: 'border-success/30',
   },
 ];
 
 const scenarios = [
-  { name: 'Goldilocks', condition: 'PIB↑ Inflação↓', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
-  { name: 'Superaquecimento', condition: 'PIB↑ Inflação↑', color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
-  { name: 'Desaceleração', condition: 'PIB↓ Inflação↓', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
-  { name: 'Estagflação', condition: 'PIB↓ Inflação↑', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' },
+  { name: 'Goldilocks', condition: 'PIB↑ Inflação↓', color: 'text-success', bg: 'bg-success/10', border: 'border-success/30' },
+  { name: 'Superaquecimento', condition: 'PIB↑ Inflação↑', color: 'text-muted-foreground', bg: 'bg-muted/10', border: 'border-border' },
+  { name: 'Desaceleração', condition: 'PIB↓ Inflação↓', color: 'text-muted-foreground', bg: 'bg-muted/10', border: 'border-border' },
+  { name: 'Estagflação', condition: 'PIB↓ Inflação↑', color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/30' },
 ];
 
 export function MacroFrameworkBanner() {
   return (
     <div className="border border-border/50 bg-background">
-      <div className="py-2 px-3 border-b border-blue-500/50 bg-blue-500/20">
+      <div className="py-2 px-3 border-b border-border bg-muted/20">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-blue-400">
+          <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-muted-foreground">
             📐 FRAMEWORK MACRO — 4 CAMADAS
           </h3>
           <NavLink to="/mapa-macro" className="flex items-center gap-1 text-[10px] font-mono text-muted-foreground hover:text-foreground transition-colors">
@@ -90,8 +90,8 @@ export function MacroFrameworkBanner() {
         </div>
 
         {/* Key rule */}
-        <div className="p-2 border border-amber-500/30 bg-amber-500/10">
-          <div className="text-[10px] font-mono text-amber-400">
+        <div className="p-2 border border-warning/30 bg-warning/10">
+          <div className="text-[10px] font-mono text-warning">
             💡 "Esse PIB muda a trajetória da inflação e dos juros?" — Se não, o mercado ignora.
           </div>
         </div>

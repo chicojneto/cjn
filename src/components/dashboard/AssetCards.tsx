@@ -10,9 +10,9 @@ interface AssetCardsProps {
 }
 
 const categoryColors: Record<string, string> = {
-  'Commodity': 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  'Forex': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  'Índice': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+  'Commodity': 'bg-warning/20 text-warning border-warning/30',
+  'Forex': 'bg-muted/20 text-muted-foreground border-border',
+  'Índice': 'bg-muted/20 text-muted-foreground border-border',
 };
 
 const assetIcons: Record<string, string> = {
@@ -46,7 +46,7 @@ export function AssetCards({ onAssetSelect, selectedAsset }: AssetCardsProps) {
           onClick={() => onAssetSelect(selectedAsset === asset.id ? null : asset.id)}
           className={cn(
             'p-4 cursor-pointer transition-all duration-200 hover:scale-105 glass-card',
-            selectedAsset === asset.id && 'ring-2 ring-primary animate-pulse-glow'
+            selectedAsset === asset.id && 'ring-2 ring-primary -glow'
           )}
         >
           <div className="flex flex-col items-center text-center gap-2">

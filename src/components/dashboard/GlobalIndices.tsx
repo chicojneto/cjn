@@ -237,7 +237,7 @@ export function GlobalIndices() {
         <div className="flex items-center gap-2">
           <div className="relative">
             <Activity className="h-5 w-5 text-primary" />
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-primary rounded-full animate-pulse" />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-primary rounded-full " />
           </div>
           <CardTitle className="text-lg">Mercados Globais</CardTitle>
         </div>

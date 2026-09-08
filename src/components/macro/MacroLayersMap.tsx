@@ -21,9 +21,9 @@ const layers: MacroLayer[] = [
     title: 'PIB',
     subtitle: 'Ritmo da Economia',
     icon: Activity,
-    color: 'text-blue-400',
-    bgColor: 'bg-blue-500/10',
-    borderColor: 'border-blue-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border',
     questions: [
       'A economia está acelerando ou freando?',
       'O crescimento vem de consumo/investimento ou gasto estatal?',
@@ -45,9 +45,9 @@ const layers: MacroLayer[] = [
     title: 'INFLAÇÃO',
     subtitle: 'Temperatura dos Preços',
     icon: Thermometer,
-    color: 'text-orange-400',
-    bgColor: 'bg-orange-500/10',
-    borderColor: 'border-orange-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border',
     questions: [
       'O crescimento está gerando pressão nos preços?',
       'A inflação é de demanda, custos ou inercial?',
@@ -69,9 +69,9 @@ const layers: MacroLayer[] = [
     title: 'JUROS',
     subtitle: 'Decisão do Poder',
     icon: Landmark,
-    color: 'text-purple-400',
-    bgColor: 'bg-purple-500/10',
-    borderColor: 'border-purple-500/30',
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted/10',
+    borderColor: 'border-border',
     questions: [
       'O Banco Central precisa intervir?',
       'Qual a direção e expectativa dos juros?',
@@ -93,9 +93,9 @@ const layers: MacroLayer[] = [
     title: 'GRÁFICO',
     subtitle: 'Onde o Dinheiro Vai',
     icon: BarChart3,
-    color: 'text-emerald-400',
-    bgColor: 'bg-emerald-500/10',
-    borderColor: 'border-emerald-500/30',
+    color: 'text-success',
+    bgColor: 'bg-success/10',
+    borderColor: 'border-success/30',
     questions: [
       'O fluxo confirma a tese macro?',
       'A amplitude do mercado é saudável?',
@@ -119,8 +119,8 @@ export function MacroLayersMap() {
     <div className="space-y-4">
       {/* Header */}
       <div className="border border-border/50 bg-background">
-        <div className="py-2 px-3 border-b border-blue-500/50 bg-blue-500/20">
-          <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-blue-400">
+        <div className="py-2 px-3 border-b border-border bg-muted/20">
+          <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-muted-foreground">
             📐 MAPA DAS 4 CAMADAS MACRO
           </h3>
         </div>

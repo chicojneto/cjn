@@ -6,7 +6,8 @@ import { AppSidebar } from './AppSidebar';
 import { MobileNav } from './MobileNav';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { useDeviceType } from '@/hooks/useDeviceType';
-import { Menu, RefreshCw, Search, Coffee } from 'lucide-react';
+import { Menu, RefreshCw, Search } from 'lucide-react';
+import { CoffeeCandleMark, Wordmark } from '@/components/brand/Logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { NavLink } from 'react-router-dom';
@@ -57,12 +58,8 @@ export function AppLayout({ children }: AppLayoutProps) {
 
               {isMobile && (
                 <NavLink to="/" className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-                    <Coffee className="h-4 w-4 text-accent-foreground" />
-                  </div>
-                  <span className="text-sm font-bold text-foreground">
-                    PullBack<span className="text-accent">CC</span>
-                  </span>
+                  <CoffeeCandleMark className="h-6 w-6 text-brand" />
+                  <Wordmark className="text-[15px]" />
                 </NavLink>
               )}
               

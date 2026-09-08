@@ -12,7 +12,7 @@ const cardVariants = cva(
         elevated: "bg-card/80 border-border/40 backdrop-blur-xl shadow-elevated",
         glass: "bg-card/40 border-border/30 backdrop-blur-lg",
         outline: "bg-transparent border-border/50",
-        glow: "bg-card/60 border-primary/30 shadow-glow backdrop-blur-sm",
+        glow: "bg-card/60 border-primary/30  backdrop-blur-sm",
       },
       interactive: {
         true: "hover:border-primary/40 hover:shadow-soft hover:-translate-y-0.5 cursor-pointer",
