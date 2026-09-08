@@ -116,3 +116,15 @@ export function formatChangeFields(d: DailyChange) {
     quoteTime: d.quoteTime,
   };
 }
+
+// Classificação automática pelo símbolo do Yahoo
+export function classifyYahoo(yahooSymbol: string): AssetClass {
+  const s = yahooSymbol.toUpperCase();
+  if (s.endsWith('-USD')) return 'crypto';
+  if (s.endsWith('=X')) return 'currency';
+  if (s.endsWith('=F')) return 'commodity';
+  if (['^TNX', '^IRX', '^TYX', '^MOVE'].includes(s) || s.startsWith('DI1') || s.includes('=.EC')) return 'rate';
+  if (s === 'DX-Y.NYB' ) return 'currency';
+  if (s === '^VIX') return 'rate';
+  return 'index';
+}
