@@ -374,17 +374,18 @@ const categoryColors = {
 
 const PRIORITY_IDS = ['win', 'wdo', 'xauusd', 'nasdaq', 'spx'];
 
+type DatedCondition = EvaluatedCondition & { updated: string };
+
 function ConditionList({
   items,
   tone,
 }: {
-  items: EvaluatedCondition[];
+  items: DatedCondition[];
   tone: 'long' | 'short';
 }) {
   return (
     <ul className="space-y-1.5">
       {items.map((c, index) => {
-        const isNew = c.text.startsWith('[NOVO]');
         const Icon = c.status === 'met' ? CheckCircle2 : c.status === 'unmet' ? Circle : PenLine;
         const iconClass =
           c.status === 'met'
@@ -400,7 +401,7 @@ function ConditionList({
               className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${iconClass}`}
               aria-label={c.status === 'met' ? 'condição atendida' : c.status === 'unmet' ? 'condição não atendida' : 'avaliação manual'}
             />
-            <span className={isNew ? 'text-amber-400' : c.status === 'met' ? 'text-foreground' : 'text-muted-foreground'}>
+            <span className={c.status === 'met' ? 'text-foreground' : 'text-muted-foreground'}>
               {c.text}
               {c.detail && (
                 <span className="ml-1.5 font-mono text-xs text-muted-foreground">{c.detail}</span>
@@ -408,6 +409,7 @@ function ConditionList({
               {c.status === 'manual' && (
                 <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted-foreground/70">manual</span>
               )}
+              <UpdatedStamp date={c.updated} className="ml-2" />
             </span>
           </li>
         );
@@ -421,6 +423,7 @@ export function LongShortTips() {
     assetTips.find((a) => a.id === 'win') ?? assetTips[0]
   );
   const [showOthers, setShowOthers] = useState(false);
+  const [showOld, setShowOld] = useState(false);
   const { data } = useMarketCorrelations();
 
   const priorityTips = PRIORITY_IDS
@@ -428,8 +431,20 @@ export function LongShortTips() {
     .filter((a): a is AssetTip => Boolean(a));
   const otherTips = assetTips.filter((a) => !PRIORITY_IDS.includes(a.id));
 
-  const longConds = evaluateConditions(selectedAsset.long, data);
-  const shortConds = evaluateConditions(selectedAsset.short, data);
+  const toDated = (tips: Tip[]): DatedCondition[] =>
+    tips.map((t) => ({ ...evaluateCondition(t.text, data), updated: t.updated }));
+
+  const allLong = toDated(selectedAsset.long);
+  const allShort = toDated(selectedAsset.short);
+  const alerts = selectedAsset.alerts ?? [];
+  const hiddenCount =
+    [...allLong, ...allShort].filter((c) => isArchived(c.updated)).length +
+    alerts.filter((a) => isArchived(a.updated)).length;
+
+  const visible = (list: DatedCondition[]) => (showOld ? list : list.filter((c) => !isArchived(c.updated)));
+  const longConds = visible(allLong);
+  const shortConds = visible(allShort);
+  const visibleAlerts = showOld ? alerts : alerts.filter((a) => !isArchived(a.updated));
   const longSummary = summarize(longConds);
   const shortSummary = summarize(shortConds);
 
