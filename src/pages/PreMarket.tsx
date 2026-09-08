@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
+import { GexPanel } from '@/components/premarket/GexPanel';
 
 const FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/gex-api`;
 
@@ -52,7 +53,15 @@ const STATUS_MAP: Record<string, { text: string; bg: string; border: string; fg:
   },
 };
 
+type TabId = 'win' | 'gold' | 'nasdaq';
+const TABS: { id: TabId; label: string }[] = [
+  { id: 'win', label: 'WIN' },
+  { id: 'gold', label: 'OURO' },
+  { id: 'nasdaq', label: 'NASDAQ' },
+];
+
 export default function PreMarket() {
+  const [tab, setTab] = useState<TabId>('win');
   const [data, setData] = useState<RadarData | null>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
@@ -148,6 +157,27 @@ export default function PreMarket() {
       {loading && !data && (
         <div className="mt-5 text-[11px] tracking-widest text-slate-500">CARREGANDO RADAR…</div>
       )}
+
+      <section className="mt-8">
+        <h2 className="mb-3 text-sm font-bold tracking-[0.18em] text-slate-100">MAPA GEX</h2>
+        <div className="mb-4 flex gap-2">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className="border px-4 py-2 text-[11px] font-bold tracking-[0.14em] transition-colors"
+              style={
+                tab === t.id
+                  ? { borderColor: '#0e7c5b', color: '#3ddc9a', background: 'rgba(14,124,91,0.16)' }
+                  : { borderColor: '#1f2937', color: '#64748b', background: '#141b2b' }
+              }
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <GexPanel key={tab} preset={tab} />
+      </section>
     </div>
   );
 }
