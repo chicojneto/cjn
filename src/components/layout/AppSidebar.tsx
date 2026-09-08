@@ -70,18 +70,21 @@ export function AppSidebar() {
             <SidebarMenu>
               {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
+                  <SidebarMenuButton
+                    asChild
                     isActive={isActive(item.url)}
                     tooltip={item.title}
+                    className="hover:bg-transparent hover:text-inherit data-[active=true]:bg-transparent data-[active=true]:text-inherit"
                   >
-                    <NavLink 
+                    <NavLink
                       to={item.url}
+                      end
+                      onClick={(e) => e.currentTarget.blur()}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
-                        isActive(item.url) 
-                          ? "bg-primary/15 text-primary border border-primary/30" 
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        isActive(item.url)
+                          ? "bg-primary/15 text-primary border border-primary/30"
+                          : "text-muted-foreground md:hover:text-foreground md:hover:bg-muted/50"
                       )}
                     >
                       <item.icon className="h-4 w-4 shrink-0" />
@@ -90,6 +93,7 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
