@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { 
   BookOpen, 
   ChevronDown, 
@@ -288,46 +288,54 @@ export function TradingStrategies() {
           </div>
         </div>
 
-        <ScrollArea className="h-[280px]">
-          <div className="space-y-2 pr-4">
-            {selectedStrategy.steps.map((step, index) => (
-              step ? (
-                <div 
-                  key={index}
-                  className={cn(
-                    'p-3 rounded-lg border transition-all',
-                    step.startsWith('→') 
-                      ? 'bg-primary/10 border-primary/30 pl-6' 
-                      : step.startsWith('[NOVO]') || step.startsWith('[RISCO]')
-                      ? 'bg-amber-500/10 border-amber-500/30'
-                      : step.startsWith('⚠️') || step.startsWith('📊')
-                      ? 'bg-rose-500/10 border-rose-500/30'
-                      : 'bg-secondary/30 border-border/30'
-                  )}
-                >
-                  <div className="flex items-start gap-2">
-                    {!step.startsWith('→') && !step.startsWith('⚠️') && !step.startsWith('📊') && (
-                      <span className="text-xs font-mono text-muted-foreground shrink-0 mt-0.5">
-                        {index + 1}.
-                      </span>
+        {(() => {
+          let stepNumber = 0;
+          return (
+            <div className="space-y-2">
+              {selectedStrategy.steps.map((step, index) => {
+                if (!step) return <div key={index} className="h-2" />;
+                const isArrow = step.startsWith('→');
+                const isAlert = step.startsWith('⚠️') || step.startsWith('📊');
+                const numbered = !isArrow && !isAlert;
+                if (numbered) stepNumber += 1;
+                const currentNumber = stepNumber;
+                return (
+                  <div
+                    key={index}
+                    className={cn(
+                      'p-3 rounded-lg border transition-all',
+                      isArrow
+                        ? 'bg-primary/10 border-primary/30 pl-6'
+                        : step.startsWith('[NOVO]') || step.startsWith('[RISCO]')
+                        ? 'bg-amber-500/10 border-amber-500/30'
+                        : isAlert
+                        ? 'bg-rose-500/10 border-rose-500/30'
+                        : 'bg-secondary/30 border-border/30'
                     )}
-                    <p className={cn(
-                      'text-sm',
-                      step.startsWith('→') && 'text-primary font-medium',
-                      step.includes('DECISÃO') && 'font-semibold text-green-400',
-                      (step.startsWith('[NOVO]') || step.startsWith('[RISCO]')) && 'text-amber-400',
-                      (step.includes('LONG') || step.includes('SHORT')) && 'font-medium'
-                    )}>
-                      {step}
-                    </p>
+                  >
+                    <div className="flex items-start gap-2">
+                      {numbered && (
+                        <span className="text-xs font-mono text-muted-foreground shrink-0 mt-0.5">
+                          {currentNumber}.
+                        </span>
+                      )}
+                      <p className={cn(
+                        'text-sm',
+                        isArrow && 'text-primary font-medium',
+                        step.includes('DECISÃO') && 'font-semibold text-green-400',
+                        (step.startsWith('[NOVO]') || step.startsWith('[RISCO]')) && 'text-amber-400',
+                        (step.includes('LONG') || step.includes('SHORT')) && 'font-medium'
+                      )}>
+                        {step}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div key={index} className="h-2" />
-              )
-            ))}
-          </div>
-        </ScrollArea>
+                );
+              })}
+            </div>
+          );
+        })()}
+
 
         {/* Dica de Ouro Atualizada */}
         <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
