@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, Activity, Globe, AlertTriangle, Clock } from 'lucide-react';
 import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
+import { useRegimeDoDia } from '@/hooks/useRegimeDoDia';
+import type { ViesWIN } from '@/lib/regimeDoDia';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -169,7 +171,7 @@ export function MacroPulseBar() {
     );
   }
 
-  const riskSentiment = getRiskSentiment(data);
+  
 
   return (
     <motion.div 
@@ -214,8 +216,8 @@ export function MacroPulseBar() {
         
         <div className="h-6 w-px bg-border/50 mx-1" />
         
-        {/* Risk Sentiment */}
-        <RiskSentiment sentiment={riskSentiment} />
+        {/* Viés WIN (fonte única: calcularRegimeDoDia) */}
+        <WinBiasBadge vies={regime.viesWIN} />
         
         <div className="h-6 w-px bg-border/50 mx-1" />
         
