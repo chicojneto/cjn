@@ -58,54 +58,19 @@ interface StockQuote {
 }
 
 async function fetchStockQuote(config: StockConfig): Promise<StockQuote | null> {
-  try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(config.yahooSymbol)}?interval=1d&range=5d`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      },
-    });
-    
-    if (!response.ok) {
-      console.log(`Yahoo failed for ${config.symbol}: ${response.status}`);
-      return null;
-    }
-    
-    const data = await response.json();
-    const result = data.chart?.result?.[0];
-    
-    if (!result) return null;
-    
-    const meta = result.meta;
-    const price = meta.regularMarketPrice;
-    const previousClose = meta.previousClose || meta.chartPreviousClose;
-    const change = price - previousClose;
-    const changePercent = (change / previousClose) * 100;
-    
-    // Format price based on market
-    const currency = config.market === 'B3' ? 'BRL' : 'USD';
-    const locale = config.market === 'B3' ? 'pt-BR' : 'en-US';
-    
-    return {
-      symbol: config.symbol,
-      name: config.name,
-      market: config.market,
-      price,
-      priceFormatted: price.toLocaleString(locale, { 
-        minimumFractionDigits: 2, 
-        maximumFractionDigits: 2 
-      }),
-      changeValue: change,
-      changePercent: changePercent >= 0 ? `+${changePercent.toFixed(2)}%` : `${changePercent.toFixed(2)}%`,
-      changePercentValue: changePercent,
-      isPositive: change > 0,
-      isNegative: change < 0,
-    };
-  } catch (error) {
-    console.error(`Error fetching ${config.symbol}:`, error);
-    return null;
-  }
+  const d = await fetchDailyChange(config.yahooSymbol, 'index');
+  if (!d) return null;
+
+  const locale = config.market === 'B3' ? 'pt-BR' : 'en-US';
+
+  return {
+    symbol: config.symbol,
+    name: config.name,
+    market: config.market,
+    price: d.price,
+    priceFormatted: d.price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+    ...formatChangeFields(d),
+  } as StockQuote;
 }
 
 serve(async (req) => {

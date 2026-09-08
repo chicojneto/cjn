@@ -38,57 +38,31 @@ interface AssetQuote {
   timestamp: string | null;
 }
 
+function classify(symbol: string, category: string): AssetClass {
+  const c = category.toLowerCase();
+  if (c.includes('forex') || c.includes('moeda') || symbol.includes('/')) return 'currency';
+  if (c.includes('commod')) return 'commodity';
+  if (c.includes('crypto') || c.includes('cripto')) return 'crypto';
+  if (/US\d+Y|DI1/.test(symbol)) return 'rate';
+  return 'index';
+}
+
 async function fetchQuoteFromYahoo(symbol: string, name: string, category: string): Promise<AssetQuote | null> {
   const yahooSymbol = YAHOO_SYMBOLS[symbol] || symbol;
-  
-  try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=5d`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      },
-    });
-    
-    if (!response.ok) {
-      console.log(`Yahoo failed for ${symbol}: ${response.status}`);
-      return null;
-    }
-    
-    const data = await response.json();
-    const result = data.chart?.result?.[0];
-    
-    if (!result) return null;
-    
-    const meta = result.meta;
-    const price = meta.regularMarketPrice;
-    const previousClose = meta.previousClose || meta.chartPreviousClose;
-    const change = price - previousClose;
-    const changePercent = (change / previousClose) * 100;
-    
-    // Determine decimal places based on category
-    let decimals = 2;
-    if (category === 'Forex' || symbol.includes('/')) {
-      decimals = 4;
-    }
-    
-    return {
-      symbol,
-      name,
-      category,
-      price,
-      priceFormatted: price.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
-      changeValue: change,
-      changePercent: changePercent >= 0 ? `+${changePercent.toFixed(2)}%` : `${changePercent.toFixed(2)}%`,
-      changePercentValue: changePercent,
-      isPositive: change > 0,
-      isNegative: change < 0,
-      timestamp: new Date().toISOString(),
-    };
-  } catch (error) {
-    console.error(`Yahoo error for ${symbol}:`, error);
-    return null;
-  }
+  const d = await fetchDailyChange(yahooSymbol, classify(symbol, category));
+  if (!d) return null;
+
+  const decimals = category === 'Forex' || symbol.includes('/') ? 4 : 2;
+
+  return {
+    symbol,
+    name,
+    category,
+    price: d.price,
+    priceFormatted: d.price.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
+    ...formatChangeFields(d),
+    timestamp: new Date().toISOString(),
+  } as AssetQuote;
 }
 
 serve(async (req) => {
