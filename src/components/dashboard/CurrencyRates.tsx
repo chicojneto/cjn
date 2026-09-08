@@ -193,7 +193,7 @@ export function CurrencyRates() {
                       {quote.change}
                     </td>
                     <td className={`text-right py-2 px-1 font-mono ${getChangeColor(quote)}`}>
-                      {quote.changePercent}
+                      {<span className="cursor-help" title={(quote as any).isSuspicious ? "dado suspeito" : ((quote as any).referenceDate ? "Referência: fechamento de " + new Date((quote as any).referenceDate).toLocaleString("pt-BR") : undefined)}>{quote.changePercent}</span>}
                     </td>
                     <td className="text-center py-2 px-1">
                       {getTrendIcon(quote)}
@@ -232,7 +232,7 @@ export function CurrencyRates() {
                       {quote.change}
                     </td>
                     <td className={`text-right py-2 px-1 font-mono ${getChangeColor(quote)}`}>
-                      {quote.changePercent}
+                      {<span className="cursor-help" title={(quote as any).isSuspicious ? "dado suspeito" : ((quote as any).referenceDate ? "Referência: fechamento de " + new Date((quote as any).referenceDate).toLocaleString("pt-BR") : undefined)}>{quote.changePercent}</span>}
                     </td>
                     <td className="text-center py-2 px-1">
                       {getTrendIcon(quote)}

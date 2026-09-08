@@ -270,7 +270,7 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
               "font-mono text-xs",
               quote.isPositive ? "text-primary" : quote.isNegative ? "text-destructive" : "text-muted-foreground"
             )}>
-              {quote.changePercent}
+              {<span className="cursor-help" title={(quote as any).isSuspicious ? "dado suspeito" : ((quote as any).referenceDate ? "Referência: fechamento de " + new Date((quote as any).referenceDate).toLocaleString("pt-BR") : undefined)}>{quote.changePercent}</span>}
             </p>
           </div>
         </div>
@@ -313,7 +313,7 @@ export function UnifiedMarketPanel({ onAssetSelect, selectedAsset }: UnifiedMark
               "font-mono text-xs",
               asset.isPositive ? "text-primary" : asset.isNegative ? "text-destructive" : "text-muted-foreground"
             )}>
-              {asset.changePercent}
+              {<span className="cursor-help" title={(asset as any).isSuspicious ? "dado suspeito" : ((asset as any).referenceDate ? "Referência: fechamento de " + new Date((asset as any).referenceDate).toLocaleString("pt-BR") : undefined)}>{asset.changePercent}</span>}
             </p>
           </div>
           <Badge 
