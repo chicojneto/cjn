@@ -150,44 +150,10 @@ function getVixLevel(vix: number): 'low' | 'medium' | 'high' {
   return 'high';
 }
 
-function getRiskSentiment(data: ReturnType<typeof useMarketCorrelations>['data']): 'risk-on' | 'risk-off' | 'neutral' {
-  if (!data) return 'neutral';
-  
-  let score = 0;
-  
-  // VIX analysis
-  if (data.vix) {
-    if (data.vix.price < 15) score += 2;
-    else if (data.vix.price > 25) score -= 2;
-    if (data.vix.changePercent < -5) score += 1;
-    else if (data.vix.changePercent > 5) score -= 1;
-  }
-  
-  // DXY analysis (strong dollar = risk-off)
-  if (data.dxy) {
-    if (data.dxy.changePercent > 0.5) score -= 1;
-    else if (data.dxy.changePercent < -0.5) score += 1;
-  }
-  
-  // US 10Y Yields
-  if (data.us10y) {
-    if (data.us10y.changePercent > 2) score -= 1;
-    else if (data.us10y.changePercent < -2) score += 1;
-  }
-  
-  // S&P 500 Futures
-  if (data.sp500Futures) {
-    if (data.sp500Futures.changePercent > 0.5) score += 1;
-    else if (data.sp500Futures.changePercent < -0.5) score -= 1;
-  }
-  
-  if (score >= 2) return 'risk-on';
-  if (score <= -2) return 'risk-off';
-  return 'neutral';
-}
-
 export function MacroPulseBar() {
   const { data, isLoading } = useMarketCorrelations();
+  const { regime } = useRegimeDoDia();
+
 
   if (isLoading) {
     return (
