@@ -18,11 +18,51 @@ import {
   Flame,
   Landmark,
   BarChart3,
-  Shield
+  Shield,
+  Percent,
+  LineChart,
+  Globe2,
+  Layers
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const fundamentals = [
+  {
+    id: 'juro-real',
+    title: 'Juro real (DFII10)',
+    icon: Percent,
+    color: 'text-emerald-400',
+    bgColor: 'bg-emerald-500/20',
+    description: 'Conteúdo a ser preenchido.',
+    keyPoints: ['Conteúdo a ser preenchido.']
+  },
+  {
+    id: 'curva-di',
+    title: 'Curva DI',
+    icon: LineChart,
+    color: 'text-sky-400',
+    bgColor: 'bg-sky-500/20',
+    description: 'Conteúdo a ser preenchido.',
+    keyPoints: ['Conteúdo a ser preenchido.']
+  },
+  {
+    id: 'fluxo-ewz',
+    title: 'Fluxo estrangeiro / EWZ',
+    icon: Globe2,
+    color: 'text-teal-400',
+    bgColor: 'bg-teal-500/20',
+    description: 'Conteúdo a ser preenchido.',
+    keyPoints: ['Conteúdo a ser preenchido.']
+  },
+  {
+    id: 'gex',
+    title: 'Posicionamento de opções (GEX)',
+    icon: Layers,
+    color: 'text-fuchsia-400',
+    bgColor: 'bg-fuchsia-500/20',
+    description: 'Conteúdo a ser preenchido.',
+    keyPoints: ['Conteúdo a ser preenchido.']
+  },
   {
     id: 'dxy',
     title: 'DXY (Índice do Dólar)',
