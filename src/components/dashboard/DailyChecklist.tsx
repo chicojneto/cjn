@@ -5,6 +5,8 @@ import { useMarketCorrelations, CorrelationAnalysis, BrazilRatesData, DIFutureCo
 import { Button } from '@/components/ui/button';
 import { useDiCurve, analyzeManualCurve, DI_FIELDS } from '@/hooks/useDiCurve';
 import { ManualStamp } from '@/components/shared/ManualStamp';
+import { useRegimeDoDia } from '@/hooks/useRegimeDoDia';
+import { viesToBias } from '@/lib/regimeDoDia';
 
 interface MarketIndicator {
   label: string;
@@ -317,6 +319,8 @@ const AUTO_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
 
 export function DailyChecklist() {
   const { data, isLoading, error, refetch, isFetching } = useMarketCorrelations();
+  const { regime: dia } = useRegimeDoDia();
+  const winBiasDia = viesToBias(dia.viesWIN);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState(15 * 60); // 15 minutes in seconds
   const [isFullscreen, setIsFullscreen] = useState(false);
