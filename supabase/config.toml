@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.analyze-daily-correlations]
 verify_jwt = false
+
+[functions.gex-api]
+verify_jwt = false
