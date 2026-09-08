@@ -52,6 +52,11 @@ const App = () => (
               <CheckList />
             </AppLayout>
           } />
+          <Route path="/pre-market" element={
+            <AppLayout>
+              <PreMarket />
+            </AppLayout>
+          } />
           <Route path="/playbook" element={
             <AppLayout>
               <Playbook />
