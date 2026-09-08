@@ -24,11 +24,14 @@ import {
   Globe
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { UpdatedStamp } from '@/components/shared/UpdatedStamp';
+import { isArchived } from '@/lib/contentFreshness';
 
 const strategies = [
   {
     id: 1,
     title: 'Análise Multi-Indicador Forex',
+    updated: '2026-08-05',
     icon: TrendingUp,
     color: 'text-blue-400',
     bgColor: 'bg-blue-500/20',
@@ -38,9 +41,9 @@ const strategies = [
       'Compare yields: diferencial de juros entre países',
       'Veja VIX (<15 calmo, 15-20 atenção, 20-25 elevado, >25 stress)',
       'Confira correlações: pares relacionados confirmam?',
-      '[NOVO] Polymarket: probabilidade de eventos geopolíticos?',
-      '[NOVO] HYG/JNK: crédito estável ou caindo?',
-      '[NOVO] BTC: canário para NASDAQ/risk assets',
+      'Polymarket: probabilidade de eventos geopolíticos?',
+      'HYG/JNK: crédito estável ou caindo?',
+      'BTC: canário para NASDAQ/risk assets',
       'Análise técnica no par específico',
       '→ DECISÃO: Se todos os fatores apontam na mesma direção = convicção alta'
     ]
@@ -48,6 +51,7 @@ const strategies = [
   {
     id: 2,
     title: 'Sentimento de Risco (Risk-On/Off)',
+    updated: '2026-08-05',
     icon: AlertTriangle,
     color: 'text-amber-400',
     bgColor: 'bg-amber-500/20',
@@ -60,7 +64,7 @@ const strategies = [
       '→ VIX > 25 + S&P caindo + Fuga para qualidade',
       '→ LONG JPY, CHF, Ouro / SHORT AUD, NZD, Ações',
       '',
-      '[NOVO] AI ROTATION (Fev/2026):',
+      'AI ROTATION (Fev/2026):',
       '→ VIX 20-25 + S&P caindo + mas staples/utilities subindo',
       '→ NÃO é risk-off clássico, é repricing setorial de AI',
       '→ WIN pode ficar lateral. Cuidado com sinais mistos!'
@@ -69,12 +73,13 @@ const strategies = [
   {
     id: 3,
     title: 'Commodities Energéticas',
+    updated: '2026-08-05',
     icon: Flame,
     color: 'text-orange-400',
     bgColor: 'bg-orange-500/20',
     steps: [
       'Verifique: Relatório EIA, decisões OPEC+, dados China',
-      '[NOVO] ALERTA IRÃ: Tensões EUA-Irã = fator geopolítico #1',
+      'ALERTA IRÃ: Tensões EUA-Irã = fator geopolítico #1',
       '→ Polymarket: probabilidade de ataque (55% até junho/2026)',
       '→ Se escalar: petróleo dispara, CAD sobe, inflação volta',
       'Correlações: DXY (inverso), USD/CAD (inverso), S&P 500 (positivo)',
@@ -86,6 +91,7 @@ const strategies = [
   {
     id: 4,
     title: 'Commodities Agrícolas',
+    updated: '2026-08-05',
     icon: Wheat,
     color: 'text-green-400',
     bgColor: 'bg-green-500/20',
@@ -98,14 +104,15 @@ const strategies = [
   {
     id: 5,
     title: 'WIN (Ibovespa Futuro)',
+    updated: '2026-08-05',
     icon: BarChart3,
     color: 'text-purple-400',
     bgColor: 'bg-purple-500/20',
     steps: [
       'Confira: S&P 500, commodities (petróleo, minério), China (HK50)',
-      '[NOVO] Fluxo gringo: monitorar EWZ (ETF Brasil NY) diariamente',
-      '[NOVO] Ibovespa em ~182k pts - fluxo estrangeiro massivo',
-      '[NOVO] IPCA-15 desacelerando = espaço para cortes Selic',
+      'Fluxo gringo: monitorar EWZ (ETF Brasil NY) diariamente',
+      'Ibovespa em ~182k pts - fluxo estrangeiro massivo',
+      'IPCA-15 desacelerando = espaço para cortes Selic',
       '[RISCO] Selloff tech/AI nos EUA pode secar fluxo → WIN sofre',
       '[RISCO] Eleições 2026 já no radar - polarização pode provocar saída',
       '',
@@ -116,15 +123,16 @@ const strategies = [
   {
     id: 6,
     title: 'WDO (Dólar Futuro)',
+    updated: '2026-08-05',
     icon: DollarSign,
     color: 'text-emerald-400',
     bgColor: 'bg-emerald-500/20',
     steps: [
       'Confira: DXY, S&P 500 (inverso), commodities (inverso)',
-      '[NOVO] Dólar/Real: R$5.20-5.30, menor em 2 anos',
-      '[NOVO] Se Irã escalar: dólar sobe contra TODAS moedas EM',
-      '[NOVO] PTAX: dias 29/30/último útil = distorções',
-      '[NOVO] Cupom cambial (DDI-DI): indicador de pressão cambial real',
+      'Dólar/Real: R$5.20-5.30, menor em 2 anos',
+      'Se Irã escalar: dólar sobe contra TODAS moedas EM',
+      'PTAX: dias 29/30/último útil = distorções',
+      'Cupom cambial (DDI-DI): indicador de pressão cambial real',
       '',
       'LONG WDO: DXY forte + risk-off + Irã escala + commodities fracas + crise BR',
       'SHORT WDO: DXY fraco + risk-on + commodities fortes + fluxo gringo + Selic alta'
@@ -132,7 +140,8 @@ const strategies = [
   },
   {
     id: 7,
-    title: 'Contingência Geopolítica (NOVO)',
+    title: 'Contingência Geopolítica',
+    updated: '2026-08-05',
     icon: Globe,
     color: 'text-red-400',
     bgColor: 'bg-red-500/20',
@@ -151,7 +160,8 @@ const strategies = [
   },
   {
     id: 8,
-    title: 'Monitoramento de Crédito (NOVO)',
+    title: 'Monitoramento de Crédito',
+    updated: '2026-08-05',
     icon: CreditCard,
     color: 'text-cyan-400',
     bgColor: 'bg-cyan-500/20',
@@ -171,7 +181,8 @@ const strategies = [
   },
   {
     id: 9,
-    title: 'Regras de Risco Dinâmico (NOVO)',
+    title: 'Regras de Risco Dinâmico',
+    updated: '2026-08-05',
     icon: Shield,
     color: 'text-rose-400',
     bgColor: 'bg-rose-500/20',
@@ -193,6 +204,7 @@ const strategies = [
   {
     id: 10,
     title: 'Rotação Setorial por Ciclo (PDF)',
+    updated: '2026-08-05',
     icon: Globe,
     color: 'text-sky-400',
     bgColor: 'bg-sky-500/20',
@@ -280,11 +292,7 @@ export function TradingStrategies() {
             <Badge variant="secondary" className="text-[10px] font-mono">
               #{selectedStrategy.id}
             </Badge>
-            {selectedStrategy.id >= 7 && (
-              <Badge className="text-[10px] bg-red-500/20 text-red-400 border-red-500/30">
-                {selectedStrategy.id === 10 ? 'PDF' : 'NOVO'}
-              </Badge>
-            )}
+            <UpdatedStamp date={selectedStrategy.updated} className="ml-auto" />
           </div>
         </div>
 
@@ -306,7 +314,7 @@ export function TradingStrategies() {
                       'p-3 rounded-lg border transition-all',
                       isArrow
                         ? 'bg-primary/10 border-primary/30 pl-6'
-                        : step.startsWith('[NOVO]') || step.startsWith('[RISCO]')
+                        : step.startsWith('[RISCO]')
                         ? 'bg-amber-500/10 border-amber-500/30'
                         : isAlert
                         ? 'bg-rose-500/10 border-rose-500/30'
@@ -323,7 +331,7 @@ export function TradingStrategies() {
                         'text-sm',
                         isArrow && 'text-primary font-medium',
                         step.includes('DECISÃO') && 'font-semibold text-green-400',
-                        (step.startsWith('[NOVO]') || step.startsWith('[RISCO]')) && 'text-amber-400',
+                        step.startsWith('[RISCO]') && 'text-amber-400',
                         (step.includes('LONG') || step.includes('SHORT')) && 'font-medium'
                       )}>
                         {step}
@@ -337,19 +345,6 @@ export function TradingStrategies() {
         })()}
 
 
-        {/* Dica de Ouro Atualizada */}
-        <div className="mt-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
-          <div className="flex items-start gap-2">
-            <Lightbulb className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs font-semibold text-amber-400 mb-1">DICA DE OURO - ATUALIZADA FEV/2026</p>
-              <p className="text-xs text-muted-foreground">
-                Não opere contra todas as correlações. Inclua agora HYG, BTC, Polymarket e market breadth na sua checagem. 
-                Os pontos cegos matam mais que os riscos óbvios. Quando TODOS concordam na direção = risco de squeeze máximo.
-              </p>
-            </div>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );
