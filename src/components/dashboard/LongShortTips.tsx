@@ -508,23 +508,34 @@ export function LongShortTips() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Badge className={categoryColors[selectedAsset.category]}>
             {categoryLabels[selectedAsset.category]}
           </Badge>
           <span className="text-sm text-muted-foreground">{selectedAsset.name}</span>
+          {hiddenCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 px-2 text-xs ml-auto"
+              onClick={() => setShowOld((v) => !v)}
+            >
+              {showOld ? 'ocultar antigos' : `mostrar antigos (${hiddenCount})`}
+            </Button>
+          )}
         </div>
 
         {/* Alerts Section */}
-        {selectedAsset.alerts && selectedAsset.alerts.length > 0 && (
+        {visibleAlerts.length > 0 && (
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 space-y-1">
             <div className="flex items-center gap-2 mb-2">
               <AlertTriangle className="h-4 w-4 text-amber-400" />
               <span className="text-xs font-semibold text-amber-400">ALERTAS</span>
             </div>
-            {selectedAsset.alerts.map((alert, index) => (
+            {visibleAlerts.map((alert, index) => (
               <p key={index} className="text-xs text-amber-300/80">
-                {alert}
+                {alert.text}
+                <UpdatedStamp date={alert.updated} className="ml-2" />
               </p>
             ))}
           </div>
