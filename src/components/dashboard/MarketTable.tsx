@@ -10,8 +10,20 @@ interface MarketQuote {
   changePercentValue: number;
   isPositive: boolean;
   isNegative: boolean;
+  isSuspicious?: boolean;
+  referenceDate?: string | null;
   time?: string;
   flag?: string;
+}
+
+function changeTooltip(quote: MarketQuote) {
+  if (quote.isSuspicious) return 'dado suspeito';
+  if (!quote.referenceDate) return undefined;
+  const d = new Date(quote.referenceDate);
+  if (isNaN(d.getTime())) return undefined;
+  return `Referência: fechamento de ${d.toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  })}`;
 }
 
 interface MarketTableProps {
