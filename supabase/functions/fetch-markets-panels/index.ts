@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { fetchDailyChange, formatChangeFields, classifyYahoo, type AssetClass } from '../_shared/dailyChange.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -126,36 +127,17 @@ const PANELS: Record<string, Ticker[]> = {
 };
 
 async function fetchYahoo(ticker: Ticker) {
-  try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker.yahoo)}?interval=1d&range=5d`;
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    const result = data.chart?.result?.[0];
-    if (!result) return null;
-    const meta = result.meta;
-    const price = meta.regularMarketPrice;
-    const prev = meta.previousClose ?? meta.chartPreviousClose;
-    if (price == null || prev == null) return null;
-    const change = price - prev;
-    const pct = (change / prev) * 100;
-    return {
-      symbol: ticker.symbol,
-      name: ticker.name,
-      flag: ticker.flag,
-      price,
-      priceFormatted: price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      changeValue: change,
-      changePercent: `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`,
-      changePercentValue: pct,
-      isPositive: change > 0,
-      isNegative: change < 0,
-    };
-  } catch (_e) {
-    return null;
-  }
+  const d = await fetchDailyChange(ticker.yahoo, classifyYahoo(ticker.yahoo));
+  if (!d) return null;
+
+  return {
+    symbol: ticker.symbol,
+    name: ticker.name,
+    flag: ticker.flag,
+    price: d.price,
+    priceFormatted: d.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+    ...formatChangeFields(d),
+  };
 }
 
 serve(async (req) => {

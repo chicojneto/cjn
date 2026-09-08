@@ -10,8 +10,20 @@ interface MarketQuote {
   changePercentValue: number;
   isPositive: boolean;
   isNegative: boolean;
+  isSuspicious?: boolean;
+  referenceDate?: string | null;
   time?: string;
   flag?: string;
+}
+
+function changeTooltip(quote: MarketQuote) {
+  if (quote.isSuspicious) return 'dado suspeito';
+  if (!quote.referenceDate) return undefined;
+  const d = new Date(quote.referenceDate);
+  if (isNaN(d.getTime())) return undefined;
+  return `Referência: fechamento de ${d.toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  })}`;
 }
 
 interface MarketTableProps {
@@ -93,13 +105,15 @@ export function MarketTable({
               <span className="font-mono text-xs font-semibold text-foreground tabular-nums min-w-[65px] text-right">
                 {quote.priceFormatted}
               </span>
-              <span className={cn(
-                "font-mono text-[11px] font-semibold tabular-nums min-w-[50px] text-right px-1.5 py-0.5 rounded",
-                quote.isPositive && "text-success bg-success/10",
-                quote.isNegative && "text-destructive bg-destructive/10",
-                !quote.isPositive && !quote.isNegative && "text-muted-foreground"
-              )}>
-                {quote.changePercent}
+              <span
+                title={changeTooltip(quote)}
+                className={cn(
+                  "font-mono text-[11px] font-semibold tabular-nums min-w-[50px] text-right px-1.5 py-0.5 rounded cursor-help",
+                  quote.isPositive && "text-success bg-success/10",
+                  quote.isNegative && "text-destructive bg-destructive/10",
+                  !quote.isPositive && !quote.isNegative && "text-muted-foreground"
+                )}>
+                {quote.isSuspicious ? '—' : quote.changePercent}
               </span>
               {showTime && (
                 <span className="font-mono text-[10px] text-muted-foreground tabular-nums min-w-[45px] hidden lg:block">

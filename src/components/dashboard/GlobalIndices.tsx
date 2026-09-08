@@ -202,7 +202,7 @@ export function GlobalIndices() {
           {quote.isPositive && <TrendingUp className="h-3.5 w-3.5" />}
           {quote.isNegative && <TrendingDown className="h-3.5 w-3.5" />}
           {!quote.isPositive && !quote.isNegative && <Minus className="h-3.5 w-3.5" />}
-          <span className="font-medium">{quote.changePercent}</span>
+          <span className="font-medium">{<span className="cursor-help" title={(quote as any).isSuspicious ? "dado suspeito" : ((quote as any).referenceDate ? "Referência: fechamento de " + new Date((quote as any).referenceDate).toLocaleString("pt-BR") : undefined)}>{quote.changePercent}</span>}</span>
         </div>
 
         {/* Yesterday's data */}

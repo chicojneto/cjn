@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { fetchDailyChange, formatChangeFields, classifyYahoo, type AssetClass } from '../_shared/dailyChange.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
@@ -40,56 +41,22 @@ const CURRENCIES: CurrencyConfig[] = [
 ];
 
 async function fetchQuoteFromYahoo(config: CurrencyConfig): Promise<any> {
-  try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(config.yahooSymbol)}?interval=1d&range=5d`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      },
-    });
-    
-    if (!response.ok) {
-      console.log(`Yahoo failed for ${config.symbol}: ${response.status}`);
-      return null;
-    }
-    
-    const data = await response.json();
-    const result = data.chart?.result?.[0];
-    
-    if (!result) return null;
-    
-    const meta = result.meta;
-    const price = meta.regularMarketPrice;
-    const previousClose = meta.previousClose || meta.chartPreviousClose;
-    const change = price - previousClose;
-    const changePercent = (change / previousClose) * 100;
-    
-    // Determine decimal places based on asset type
-    let decimals = 4;
-    if (config.category === 'commodity') {
-      decimals = 2;
-    }
-    
-    return {
-      symbol: config.symbol,
-      name: config.name,
-      category: config.category,
-      price: price,
-      priceFormatted: price.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
-      change: change >= 0 ? `+${change.toFixed(decimals)}` : change.toFixed(decimals),
-      changeValue: change,
-      changePercent: changePercent >= 0 ? `+${changePercent.toFixed(2)}%` : `${changePercent.toFixed(2)}%`,
-      changePercentValue: changePercent,
-      previousClose: previousClose,
-      isPositive: change > 0,
-      isNegative: change < 0,
-      timestamp: new Date().toISOString(),
-    };
-  } catch (error) {
-    console.error(`Yahoo error for ${config.symbol}:`, error);
-    return null;
-  }
+  const d = await fetchDailyChange(config.yahooSymbol, config.category);
+  if (!d) return null;
+
+  const decimals = config.category === 'commodity' ? 2 : 4;
+  const f = formatChangeFields(d);
+
+  return {
+    symbol: config.symbol,
+    name: config.name,
+    category: config.category,
+    price: d.price,
+    priceFormatted: d.price.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
+    ...f,
+    change: f.isSuspicious ? '—' : (d.change >= 0 ? `+${d.change.toFixed(decimals)}` : d.change.toFixed(decimals)),
+    timestamp: new Date().toISOString(),
+  };
 }
 
 serve(async (req) => {
