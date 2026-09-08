@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion';
 import { TradingStrategies } from '@/components/dashboard/TradingStrategies';
 import { MacroFundamentals } from '@/components/dashboard/MacroFundamentals';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Lightbulb } from 'lucide-react';
+import { UpdatedStamp } from '@/components/shared/UpdatedStamp';
+
+const GOLDEN_TIP_DATE = '2026-08-05';
 
 const container = {
   hidden: { opacity: 0 },
@@ -40,6 +43,27 @@ export default function Estrategias() {
           </div>
         </div>
       </motion.div>
+
+      {/* Dica de Ouro (única, no topo da página) */}
+      <motion.div variants={item}>
+        <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+          <div className="flex items-start gap-2">
+            <Lightbulb className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <p className="text-xs font-semibold text-amber-400">DICA DE OURO</p>
+                <UpdatedStamp date={GOLDEN_TIP_DATE} />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Não opere contra todas as correlações. Inclua HYG, BTC, Polymarket e market breadth na sua checagem.
+                Os pontos cegos matam mais que os riscos óbvios. Quando TODOS concordam na direção = risco de squeeze máximo.
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+
 
       {/* Strategies Grid */}
       <motion.section variants={item}>

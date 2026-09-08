@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { TrendingUp, TrendingDown, ChevronDown, DollarSign, Coins, BarChart3, Fuel, Flame, AlertTriangle, CheckCircle2, Circle, PenLine } from 'lucide-react';
 import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
-import { evaluateConditions, summarize, type EvaluatedCondition } from '@/lib/longShortConditions';
+import { evaluateCondition, summarize, type EvaluatedCondition } from '@/lib/longShortConditions';
+import { isArchived } from '@/lib/contentFreshness';
+import { UpdatedStamp } from '@/components/shared/UpdatedStamp';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,15 +15,21 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 
+export interface Tip {
+  text: string;
+  /** ISO date (YYYY-MM-DD) da última revisão do item */
+  updated: string;
+}
+
 interface AssetTip {
   id: string;
   symbol: string;
   name: string;
   icon: React.ComponentType<{ className?: string }>;
   category: 'forex' | 'indices' | 'commodities';
-  long: string[];
-  short: string[];
-  alerts?: string[];
+  long: Tip[];
+  short: Tip[];
+  alerts?: Tip[];
 }
 
 const assetTips: AssetTip[] = [
@@ -32,25 +40,25 @@ const assetTips: AssetTip[] = [
     icon: Coins,
     category: 'commodities',
     long: [
-      'DXY caindo (correlação enfraquecida: -0.45 vs histórico -0.8)',
-      'VIX subindo (correlação +0.5 a +0.6 em crises)',
-      'Yields caindo (correlação QUEBRADA em períodos)',
-      'Tensão geopolítica (IRÃ = fator #1 agora)',
-      'Fed dovish ou perdendo independência',
-      '[NOVO] Bancos centrais comprando ouro como reserva (recorde)',
-      '[NOVO] Term premium subindo = policy mismatch'
+      { text: 'DXY caindo (correlação enfraquecida: -0.45 vs histórico -0.8)', updated: '2026-07-01' },
+      { text: 'VIX subindo (correlação +0.5 a +0.6 em crises)', updated: '2026-07-01' },
+      { text: 'Yields caindo (correlação QUEBRADA em períodos)', updated: '2026-07-01' },
+      { text: 'Tensão geopolítica (IRÃ = fator #1 agora)', updated: '2026-07-01' },
+      { text: 'Fed dovish ou perdendo independência', updated: '2026-07-01' },
+      { text: 'Bancos centrais comprando ouro como reserva (recorde)', updated: '2026-08-05' },
+      { text: 'Term premium subindo = policy mismatch', updated: '2026-08-05' },
     ],
     short: [
-      'DXY subindo forte',
-      'VIX baixo + mercado calmo',
-      'Fed hawkish + yields reais subindo',
-      'Profit-taking após rally',
-      '[NOVO] Stock-bond correlation em máxima 30 anos'
+      { text: 'DXY subindo forte', updated: '2026-07-01' },
+      { text: 'VIX baixo + mercado calmo', updated: '2026-07-01' },
+      { text: 'Fed hawkish + yields reais subindo', updated: '2026-07-01' },
+      { text: 'Profit-taking após rally', updated: '2026-07-01' },
+      { text: 'Stock-bond correlation em máxima 30 anos', updated: '2026-08-05' },
     ],
     alerts: [
-      '⚠️ STOP OBRIGATÓRIO: Ouro pode crashar 10-20% em DIAS (Jan/26: $5.500→$4.500 em 48h)',
-      'Zona de buy-the-dip estrutural: $3.500-$3.700 (State Street/WGC)',
-      'NÃO trate como posição segura. Tail risk brutal.'
+      { text: '⚠️ STOP OBRIGATÓRIO: Ouro pode crashar 10-20% em DIAS (Jan/26: $5.500→$4.500 em 48h)', updated: '2026-07-01' },
+      { text: 'Zona de buy-the-dip estrutural: $3.500-$3.700 (State Street/WGC)', updated: '2026-07-01' },
+      { text: 'NÃO trate como posição segura. Tail risk brutal.', updated: '2026-07-01' },
     ]
   },
   {
@@ -60,22 +68,22 @@ const assetTips: AssetTip[] = [
     icon: DollarSign,
     category: 'forex',
     long: [
-      'DXY caindo (correlação -0.97, praticamente inverso)',
-      'ECB menos dovish que Fed',
-      'Dados fortes da Zona Euro',
-      '[NOVO] Estímulo fiscal europeu EUR 500bi',
-      'Yields alemães subindo mais que dos EUA'
+      { text: 'DXY caindo (correlação -0.97, praticamente inverso)', updated: '2026-07-01' },
+      { text: 'ECB menos dovish que Fed', updated: '2026-07-01' },
+      { text: 'Dados fortes da Zona Euro', updated: '2026-07-01' },
+      { text: 'Estímulo fiscal europeu EUR 500bi', updated: '2026-08-05' },
+      { text: 'Yields alemães subindo mais que dos EUA', updated: '2026-07-01' },
     ],
     short: [
-      'DXY repricando para cima',
-      'Dados EUA fortes (NFP, CPI)',
-      'Fed hawkish surpresa',
-      '[NOVO] Escalada Irã (flight to USD temporário)'
+      { text: 'DXY repricando para cima', updated: '2026-07-01' },
+      { text: 'Dados EUA fortes (NFP, CPI)', updated: '2026-07-01' },
+      { text: 'Fed hawkish surpresa', updated: '2026-07-01' },
+      { text: 'Escalada Irã (flight to USD temporário)', updated: '2026-08-05' },
     ],
     alerts: [
-      'EUR/USD próximo de 1.1900-1.2000, máximas de 3 anos',
-      'Resistência Fibonacci em jogo',
-      'GBP/USD mostra tendência mais limpa para trade de dólar fraco'
+      { text: 'EUR/USD próximo de 1.1900-1.2000, máximas de 3 anos', updated: '2026-07-01' },
+      { text: 'Resistência Fibonacci em jogo', updated: '2026-07-01' },
+      { text: 'GBP/USD mostra tendência mais limpa para trade de dólar fraco', updated: '2026-07-01' },
     ]
   },
   {
@@ -85,22 +93,22 @@ const assetTips: AssetTip[] = [
     icon: DollarSign,
     category: 'forex',
     long: [
-      'DXY fraco (correlação -0.85)',
-      'BOE hawkish relativo (cortando mais devagar que Fed)',
-      'Inflação UK alta/persistente',
-      'EUR/GBP caindo (GBP forte)',
-      '[NOVO] PAR PREFERIDO para trade de dólar fraco em 2026'
+      { text: 'DXY fraco (correlação -0.85)', updated: '2026-07-01' },
+      { text: 'BOE hawkish relativo (cortando mais devagar que Fed)', updated: '2026-07-01' },
+      { text: 'Inflação UK alta/persistente', updated: '2026-07-01' },
+      { text: 'EUR/GBP caindo (GBP forte)', updated: '2026-07-01' },
+      { text: 'PAR PREFERIDO para trade de dólar fraco em 2026', updated: '2026-08-05' },
     ],
     short: [
-      'DXY forte',
-      'BOE dovish surpresa',
-      '[NOVO] Crise fiscal UK (cortes de gastos março)',
-      'Risk-off extremo'
+      { text: 'DXY forte', updated: '2026-07-01' },
+      { text: 'BOE dovish surpresa', updated: '2026-07-01' },
+      { text: 'Crise fiscal UK (cortes de gastos março)', updated: '2026-08-05' },
+      { text: 'Risk-off extremo', updated: '2026-07-01' },
     ],
     alerts: [
-      'Forecasts bancos: GBP/USD 1.36-1.40 em 2026',
-      'Testando 1.3500 como resistência',
-      'Tendência mais limpa que EUR/USD para dólar fraco'
+      { text: 'Forecasts bancos: GBP/USD 1.36-1.40 em 2026', updated: '2026-07-01' },
+      { text: 'Testando 1.3500 como resistência', updated: '2026-07-01' },
+      { text: 'Tendência mais limpa que EUR/USD para dólar fraco', updated: '2026-07-01' },
     ]
   },
   {
@@ -110,23 +118,23 @@ const assetTips: AssetTip[] = [
     icon: DollarSign,
     category: 'forex',
     long: [
-      'Yields EUA subindo (correlação +0.9)',
-      'Risk-on forte',
-      'BOJ dovish surpresa',
-      'Carry trade atrativo',
-      'Nikkei subindo (correlação positiva)'
+      { text: 'Yields EUA subindo (correlação +0.9)', updated: '2026-07-01' },
+      { text: 'Risk-on forte', updated: '2026-07-01' },
+      { text: 'BOJ dovish surpresa', updated: '2026-07-01' },
+      { text: 'Carry trade atrativo', updated: '2026-07-01' },
+      { text: 'Nikkei subindo (correlação positiva)', updated: '2026-07-01' },
     ],
     short: [
-      'Risk-off + VIX disparando',
-      'BOJ hawkish (esperado +50bps em 2026)',
-      'Carry unwind sistêmico',
-      'Intervenção japonesa (nível 160 = linha vermelha)',
-      '[NOVO] Diferencial convergindo: Fed cortando + BOJ subindo'
+      { text: 'Risk-off + VIX disparando', updated: '2026-07-01' },
+      { text: 'BOJ hawkish (esperado +50bps em 2026)', updated: '2026-07-01' },
+      { text: 'Carry unwind sistêmico', updated: '2026-07-01' },
+      { text: 'Intervenção japonesa (nível 160 = linha vermelha)', updated: '2026-07-01' },
+      { text: 'Diferencial convergindo: Fed cortando + BOJ subindo', updated: '2026-08-05' },
     ],
     alerts: [
-      '⚠️ ALERTA: Se USD/JPY romper 140 com velocidade = LIQUIDAR posições de risco',
-      'USD/JPY é 13.6% do DXY. Se carry unwind = DXY desmorona junto',
-      'RISCO DE UNWIND SISTÊMICO - maior carry trade do mundo'
+      { text: '⚠️ ALERTA: Se USD/JPY romper 140 com velocidade = LIQUIDAR posições de risco', updated: '2026-07-01' },
+      { text: 'USD/JPY é 13.6% do DXY. Se carry unwind = DXY desmorona junto', updated: '2026-07-01' },
+      { text: 'RISCO DE UNWIND SISTÊMICO - maior carry trade do mundo', updated: '2026-07-01' },
     ]
   },
   {
@@ -136,22 +144,22 @@ const assetTips: AssetTip[] = [
     icon: DollarSign,
     category: 'forex',
     long: [
-      'Risk-on forte',
-      'Commodities subindo',
-      'China forte (HK50 subindo)',
-      'DXY caindo',
-      '[NOVO] China anunciou estímulos - monitorar PMIs mensalmente'
+      { text: 'Risk-on forte', updated: '2026-07-01' },
+      { text: 'Commodities subindo', updated: '2026-07-01' },
+      { text: 'China forte (HK50 subindo)', updated: '2026-07-01' },
+      { text: 'DXY caindo', updated: '2026-07-01' },
+      { text: 'China anunciou estímulos - monitorar PMIs mensalmente', updated: '2026-08-05' },
     ],
     short: [
-      'Risk-off',
-      'Commodities caindo',
-      'China fraca',
-      'DXY forte',
-      'VIX alto'
+      { text: 'Risk-off', updated: '2026-07-01' },
+      { text: 'Commodities caindo', updated: '2026-07-01' },
+      { text: 'China fraca', updated: '2026-07-01' },
+      { text: 'DXY forte', updated: '2026-07-01' },
+      { text: 'VIX alto', updated: '2026-07-01' },
     ],
     alerts: [
-      'Correlação +0.9 com NZD/USD',
-      'AUD geralmente preferível (mais liquidez)'
+      { text: 'Correlação +0.9 com NZD/USD', updated: '2026-07-01' },
+      { text: 'AUD geralmente preferível (mais liquidez)', updated: '2026-07-01' },
     ]
   },
   {
@@ -161,17 +169,17 @@ const assetTips: AssetTip[] = [
     icon: DollarSign,
     category: 'forex',
     long: [
-      'Petróleo caindo forte',
-      'DXY subindo',
-      'BOC dovish',
-      'Fed hawkish'
+      { text: 'Petróleo caindo forte', updated: '2026-07-01' },
+      { text: 'DXY subindo', updated: '2026-07-01' },
+      { text: 'BOC dovish', updated: '2026-07-01' },
+      { text: 'Fed hawkish', updated: '2026-07-01' },
     ],
     short: [
-      'Petróleo subindo forte',
-      'DXY caindo',
-      'BOC hawkish',
-      'Risk-on',
-      '[NOVO] Se tensões Irã escalarem = petróleo dispara = CAD forte = USD/CAD cai forte'
+      { text: 'Petróleo subindo forte', updated: '2026-07-01' },
+      { text: 'DXY caindo', updated: '2026-07-01' },
+      { text: 'BOC hawkish', updated: '2026-07-01' },
+      { text: 'Risk-on', updated: '2026-07-01' },
+      { text: 'Se tensões Irã escalarem = petróleo dispara = CAD forte = USD/CAD cai forte', updated: '2026-08-05' },
     ]
   },
   {
@@ -181,17 +189,17 @@ const assetTips: AssetTip[] = [
     icon: DollarSign,
     category: 'forex',
     long: [
-      'Risk-on forte',
-      'VIX baixo',
-      'DXY forte',
-      'Ações subindo'
+      { text: 'Risk-on forte', updated: '2026-07-01' },
+      { text: 'VIX baixo', updated: '2026-07-01' },
+      { text: 'DXY forte', updated: '2026-07-01' },
+      { text: 'Ações subindo', updated: '2026-07-01' },
     ],
     short: [
-      'Risk-off',
-      'Crise global',
-      'VIX alto',
-      'Busca por segurança',
-      '[NOVO] Se Irã escalar = CHF fortalece junto com JPY e ouro'
+      { text: 'Risk-off', updated: '2026-07-01' },
+      { text: 'Crise global', updated: '2026-07-01' },
+      { text: 'VIX alto', updated: '2026-07-01' },
+      { text: 'Busca por segurança', updated: '2026-07-01' },
+      { text: 'Se Irã escalar = CHF fortalece junto com JPY e ouro', updated: '2026-08-05' },
     ]
   },
   {
@@ -201,27 +209,27 @@ const assetTips: AssetTip[] = [
     icon: BarChart3,
     category: 'indices',
     long: [
-      'DXY caindo (favorece exportações)',
-      'VIX < 15',
-      'Dados econômicos fortes',
-      'Fed dovish/neutro',
-      'Earnings positivos',
-      'Market breadth expandindo',
-      '[NOVO] HYG/JNK estável (crédito saudável)'
+      { text: 'DXY caindo (favorece exportações)', updated: '2026-07-01' },
+      { text: 'VIX < 15', updated: '2026-07-01' },
+      { text: 'Dados econômicos fortes', updated: '2026-07-01' },
+      { text: 'Fed dovish/neutro', updated: '2026-07-01' },
+      { text: 'Earnings positivos', updated: '2026-07-01' },
+      { text: 'Market breadth expandindo', updated: '2026-07-01' },
+      { text: 'HYG/JNK estável (crédito saudável)', updated: '2026-08-05' },
     ],
     short: [
-      'DXY subindo forte',
-      'VIX > 25',
-      'Dados fracos',
-      'Fed muito hawkish',
-      '[NOVO] AI repricing (Mag-7 = 30% do índice)',
-      '[NOVO] Market breadth contraindo',
-      '[NOVO] JOLTS colapsando (<6M = recessão)',
-      '[NOVO] HY spreads subindo (>4% = stress)'
+      { text: 'DXY subindo forte', updated: '2026-07-01' },
+      { text: 'VIX > 25', updated: '2026-07-01' },
+      { text: 'Dados fracos', updated: '2026-07-01' },
+      { text: 'Fed muito hawkish', updated: '2026-07-01' },
+      { text: 'AI repricing (Mag-7 = 30% do índice)', updated: '2026-08-05' },
+      { text: 'Market breadth contraindo', updated: '2026-08-05' },
+      { text: 'JOLTS colapsando (<6M = recessão)', updated: '2026-08-05' },
+      { text: 'HY spreads subindo (>4% = stress)', updated: '2026-08-05' },
     ],
     alerts: [
-      'CONCENTRAÇÃO EXTREMA: 6 ações AI = 30% do S&P 500',
-      'BTC = canário - se BTC cair >10%, NQ/S&P seguem'
+      { text: 'CONCENTRAÇÃO EXTREMA: 6 ações AI = 30% do S&P 500', updated: '2026-07-01' },
+      { text: 'BTC = canário - se BTC cair >10%, NQ/S&P seguem', updated: '2026-07-01' },
     ]
   },
   {
@@ -231,26 +239,26 @@ const assetTips: AssetTip[] = [
     icon: BarChart3,
     category: 'indices',
     long: [
-      'DXY caindo (techs se beneficiam muito)',
-      'VIX baixo',
-      'Yields caindo (favorece growth stocks)',
-      'Fed dovish',
-      'Earnings de tech positivos',
-      '[NOVO] Rotação setorial estabiliza'
+      { text: 'DXY caindo (techs se beneficiam muito)', updated: '2026-07-01' },
+      { text: 'VIX baixo', updated: '2026-07-01' },
+      { text: 'Yields caindo (favorece growth stocks)', updated: '2026-07-01' },
+      { text: 'Fed dovish', updated: '2026-07-01' },
+      { text: 'Earnings de tech positivos', updated: '2026-07-01' },
+      { text: 'Rotação setorial estabiliza', updated: '2026-08-05' },
     ],
     short: [
-      'DXY subindo forte (40% receita vem de fora EUA)',
-      'VIX alto',
-      'Yields subindo (pressiona valuations)',
-      'Fed muito hawkish',
-      '[NOVO] AI CAPEX SELLOFF em curso',
-      '[NOVO] Alphabet $185bi + Amazon $200bi = repricing',
-      '[NOVO] Rotação para staples, utilities, telecom'
+      { text: 'DXY subindo forte (40% receita vem de fora EUA)', updated: '2026-07-01' },
+      { text: 'VIX alto', updated: '2026-07-01' },
+      { text: 'Yields subindo (pressiona valuations)', updated: '2026-07-01' },
+      { text: 'Fed muito hawkish', updated: '2026-07-01' },
+      { text: 'AI CAPEX SELLOFF em curso', updated: '2026-08-05' },
+      { text: 'Alphabet $185bi + Amazon $200bi = repricing', updated: '2026-08-05' },
+      { text: 'Rotação para staples, utilities, telecom', updated: '2026-08-05' },
     ],
     alerts: [
-      'NASDAQ: 22.540 - caiu 4% na semana (pior sequência desde abril)',
-      'Negativo no ano (-3%)',
-      'BTC em $63k no selloff - altamente correlacionado'
+      { text: 'NASDAQ: 22.540 - caiu 4% na semana (pior sequência desde abril)', updated: '2026-07-01' },
+      { text: 'Negativo no ano (-3%)', updated: '2026-07-01' },
+      { text: 'BTC em $63k no selloff - altamente correlacionado', updated: '2026-07-01' },
     ]
   },
   {
@@ -260,24 +268,24 @@ const assetTips: AssetTip[] = [
     icon: BarChart3,
     category: 'indices',
     long: [
-      'S&P 500 subindo',
-      'Commodities fortes (petróleo, minério)',
-      'Real forte',
-      'Fluxo gringo entrando',
-      'Selic caindo',
-      '[NOVO] IPCA-15 desacelerando = espaço cortes',
-      '[NOVO] EWZ (ETF Brasil NY) subindo no pré-mercado'
+      { text: 'S&P 500 subindo', updated: '2026-07-01' },
+      { text: 'Commodities fortes (petróleo, minério)', updated: '2026-07-01' },
+      { text: 'Real forte', updated: '2026-07-01' },
+      { text: 'Fluxo gringo entrando', updated: '2026-07-01' },
+      { text: 'Selic caindo', updated: '2026-07-01' },
+      { text: 'IPCA-15 desacelerando = espaço cortes', updated: '2026-08-05' },
+      { text: 'EWZ (ETF Brasil NY) subindo no pré-mercado', updated: '2026-08-05' },
     ],
     short: [
-      'Risk-off global',
-      'AI selloff seca fluxo',
-      'Crise política Brasil',
-      'DXY disparando',
-      '[NOVO] Eleições 2026 provocando saída de fluxo'
+      { text: 'Risk-off global', updated: '2026-07-01' },
+      { text: 'AI selloff seca fluxo', updated: '2026-07-01' },
+      { text: 'Crise política Brasil', updated: '2026-07-01' },
+      { text: 'DXY disparando', updated: '2026-07-01' },
+      { text: 'Eleições 2026 provocando saída de fluxo', updated: '2026-08-05' },
     ],
     alerts: [
-      'Ibovespa ~182.695 pts - fluxo estrangeiro massivo',
-      'RISCO: Selloff tech/AI nos EUA seca fluxo global'
+      { text: 'Ibovespa ~182.695 pts - fluxo estrangeiro massivo', updated: '2026-07-01' },
+      { text: 'RISCO: Selloff tech/AI nos EUA seca fluxo global', updated: '2026-07-01' },
     ]
   },
   {
@@ -287,24 +295,24 @@ const assetTips: AssetTip[] = [
     icon: DollarSign,
     category: 'indices',
     long: [
-      'DXY forte (correlação +0.9)',
-      'Risk-off global',
-      'Commodities fracas',
-      'Crise política Brasil',
-      '[NOVO] Irã escala = dólar sobe contra TODAS moedas EM'
+      { text: 'DXY forte (correlação +0.9)', updated: '2026-07-01' },
+      { text: 'Risk-off global', updated: '2026-07-01' },
+      { text: 'Commodities fracas', updated: '2026-07-01' },
+      { text: 'Crise política Brasil', updated: '2026-07-01' },
+      { text: 'Irã escala = dólar sobe contra TODAS moedas EM', updated: '2026-08-05' },
     ],
     short: [
-      'DXY fraco',
-      'Risk-on',
-      'Commodities fortes',
-      'S&P subindo',
-      'Selic alta + Fed cortando = diferencial',
-      '[NOVO] Fluxo gringo massivo para Brasil'
+      { text: 'DXY fraco', updated: '2026-07-01' },
+      { text: 'Risk-on', updated: '2026-07-01' },
+      { text: 'Commodities fortes', updated: '2026-07-01' },
+      { text: 'S&P subindo', updated: '2026-07-01' },
+      { text: 'Selic alta + Fed cortando = diferencial', updated: '2026-07-01' },
+      { text: 'Fluxo gringo massivo para Brasil', updated: '2026-08-05' },
     ],
     alerts: [
-      'Dólar/Real: R$5.20-5.30 (menor em 2 anos)',
-      'PTAX: dias 29/30/último útil = distorções',
-      'Cupom cambial (DDI-DI) = indicador real de pressão'
+      { text: 'Dólar/Real: R$5.20-5.30 (menor em 2 anos)', updated: '2026-07-01' },
+      { text: 'PTAX: dias 29/30/último útil = distorções', updated: '2026-07-01' },
+      { text: 'Cupom cambial (DDI-DI) = indicador real de pressão', updated: '2026-07-01' },
     ]
   },
   {
@@ -314,23 +322,23 @@ const assetTips: AssetTip[] = [
     icon: Fuel,
     category: 'commodities',
     long: [
-      '[NOVO] TENSÕES IRÃ = FATOR #1 AGORA',
-      'OPEC+ cortando produção',
-      'China forte',
-      'Estoques caindo',
-      'Polymarket: 55% chance ataque até junho'
+      { text: 'TENSÕES IRÃ = FATOR #1 AGORA', updated: '2026-08-05' },
+      { text: 'OPEC+ cortando produção', updated: '2026-07-01' },
+      { text: 'China forte', updated: '2026-07-01' },
+      { text: 'Estoques caindo', updated: '2026-07-01' },
+      { text: 'Polymarket: 55% chance ataque até junho', updated: '2026-07-01' },
     ],
     short: [
-      'Negociações Irã avançam',
-      'OPEC+ aumentando produção',
-      'Recessão iminente',
-      'Estoques subindo forte',
-      'China fraca'
+      { text: 'Negociações Irã avançam', updated: '2026-07-01' },
+      { text: 'OPEC+ aumentando produção', updated: '2026-07-01' },
+      { text: 'Recessão iminente', updated: '2026-07-01' },
+      { text: 'Estoques subindo forte', updated: '2026-07-01' },
+      { text: 'China fraca', updated: '2026-07-01' },
     ],
     alerts: [
-      'Armada naval EUA posicionada + negociações Omã',
-      'Se probabilidade >40%: ajustar CAD, BRL, energia',
-      'Preços esperados em queda SEM evento geopolítico'
+      { text: 'Armada naval EUA posicionada + negociações Omã', updated: '2026-07-01' },
+      { text: 'Se probabilidade >40%: ajustar CAD, BRL, energia', updated: '2026-07-01' },
+      { text: 'Preços esperados em queda SEM evento geopolítico', updated: '2026-07-01' },
     ]
   },
   {
@@ -340,16 +348,16 @@ const assetTips: AssetTip[] = [
     icon: Flame,
     category: 'commodities',
     long: [
-      'Previsão de inverno rigoroso',
-      'Estoques baixos',
-      'Crise na Europa',
-      'Produção caindo'
+      { text: 'Previsão de inverno rigoroso', updated: '2026-07-01' },
+      { text: 'Estoques baixos', updated: '2026-07-01' },
+      { text: 'Crise na Europa', updated: '2026-07-01' },
+      { text: 'Produção caindo', updated: '2026-07-01' },
     ],
     short: [
-      'Inverno ameno previsto',
-      'Estoques altos',
-      'Produção recordes',
-      'Demanda fraca'
+      { text: 'Inverno ameno previsto', updated: '2026-07-01' },
+      { text: 'Estoques altos', updated: '2026-07-01' },
+      { text: 'Produção recordes', updated: '2026-07-01' },
+      { text: 'Demanda fraca', updated: '2026-07-01' },
     ]
   }
 ];
@@ -368,17 +376,18 @@ const categoryColors = {
 
 const PRIORITY_IDS = ['win', 'wdo', 'xauusd', 'nasdaq', 'spx'];
 
+type DatedCondition = EvaluatedCondition & { updated: string };
+
 function ConditionList({
   items,
   tone,
 }: {
-  items: EvaluatedCondition[];
+  items: DatedCondition[];
   tone: 'long' | 'short';
 }) {
   return (
     <ul className="space-y-1.5">
       {items.map((c, index) => {
-        const isNew = c.text.startsWith('[NOVO]');
         const Icon = c.status === 'met' ? CheckCircle2 : c.status === 'unmet' ? Circle : PenLine;
         const iconClass =
           c.status === 'met'
@@ -394,7 +403,7 @@ function ConditionList({
               className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${iconClass}`}
               aria-label={c.status === 'met' ? 'condição atendida' : c.status === 'unmet' ? 'condição não atendida' : 'avaliação manual'}
             />
-            <span className={isNew ? 'text-amber-400' : c.status === 'met' ? 'text-foreground' : 'text-muted-foreground'}>
+            <span className={c.status === 'met' ? 'text-foreground' : 'text-muted-foreground'}>
               {c.text}
               {c.detail && (
                 <span className="ml-1.5 font-mono text-xs text-muted-foreground">{c.detail}</span>
@@ -402,6 +411,7 @@ function ConditionList({
               {c.status === 'manual' && (
                 <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted-foreground/70">manual</span>
               )}
+              <UpdatedStamp date={c.updated} className="ml-2" />
             </span>
           </li>
         );
@@ -415,6 +425,7 @@ export function LongShortTips() {
     assetTips.find((a) => a.id === 'win') ?? assetTips[0]
   );
   const [showOthers, setShowOthers] = useState(false);
+  const [showOld, setShowOld] = useState(false);
   const { data } = useMarketCorrelations();
 
   const priorityTips = PRIORITY_IDS
@@ -422,8 +433,20 @@ export function LongShortTips() {
     .filter((a): a is AssetTip => Boolean(a));
   const otherTips = assetTips.filter((a) => !PRIORITY_IDS.includes(a.id));
 
-  const longConds = evaluateConditions(selectedAsset.long, data);
-  const shortConds = evaluateConditions(selectedAsset.short, data);
+  const toDated = (tips: Tip[]): DatedCondition[] =>
+    tips.map((t) => ({ ...evaluateCondition(t.text, data), updated: t.updated }));
+
+  const allLong = toDated(selectedAsset.long);
+  const allShort = toDated(selectedAsset.short);
+  const alerts = selectedAsset.alerts ?? [];
+  const hiddenCount =
+    [...allLong, ...allShort].filter((c) => isArchived(c.updated)).length +
+    alerts.filter((a) => isArchived(a.updated)).length;
+
+  const visible = (list: DatedCondition[]) => (showOld ? list : list.filter((c) => !isArchived(c.updated)));
+  const longConds = visible(allLong);
+  const shortConds = visible(allShort);
+  const visibleAlerts = showOld ? alerts : alerts.filter((a) => !isArchived(a.updated));
   const longSummary = summarize(longConds);
   const shortSummary = summarize(shortConds);
 
@@ -485,23 +508,34 @@ export function LongShortTips() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Badge className={categoryColors[selectedAsset.category]}>
             {categoryLabels[selectedAsset.category]}
           </Badge>
           <span className="text-sm text-muted-foreground">{selectedAsset.name}</span>
+          {hiddenCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 px-2 text-xs ml-auto"
+              onClick={() => setShowOld((v) => !v)}
+            >
+              {showOld ? 'ocultar antigos' : `mostrar antigos (${hiddenCount})`}
+            </Button>
+          )}
         </div>
 
         {/* Alerts Section */}
-        {selectedAsset.alerts && selectedAsset.alerts.length > 0 && (
+        {visibleAlerts.length > 0 && (
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 space-y-1">
             <div className="flex items-center gap-2 mb-2">
               <AlertTriangle className="h-4 w-4 text-amber-400" />
               <span className="text-xs font-semibold text-amber-400">ALERTAS</span>
             </div>
-            {selectedAsset.alerts.map((alert, index) => (
+            {visibleAlerts.map((alert, index) => (
               <p key={index} className="text-xs text-amber-300/80">
-                {alert}
+                {alert.text}
+                <UpdatedStamp date={alert.updated} className="ml-2" />
               </p>
             ))}
           </div>
