@@ -4,6 +4,7 @@ import { BarChart3, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MarketTable } from '@/components/dashboard/MarketTable';
+import { DiCurvePanel } from '@/components/dashboard/DiCurvePanel';
 import { supabase } from '@/integrations/supabase/client';
 
 const PANEL_ORDER = [
