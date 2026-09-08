@@ -123,6 +123,11 @@ export default function Configuracoes() {
           </ModernCardContent>
         </ModernCard>
       </motion.section>
+
+      {/* Curva DI manual */}
+      <motion.section variants={item}>
+        <DiCurveEditor />
+      </motion.section>
     </motion.div>
   );
 }
