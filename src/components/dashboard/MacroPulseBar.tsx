@@ -55,26 +55,26 @@ function PulseIndicator({ label, value, change, changeValue = 0, alertLevel, com
   );
 }
 
-function RiskSentiment({ sentiment }: { sentiment: 'risk-on' | 'risk-off' | 'neutral' }) {
+function WinBiasBadge({ vies }: { vies: ViesWIN }) {
   const config = {
-    'risk-on': { 
-      label: 'RISK-ON', 
+    alta: {
+      label: 'ALTA',
       color: 'text-success bg-success/10 border-success/30',
-      icon: TrendingUp
+      icon: TrendingUp,
     },
-    'risk-off': { 
-      label: 'RISK-OFF', 
+    baixa: {
+      label: 'BAIXA',
       color: 'text-destructive bg-destructive/10 border-destructive/30',
-      icon: AlertTriangle
+      icon: TrendingDown,
     },
-    neutral: { 
-      label: 'NEUTRO', 
+    neutro: {
+      label: 'NEUTRO',
       color: 'text-warning bg-warning/10 border-warning/30',
-      icon: Minus
+      icon: Minus,
     },
-  };
+  } as const;
 
-  const { label, color, icon: Icon } = config[sentiment];
+  const { label, color, icon: Icon } = config[vies];
 
   return (
     <div className={cn(
@@ -82,10 +82,11 @@ function RiskSentiment({ sentiment }: { sentiment: 'risk-on' | 'risk-off' | 'neu
       color
     )}>
       <Icon className="h-3.5 w-3.5" />
-      {label}
+      WIN {label}
     </div>
   );
 }
+
 
 function SessionIndicator() {
   const hour = new Date().getHours();
