@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ClipboardCheck, TrendingUp, TrendingDown, Minus, RefreshCw, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 import { useMarketCorrelations, CorrelationAnalysis, BrazilRatesData, DIFutureContract } from '@/hooks/useMarketCorrelations';
 import { Button } from '@/components/ui/button';
+import { useDiCurve, analyzeManualCurve, DI_FIELDS } from '@/hooks/useDiCurve';
+import { ManualStamp } from '@/components/shared/ManualStamp';
 
 interface MarketIndicator {
   label: string;
