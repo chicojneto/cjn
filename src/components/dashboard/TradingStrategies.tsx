@@ -18,7 +18,6 @@ import {
   Wheat,
   BarChart3,
   DollarSign,
-  Lightbulb,
   Shield,
   CreditCard,
   Globe

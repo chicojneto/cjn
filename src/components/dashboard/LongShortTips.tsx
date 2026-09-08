@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { TrendingUp, TrendingDown, ChevronDown, DollarSign, Coins, BarChart3, Fuel, Flame, AlertTriangle, CheckCircle2, Circle, PenLine } from 'lucide-react';
 import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
-import { evaluateCondition, evaluateConditions, summarize, type EvaluatedCondition } from '@/lib/longShortConditions';
+import { evaluateCondition, summarize, type EvaluatedCondition } from '@/lib/longShortConditions';
 import { isArchived } from '@/lib/contentFreshness';
 import { UpdatedStamp } from '@/components/shared/UpdatedStamp';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
