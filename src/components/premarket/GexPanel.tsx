@@ -90,14 +90,14 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
       : '';
 
   if (loading && !data) {
-    return <div className="py-10 text-center text-[11px] tracking-widest text-muted-foreground">CARREGANDO MAPA GEX…</div>;
+    return <div className="py-10 text-center text-[11px] tracking-widest text-muted-foreground">Carregando mapa GEX…</div>;
   }
   if (erro) {
     return (
       <div className="flex items-center justify-between border border-destructive/60 bg-destructive/30 px-4 py-3 text-xs text-destructive">
         {erro}
         <button onClick={load} className="flex items-center gap-1 tracking-widest">
-          <RefreshCw className="h-3 w-3" /> TENTAR
+          <RefreshCw className="h-3 w-3" /> Tentar de novo
         </button>
       </div>
     );
@@ -109,7 +109,7 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
       <div className="flex flex-wrap items-center justify-between gap-3 border px-4 py-3" style={{ background: 'var(--surface)', borderColor: 'var(--hairline)' }}>
         <div>
           <div className="text-[10px] tracking-widest text-muted-foreground">
-            GEX LÍQUIDO · {data.und} · SPOT {num(data.spot, 2)}
+            GEX líquido · {data.und} · spot {num(data.spot, 2)}
           </div>
           <div className="text-2xl font-bold tabular-nums" style={{ color: positivo ? GREEN : RED }}>
             ${num(data.gexLiquidoM, 1)} M/1%
@@ -124,7 +124,7 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
               background: positivo ? 'var(--brand-soft)' : 'var(--down-soft)',
             }}
           >
-            {positivo ? 'COMPRESSÃO' : 'EXPANSÃO'}
+            {positivo ? 'Compressão' : 'Expansão'}
           </span>
           <button
             onClick={load}
@@ -139,19 +139,19 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <LevelCard titulo="GAMMA FLIP" nivel={data.flip} refNome={data.refNome} cor="var(--text)" />
-        <LevelCard titulo="CALL WALL" nivel={data.callWall} refNome={data.refNome} cor={GREEN} />
-        <LevelCard titulo="PUT WALL" nivel={data.putWall} refNome={data.refNome} cor={RED} />
+        <LevelCard titulo="Gamma flip" nivel={data.flip} refNome={data.refNome} cor="var(--text)" />
+        <LevelCard titulo="Call wall" nivel={data.callWall} refNome={data.refNome} cor={GREEN} />
+        <LevelCard titulo="Put wall" nivel={data.putWall} refNome={data.refNome} cor={RED} />
       </div>
 
       <div className="overflow-x-auto border" style={{ background: 'var(--surface)', borderColor: 'var(--hairline)' }}>
         <table className="w-full text-xs tabular-nums">
           <thead>
             <tr className="text-[10px] tracking-widest text-muted-foreground">
-              <th className="px-3 py-2 text-left">STRIKE</th>
+              <th className="px-3 py-2 text-left">Strike</th>
               <th className="px-3 py-2 text-right">~{data.refNome}</th>
-              <th className="px-3 py-2 text-right">OI CALL</th>
-              <th className="px-3 py-2 text-right">OI PUT</th>
+              <th className="px-3 py-2 text-right">OI call</th>
+              <th className="px-3 py-2 text-right">OI put</th>
               <th className="px-3 py-2 text-right">GEX $M/1%</th>
             </tr>
           </thead>
@@ -170,8 +170,8 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
                 >
                   <td className="px-3 py-2 text-left text-muted-foreground">
                     {num(l.strike, 2)}
-                    {isCall && <span className="ml-2 text-[9px] tracking-widest" style={{ color: GREEN }}>CALL WALL</span>}
-                    {isPut && <span className="ml-2 text-[9px] tracking-widest" style={{ color: RED }}>PUT WALL</span>}
+                    {isCall && <span className="ml-2 text-[9px] tracking-widest" style={{ color: GREEN }}>call wall</span>}
+                    {isPut && <span className="ml-2 text-[9px] tracking-widest" style={{ color: RED }}>put wall</span>}
                   </td>
                   <td className="px-3 py-2 text-right text-muted-foreground">{l.ref != null ? num(l.ref) : '—'}</td>
                   <td className="px-3 py-2 text-right text-muted-foreground">{num(l.oiCall)}</td>
@@ -189,10 +189,10 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
 
       {preset === 'win' && (
         <div className="border px-4 py-4" style={{ background: 'var(--surface)', borderColor: ACCENT }}>
-          <div className="text-[10px] tracking-widest" style={{ color: GREEN }}>CONVERSÃO PARA O WIN</div>
+          <div className="text-[10px] tracking-widest" style={{ color: GREEN }}>Conversão para o WIN</div>
           <div className="mt-3 flex flex-wrap items-end gap-3">
             <label className="text-[10px] tracking-widest text-muted-foreground">
-              FECHAMENTO DO WIN D-1
+              Fechamento do WIN D-1
               <input
                 type="number"
                 value={winClose}
@@ -204,7 +204,7 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
             </label>
             {offset != null && (
               <div className="text-[10px] tracking-widest text-muted-foreground">
-                OFFSET <span className="text-sm font-bold text-muted-foreground">{offset > 0 ? '+' : ''}{num(offset)}</span>
+                Offset <span className="text-sm font-bold text-muted-foreground">{offset > 0 ? '+' : ''}{num(offset)}</span>
               </div>
             )}
           </div>
@@ -213,9 +213,9 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
             <>
               <div className="mt-4 grid grid-cols-3 gap-3">
                 {[
-                  { t: 'PUT WALL WIN', v: conv(data.putWall), c: RED },
-                  { t: 'FLIP WIN', v: conv(data.flip), c: 'var(--text)' },
-                  { t: 'CALL WALL WIN', v: conv(data.callWall), c: GREEN },
+                  { t: 'Put wall WIN', v: conv(data.putWall), c: RED },
+                  { t: 'Flip WIN', v: conv(data.flip), c: 'var(--text)' },
+                  { t: 'Call wall WIN', v: conv(data.callWall), c: GREEN },
                 ].map((x) => (
                   <div key={x.t} className="border px-3 py-2" style={{ borderColor: 'var(--hairline)' }}>
                     <div className="text-[10px] tracking-widest text-muted-foreground">{x.t}</div>
@@ -235,7 +235,7 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
                   className="flex items-center gap-2 border px-3 py-2 text-[11px] tracking-widest"
                   style={{ borderColor: ACCENT, color: GREEN, background: 'var(--brand-soft)' }}
                 >
-                  <Copy className="h-3.5 w-3.5" /> COPIAR
+                  <Copy className="h-3.5 w-3.5" /> Copiar
                 </button>
               </div>
             </>
@@ -244,7 +244,7 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
       )}
 
       <div className="text-[10px] tracking-widest text-muted-foreground">
-        {data.aviso} · GERADO EM {new Date(data.geradoEm).toLocaleString('pt-BR')}
+        {data.aviso}  · gerado em {new Date(data.geradoEm).toLocaleString('pt-BR')}
       </div>
     </div>
   );

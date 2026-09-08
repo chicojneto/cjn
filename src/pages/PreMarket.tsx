@@ -12,12 +12,12 @@ type RadarData = {
 };
 
 const CARDS: { sym: string; label: string; destaque?: boolean }[] = [
-  { sym: '6L=F', label: '6L (BRL FUT)', destaque: true },
+  { sym: '6L=F', label: '6L (BRL fut.)', destaque: true },
   { sym: 'EWZ', label: 'EWZ', destaque: true },
   { sym: 'ES=F', label: 'ES (S&P)' },
-  { sym: 'NQ=F', label: 'NQ (NASDAQ)' },
+  { sym: 'NQ=F', label: 'NQ (Nasdaq)' },
   { sym: 'DX-Y.NYB', label: 'DXY' },
-  { sym: 'GC=F', label: 'OURO' },
+  { sym: 'GC=F', label: 'Ouro' },
 ];
 
 const STATUS_MAP: Record<string, { text: string; bg: string; border: string; fg: string }> = {
@@ -56,8 +56,8 @@ const STATUS_MAP: Record<string, { text: string; bg: string; border: string; fg:
 type TabId = 'win' | 'gold' | 'nasdaq';
 const TABS: { id: TabId; label: string }[] = [
   { id: 'win', label: 'WIN' },
-  { id: 'gold', label: 'OURO' },
-  { id: 'nasdaq', label: 'NASDAQ' },
+  { id: 'gold', label: 'Ouro' },
+  { id: 'nasdaq', label: 'Nasdaq' },
 ];
 
 export default function PreMarket() {
@@ -91,9 +91,9 @@ export default function PreMarket() {
     <div style={{ background: 'var(--bg)' }} className="min-h-full -m-4 p-6 font-mono text-muted-foreground md:-m-6 md:p-8">
       <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold tracking-normal text-muted-foreground">PRÉ-MARKET</h1>
+          <h1 className="text-xl font-bold tracking-normal text-muted-foreground">Pré-market</h1>
           <p className="text-[11px] tracking-widest text-muted-foreground">
-            RADAR 6L · VARIAÇÃO OVERNIGHT
+            Radar 6L · variação overnight
             {data ? ` · ${new Date(data.geradoEm).toLocaleTimeString('pt-BR')}` : ''}
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function PreMarket() {
           style={{ borderColor: 'var(--brand-hex)', color: 'var(--up-hex)', background: 'var(--brand-soft)' }}
         >
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-          ATUALIZAR
+          Atualizar
         </button>
       </header>
 
@@ -155,11 +155,11 @@ export default function PreMarket() {
       )}
 
       {loading && !data && (
-        <div className="mt-5 text-[11px] tracking-widest text-muted-foreground">CARREGANDO RADAR…</div>
+        <div className="mt-5 text-[11px] tracking-widest text-muted-foreground">Carregando radar…</div>
       )}
 
       <section className="mt-8">
-        <h2 className="mb-3 text-sm font-bold tracking-normal text-muted-foreground">MAPA GEX</h2>
+        <h2 className="mb-3 text-sm font-bold tracking-normal text-muted-foreground">Mapa GEX</h2>
         <div className="mb-4 flex gap-2">
           {TABS.map((t) => (
             <button
