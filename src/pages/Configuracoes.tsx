@@ -3,6 +3,7 @@ import { Settings, Bell, Palette, Clock, Shield } from 'lucide-react';
 import { ModernCard, ModernCardHeader, ModernCardTitle, ModernCardContent } from '@/components/ui/modern-card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { DiCurveEditor } from '@/components/settings/DiCurveEditor';
 
 const container = {
   hidden: { opacity: 0 },
@@ -122,6 +123,11 @@ export default function Configuracoes() {
             </div>
           </ModernCardContent>
         </ModernCard>
+      </motion.section>
+
+      {/* Curva DI manual */}
+      <motion.section variants={item}>
+        <DiCurveEditor />
       </motion.section>
     </motion.div>
   );

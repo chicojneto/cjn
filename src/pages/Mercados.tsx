@@ -4,6 +4,7 @@ import { BarChart3, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MarketTable } from '@/components/dashboard/MarketTable';
+import { DiCurvePanel } from '@/components/dashboard/DiCurvePanel';
 import { supabase } from '@/integrations/supabase/client';
 
 const PANEL_ORDER = [
@@ -94,6 +95,7 @@ export default function Mercados() {
           variants={item}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-min"
         >
+          <DiCurvePanel />
           {PANEL_ORDER.map((title) => {
             const quotes = panels?.[title] || [];
             if (!quotes.length) return null;
