@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MarketTable } from '@/components/dashboard/MarketTable';
 import { DiCurvePanel } from '@/components/dashboard/DiCurvePanel';
+import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
 import { supabase } from '@/integrations/supabase/client';
 
 const PANEL_ORDER = [
