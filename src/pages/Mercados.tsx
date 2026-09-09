@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MarketTable } from '@/components/dashboard/MarketTable';
 import { DiCurvePanel } from '@/components/dashboard/DiCurvePanel';
+import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
 import { supabase } from '@/integrations/supabase/client';
 
 const PANEL_ORDER = [
@@ -78,45 +79,46 @@ export default function Mercados() {
         </Button>
       </motion.div>
 
-      {/* Panels grid */}
+      {/* Panels — coluna única */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
+        <div className="space-y-4">
+          {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="space-y-2">
               <Skeleton className="h-8 w-full" />
-              {Array.from({ length: 6 }).map((_, j) => (
+              {Array.from({ length: 5 }).map((_, j) => (
                 <Skeleton key={j} className="h-9 w-full" />
               ))}
             </div>
           ))}
         </div>
       ) : (
-        <motion.div
-          variants={item}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-min"
-        >
-          <DiCurvePanel />
+        <motion.div variants={item} className="space-y-4">
           {PANEL_ORDER.map((title) => {
             const quotes = panels?.[title] || [];
             if (!quotes.length) return null;
-            const featured = title === 'Pré Abertura B3';
             return (
-              <div
+              <MarketTable
                 key={title}
-                className={featured ? 'md:col-span-2 lg:col-span-3 xl:col-span-3' : ''}
-              >
-                <MarketTable
-                  title={title}
-                  quotes={quotes}
-                  compact={!featured}
-                  columns={featured ? 2 : 1}
-                  showTime={false}
-                />
-              </div>
+                title={title}
+                quotes={quotes}
+                compact
+                columns={1}
+                showTime={false}
+              />
             );
           })}
         </motion.div>
       )}
+
+      {/* Juros */}
+      <motion.section variants={item}>
+        <DiCurvePanel />
+      </motion.section>
+
+      {/* Correlações */}
+      <motion.section variants={item}>
+        <CorrelationsPanel selectedAsset={null} onAssetSelect={() => {}} />
+      </motion.section>
     </motion.div>
   );
 }

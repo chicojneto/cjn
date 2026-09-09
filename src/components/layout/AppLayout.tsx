@@ -1,188 +1,118 @@
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { AppSidebar } from './AppSidebar';
-import { MobileNav } from './MobileNav';
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { useDeviceType } from '@/hooks/useDeviceType';
-import { Menu, RefreshCw, Search } from 'lucide-react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Search, Bell } from 'lucide-react';
 import { CoffeeCandleMark, Wordmark } from '@/components/brand/Logo';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { NavLink } from 'react-router-dom';
-import { MacroPulseBar } from '@/components/dashboard/MacroPulseBar';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
+import { navDestinations } from './navDestinations';
+import { SearchCommand } from './SearchCommand';
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const { isMobile, isTablet } = useDeviceType();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    const interval = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(interval);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen((o) => !o);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const timeStr = format(currentTime, 'HH:mm:ss');
-  const dateStr = format(currentTime, "EEEE, d 'de' MMMM", { locale: ptBR });
-  const capitalizedDate = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+  const isActive = (url: string) => (url === '/' ? pathname === '/' : pathname.startsWith(url));
 
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    window.location.reload();
-  };
+  return (
+    <div className="min-h-screen w-full bg-background">
+      <SearchCommand open={searchOpen} onOpenChange={setSearchOpen} />
 
-  // Mobile and tablet layout - no sidebar, use sheet navigation
-  if (isMobile || isTablet) {
-    return (
-      <div className="min-h-screen flex flex-col w-full bg-gradient-mesh">
-        <MobileNav open={mobileNavOpen} onOpenChange={setMobileNavOpen} />
-        
-        {/* Mobile/Tablet Header */}
-        <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50">
-          <div className="flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4">
-            <div className="flex items-center gap-2 sm:gap-4">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setMobileNavOpen(true)}
-                className="h-9 w-9"
+      {/* Desktop icon rail */}
+      <aside className="hidden md:flex fixed inset-y-0 left-0 z-40 w-16 flex-col items-center gap-1 border-r border-border bg-card py-4">
+        <NavLink to="/" className="mb-4">
+          <CoffeeCandleMark className="h-7 w-7 text-brand" />
+        </NavLink>
+        {navDestinations.map((d) => (
+          <Tooltip key={d.url} delayDuration={120}>
+            <TooltipTrigger asChild>
+              <NavLink
+                to={d.url}
+                className={cn(
+                  'flex h-11 w-11 items-center justify-center rounded-xl transition-colors duration-150',
+                  isActive(d.url)
+                    ? 'bg-primary/15 text-primary'
+                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                )}
               >
-                <Menu className="h-5 w-5" />
-              </Button>
+                <d.icon className="h-5 w-5" />
+                <span className="sr-only">{d.title}</span>
+              </NavLink>
+            </TooltipTrigger>
+            <TooltipContent side="right">{d.title}</TooltipContent>
+          </Tooltip>
+        ))}
+      </aside>
 
-              {isMobile && (
-                <NavLink to="/" className="flex items-center gap-2">
-                  <CoffeeCandleMark className="h-6 w-6 text-brand" />
-                  <Wordmark className="text-[15px]" />
-                </NavLink>
-              )}
-              
-              {!isMobile && (
-                <div className="flex flex-col">
-                  <span className="text-base font-bold text-foreground tabular-nums tracking-tight">
-                    {timeStr}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground truncate max-w-[150px]">
-                    {capitalizedDate}
-                  </span>
-                </div>
-              )}
-
-              <div className="live-indicator hidden sm:flex">
-                <span className="text-xs font-semibold text-primary">LIVE</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1 sm:gap-2">
-              {isMobile && (
-                <span className="text-sm font-bold text-foreground tabular-nums mr-2">
-                  {timeStr}
-                </span>
-              )}
-
-              <Button variant="ghost" size="icon" className="h-9 w-9">
+      <div className="md:pl-16">
+        {/* Minimal header */}
+        <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-xl">
+          <div className="mx-auto flex h-14 max-w-[720px] items-center justify-between px-4">
+            <NavLink to="/" className="flex items-center gap-2">
+              <CoffeeCandleMark className="h-6 w-6 text-brand md:hidden" />
+              <Wordmark className="text-[15px]" />
+            </NavLink>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9"
+                onClick={() => setSearchOpen(true)}
+                aria-label="Buscar"
+              >
                 <Search className="h-4 w-4" />
               </Button>
-
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="h-9 w-9"
-              >
-                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <Button variant="ghost" size="icon" className="h-9 w-9" aria-label="Alertas">
+                <Bell className="h-4 w-4" />
               </Button>
             </div>
           </div>
         </header>
 
-        {/* Mobile Macro Pulse Bar */}
-        <MacroPulseBar />
-
-        <motion.main 
-          className="flex-1 p-3 sm:p-4 overflow-auto scrollbar-thin"
-          initial={{ opacity: 0, y: 10 }}
+        <motion.main
+          className="mx-auto w-full max-w-[720px] px-4 pb-24 pt-4 md:pb-10"
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
         >
           {children}
         </motion.main>
       </div>
-    );
-  }
 
-  // Desktop layout - full sidebar with SidebarProvider
-  return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gradient-mesh">
-        <AppSidebar />
-        <SidebarInset className="flex flex-col flex-1 min-w-0">
-          {/* Desktop Header */}
-          <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50">
-            <div className="flex items-center justify-between h-16 px-4 lg:px-6">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger>
-                  <Menu className="h-5 w-5" />
-                </SidebarTrigger>
-                
-                <div className="flex flex-col">
-                  <span className="text-lg font-bold text-foreground tabular-nums tracking-tight">
-                    {timeStr}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {capitalizedDate}
-                  </span>
-                </div>
-
-                <div className="live-indicator">
-                  <span className="text-xs font-semibold text-primary">LIVE</span>
-                </div>
-              </div>
-
-              <div className="flex flex-1 max-w-md mx-8">
-                <div className="relative w-full">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    placeholder="Buscar ativos..."
-                    className="pl-10 bg-secondary/50 border-border/50 focus:border-primary/50 focus:ring-primary/20"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={handleRefresh}
-                  disabled={isRefreshing}
-                  className="h-9 w-9 hover:bg-muted/50"
-                >
-                  <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                </Button>
-              </div>
-            </div>
-          </header>
-
-          {/* Desktop Macro Pulse Bar */}
-          <MacroPulseBar />
-
-          <motion.main 
-            className="flex-1 p-4 lg:p-6 overflow-auto scrollbar-thin"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {children}
-          </motion.main>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+      {/* Mobile bottom bar */}
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur-xl md:hidden">
+        <div className="flex items-stretch justify-around">
+          {navDestinations.map((d) => (
+            <NavLink
+              key={d.url}
+              to={d.url}
+              className={cn(
+                'flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] transition-colors duration-150',
+                isActive(d.url) ? 'text-primary' : 'text-muted-foreground'
+              )}
+            >
+              <d.icon className="h-5 w-5" />
+              {d.title}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
+    </div>
   );
 }
