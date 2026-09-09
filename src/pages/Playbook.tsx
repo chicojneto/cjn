@@ -7,6 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { LongShortTips } from '@/components/dashboard/LongShortTips';
+import { TradingStrategies } from '@/components/dashboard/TradingStrategies';
 import {
   protocoloMatinal,
   hierarquiaSinais,
@@ -168,6 +170,7 @@ export default function Playbook() {
           <TabsTrigger value="hierarquia">Hierarquia de Sinais</TabsTrigger>
           <TabsTrigger value="gex">Camada GEX</TabsTrigger>
           <TabsTrigger value="ativos">Configuração por ativo</TabsTrigger>
+          <TabsTrigger value="referencia">Referência</TabsTrigger>
         </TabsList>
 
         <TabsContent value="protocolo">
@@ -181,6 +184,10 @@ export default function Playbook() {
         </TabsContent>
         <TabsContent value="ativos">
           <BlockCards blocks={configuracaoPorAtivo} label="Configuração por ativo" />
+        </TabsContent>
+        <TabsContent value="referencia" className="space-y-6">
+          <LongShortTips />
+          <TradingStrategies />
         </TabsContent>
       </Tabs>
     </motion.div>
