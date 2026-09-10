@@ -7,8 +7,8 @@ export interface NavDestination {
 }
 
 export const navDestinations: NavDestination[] = [
-  { title: 'Manhã', url: '/', icon: Sunrise },
+  { title: 'Sessões', url: '/', icon: Globe2 },
+  { title: 'Manhã', url: '/manha', icon: Sunrise },
   { title: 'Mercados', url: '/mercados', icon: BarChart3 },
-  { title: 'Sessões', url: '/sessoes', icon: Globe2 },
   { title: 'Playbook', url: '/playbook', icon: NotebookPen },
 ];
