@@ -30,12 +30,17 @@ const App = () => (
         <Routes>
           <Route path="/" element={
             <AppLayout>
-              <Manha />
+              <MapaGlobal />
             </AppLayout>
           } />
           <Route path="/sessoes" element={
             <AppLayout>
               <MapaGlobal />
+            </AppLayout>
+          } />
+          <Route path="/manha" element={
+            <AppLayout>
+              <Manha />
             </AppLayout>
           } />
           <Route path="/dashboard" element={
