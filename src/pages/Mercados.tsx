@@ -9,7 +9,6 @@ import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
 import { supabase } from '@/integrations/supabase/client';
 
 const PANEL_ORDER = [
-  'Pré Abertura B3',
   'Índices Acionários - B3',
   'Commodities',
   'Cesta DXY',
@@ -111,13 +110,14 @@ export default function Mercados() {
       )}
 
       {/* Juros */}
-      <motion.section variants={item}>
+      <motion.section variants={item} className="space-y-4">
         <DiCurvePanel />
+        <DiCurveEditor />
       </motion.section>
 
       {/* Correlações */}
       <motion.section variants={item}>
-        <CorrelationsPanel selectedAsset={null} onAssetSelect={() => {}} />
+        <CorrelationsPanel selectedAsset={selectedAsset} onAssetSelect={setSelectedAsset} />
       </motion.section>
     </motion.div>
   );
