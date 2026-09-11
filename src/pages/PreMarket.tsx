@@ -94,7 +94,7 @@ export default function PreMarket() {
           <h1 className="text-xl font-bold tracking-normal text-muted-foreground">Pré-market</h1>
           <p className="text-[11px] tracking-widest text-muted-foreground">
             Radar 6L · variação overnight
-            {data ? ` · ${new Date(data.geradoEm).toLocaleTimeString('pt-BR')}` : ''}
+            {data ? ` · ${new Date(data.geradoEm).toLocaleTimeString('pt-BR', { timeZone: 'America/New_York' }) + ' NY'}` : ''}
           </p>
         </div>
         <button

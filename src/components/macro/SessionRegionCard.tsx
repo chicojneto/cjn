@@ -2,7 +2,7 @@ import { type SessionDef, isSessionActive } from '@/lib/marketSessions';
 import { Building2, Clock, MapPin, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTimezone } from '@/contexts/TimezoneContext';
-import { convertHHMMFromBRT } from '@/lib/timezones';
+import { convertHHMMFromNY } from '@/lib/timezones';
 import asiaImg from '@/assets/region-asia.jpg';
 import middleEastImg from '@/assets/region-middle-east.jpg';
 import europeImg from '@/assets/region-europe.jpg';
@@ -27,8 +27,8 @@ export function SessionRegionCard({ session }: Props) {
   }, []);
   const { tz } = useTimezone();
   const active = isSessionActive(session, now);
-  const openTz = convertHHMMFromBRT(session.openBRT, tz.iana, now);
-  const closeTz = convertHHMMFromBRT(session.closeBRT, tz.iana, now);
+  const openTz = convertHHMMFromNY(session.openNY, tz.iana, now);
+  const closeTz = convertHHMMFromNY(session.closeNY, tz.iana, now);
   const accent = `hsl(${session.accent})`;
   const accentSoft = `hsl(${session.accent} / 0.12)`;
   const accentBorder = `hsl(${session.accent} / 0.35)`;
@@ -109,7 +109,7 @@ export function SessionRegionCard({ session }: Props) {
             </div>
             {tz.id !== 'brt' && (
               <div className="text-[10px] font-mono text-muted-foreground mt-1 uppercase tracking-wider">
-                {session.openBRT} – {session.closeBRT} BRT
+                {session.openNY} – {session.closeNY} NY
               </div>
             )}
           </div>

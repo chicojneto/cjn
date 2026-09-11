@@ -67,7 +67,7 @@ export function LiquidityIndicator() {
               </span>
             </div>
             <div className="text-[11px] text-muted-foreground mt-2 font-mono uppercase tracking-wider">
-              Encerra em <span className="text-foreground tabular-nums">{formatHMS(golden.secondsToEnd)}</span> • 10:00–13:00 BRT
+              Encerra em <span className="text-foreground tabular-nums">{formatHMS(golden.secondsToEnd)}</span> • 08:00–11:30 NY
             </div>
           </>
         ) : (
@@ -76,7 +76,7 @@ export function LiquidityIndicator() {
               Aguardando
             </div>
             <div className="text-[11px] text-muted-foreground mt-2 font-mono uppercase tracking-wider">
-              Inicia em <span className="text-foreground tabular-nums">{formatHMS(Math.max(0, golden.secondsToStart))}</span> • 10:00–13:00 BRT
+              Inicia em <span className="text-foreground tabular-nums">{formatHMS(Math.max(0, golden.secondsToStart))}</span> • 08:00–11:30 NY
             </div>
           </>
         )}

@@ -1,5 +1,5 @@
 // IANA timezone presets used across the app.
-// All session windows in marketSessions.ts are stored in BRT (UTC-3).
+// All session windows in marketSessions.ts are stored in New York time.
 // We never change that — we only re-render the *displayed* clock/labels.
 
 export interface TzPreset {
@@ -10,9 +10,9 @@ export interface TzPreset {
 }
 
 export const TZ_PRESETS: TzPreset[] = [
+  { id: 'ny',     label: 'NY',     iana: 'America/New_York',    description: 'Nova York (EST/EDT) — referência' },
   { id: 'brt',    label: 'BRT',    iana: 'America/Sao_Paulo',  description: 'Brasília (UTC-3)' },
   { id: 'utc',    label: 'UTC',    iana: 'UTC',                 description: 'Tempo Universal' },
-  { id: 'ny',     label: 'NY',     iana: 'America/New_York',    description: 'Nova York (EST/EDT)' },
   { id: 'london', label: 'LON',    iana: 'Europe/London',       description: 'Londres (GMT/BST)' },
   { id: 'frank',  label: 'FRA',    iana: 'Europe/Berlin',       description: 'Frankfurt (CET/CEST)' },
   { id: 'dubai',  label: 'DXB',    iana: 'Asia/Dubai',          description: 'Dubai (GST)' },
@@ -20,7 +20,8 @@ export const TZ_PRESETS: TzPreset[] = [
   { id: 'sydney', label: 'SYD',    iana: 'Australia/Sydney',    description: 'Sydney (AEST/AEDT)' },
 ];
 
-export const DEFAULT_TZ = TZ_PRESETS[0]; // BRT
+export const DEFAULT_TZ = TZ_PRESETS[0]; // New York — base de referência do portal
+export const NY_IANA = 'America/New_York';
 
 /**
  * Returns offset (in minutes) for a given IANA timezone at a given date.
@@ -84,13 +85,12 @@ export function formatDateInTz(iana: string, now: Date): string {
 }
 
 /**
- * Convert a HH:MM string from BRT to the given target IANA tz.
+ * Convert a HH:MM string from New York time to the given target IANA tz.
  * Used to relabel session open/close.
  */
-export function convertHHMMFromBRT(hhmmBRT: string, targetIana: string, now: Date): string {
-  const [h, m] = hhmmBRT.split(':').map(Number);
-  // BRT offset right now (handles potential DST anywhere)
-  const brtOff = tzOffsetMinutes('America/Sao_Paulo', now); // typically -180
+export function convertHHMMFromNY(hhmmNY: string, targetIana: string, now: Date): string {
+  const [h, m] = hhmmNY.split(':').map(Number);
+  const brtOff = tzOffsetMinutes(NY_IANA, now); // -240 (EDT) or -300 (EST)
   const targetOff = tzOffsetMinutes(targetIana, now);
   const deltaMin = targetOff - brtOff;
   let total = h * 60 + m + deltaMin;
@@ -108,4 +108,70 @@ export function formatUtcOffset(iana: string, now: Date): string {
   const h = Math.floor(abs / 60);
   const m = abs % 60;
   return m === 0 ? `UTC${sign}${h}` : `UTC${sign}${h}:${m.toString().padStart(2, '0')}`;
+}
+
+
+// ──────────────────────────────────────────────────────────
+// New York daylight saving time (DST) helpers
+// EDT: 2nd Sunday of March 02:00 → 1st Sunday of November 02:00
+// ──────────────────────────────────────────────────────────
+
+/** True when New York is on daylight saving time (EDT, UTC-4). */
+export function isNyDst(at: Date): boolean {
+  return tzOffsetMinutes(NY_IANA, at) === -240;
+}
+
+/** Short label: "EDT (UTC-4)" / "EST (UTC-5)". */
+export function nyTzLabel(at: Date): string {
+  return isNyDst(at) ? 'EDT (UTC-4)' : 'EST (UTC-5)';
+}
+
+function nthSundayUTCNoon(year: number, month: number, nth: number): Date {
+  // month: 0-based. Returns the nth Sunday of that month at 12:00 UTC.
+  let count = 0;
+  for (let d = 1; d <= 31; d++) {
+    const dt = new Date(Date.UTC(year, month, d, 12));
+    if (dt.getUTCMonth() !== month) break;
+    if (dt.getUTCDay() === 0) {
+      count++;
+      if (count === nth) return dt;
+    }
+  }
+  return new Date(Date.UTC(year, month, 1, 12));
+}
+
+export interface NyDstTransition {
+  date: Date;
+  /** 'start' = entra no horário de verão (EDT); 'end' = volta ao padrão (EST). */
+  type: 'start' | 'end';
+}
+
+/** Next New York DST transition after `at`. */
+export function nextNyDstTransition(at: Date): NyDstTransition {
+  const year = Number(
+    new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, year: 'numeric' }).format(at),
+  );
+  const candidates: NyDstTransition[] = [];
+  for (const y of [year, year + 1]) {
+    candidates.push({ date: nthSundayUTCNoon(y, 2, 2), type: 'start' });
+    candidates.push({ date: nthSundayUTCNoon(y, 10, 1), type: 'end' });
+  }
+  candidates.sort((a, b) => a.date.getTime() - b.date.getTime());
+  return candidates.find((c) => c.date.getTime() > at.getTime()) ?? candidates[0];
+}
+
+/** Full note in pt-BR about the NY reference and the next DST change. */
+export function nyDstNote(at: Date = new Date()): string {
+  const t = nextNyDstTransition(at);
+  const d = new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(t.date);
+  const acao =
+    t.type === 'start'
+      ? 'Nova York entra no horário de verão (EDT, UTC-4)'
+      : 'Nova York volta ao horário padrão (EST, UTC-5)';
+  return `Todos os horários têm como referência Nova York — ${nyTzLabel(at)}. ${acao} em ${d}.`;
 }

@@ -470,7 +470,7 @@ export function DailyChecklist() {
               </CardTitle>
               {/* Auto-refresh indicator */}
               <div className={`flex items-center gap-2 font-mono text-muted-foreground ${isFullscreen ? 'text-xs' : 'text-[10px]'}`}>
-                <span className="hidden sm:inline">Atualizado: {lastUpdate.toLocaleTimeString('pt-BR')}</span>
+                <span className="hidden sm:inline">Atualizado: {lastUpdate.toLocaleTimeString('pt-BR', { timeZone: 'America/New_York' }) + ' NY'}</span>
                 <span className={`px-2 py-1 rounded-md flex items-center gap-1.5 ${
                   countdown <= 60 ? 'bg-warning/20 text-warning border border-warning/30' : 'bg-muted/50 border border-border/50'
                 }`}>

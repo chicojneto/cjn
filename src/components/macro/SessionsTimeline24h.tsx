@@ -1,7 +1,7 @@
 import { SESSIONS, toMinutes } from '@/lib/marketSessions';
 import { useEffect, useState } from 'react';
 import { useTimezone } from '@/contexts/TimezoneContext';
-import { convertHHMMFromBRT, nowMinutesInTz } from '@/lib/timezones';
+import { convertHHMMFromNY, nowMinutesInTz } from '@/lib/timezones';
 
 /**
  * 24h timeline of all market sessions, monochrome.
@@ -47,8 +47,8 @@ export function SessionsTimeline24h() {
         {/* Bars */}
         <div className="relative pt-3 space-y-2">
           {SESSIONS.map((s) => {
-            const openTz = convertHHMMFromBRT(s.openBRT, tz.iana, now);
-            const closeTz = convertHHMMFromBRT(s.closeBRT, tz.iana, now);
+            const openTz = convertHHMMFromNY(s.openNY, tz.iana, now);
+            const closeTz = convertHHMMFromNY(s.closeNY, tz.iana, now);
             return (
               <SessionBar
                 key={s.id}
