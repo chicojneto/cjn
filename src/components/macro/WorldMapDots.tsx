@@ -69,7 +69,7 @@ export function WorldMapDots() {
       </div>
 
       <div className="absolute bottom-2 left-2 px-2 py-1 border border-border bg-background/80 backdrop-blur text-[9px] font-mono uppercase tracking-widest text-muted-foreground">
-        ◴ Linha em BRT / UTC-3
+        ◴ Linha em Nova York (EST/EDT)
       </div>
     </div>
   );
@@ -109,7 +109,7 @@ function SessionMarker({ session, active }: { session: SessionDef; active: boole
         textAnchor="middle"
         className="fill-muted-foreground text-[2.5px] font-mono"
       >
-        {session.openBRT} – {session.closeBRT}
+        {session.openNY} – {session.closeNY}
       </text>
     </g>
   );

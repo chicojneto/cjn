@@ -16,7 +16,7 @@ import { ForexStatusBar } from '@/components/macro/ForexStatusBar';
 import { LiquidityIndicator } from '@/components/macro/LiquidityIndicator';
 import { TimezoneSelector } from '@/components/macro/TimezoneSelector';
 import { useTimezone } from '@/contexts/TimezoneContext';
-import { convertHHMMFromBRT, formatClockInTz, formatDateInTz, formatUtcOffset } from '@/lib/timezones';
+import { convertHHMMFromNY, formatClockInTz, formatDateInTz, formatUtcOffset } from '@/lib/timezones';
 
 const container = {
   hidden: { opacity: 0 },
@@ -40,7 +40,7 @@ export default function MapaGlobal() {
   const rolloverMin = minutesUntilNextRollover(now);
   const rolloverSec = (rolloverMin * 60) - now.getUTCSeconds();
   const rollover = formatHMS(rolloverSec > 0 ? rolloverSec : rolloverSec + 86400);
-  const rolloverInTz = convertHHMMFromBRT('18:00', tz.iana, now);
+  const rolloverInTz = convertHHMMFromNY('17:00', tz.iana, now);
   const clock = formatClockInTz(tz.iana, now);
   const dateLabel = formatDateInTz(tz.iana, now);
   const offset = formatUtcOffset(tz.iana, now);

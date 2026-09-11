@@ -37,7 +37,7 @@ export function ForexStatusBar() {
           </span>
         </div>
         <p className="text-[11px] font-mono text-muted-foreground mt-0.5 uppercase tracking-wider">
-          {status.label} • Dom 18:00 → Sex 18:00 BRT
+          {status.label} • Dom 17:00 → Sex 17:00 NY
         </p>
       </div>
       <div className="text-right shrink-0">
