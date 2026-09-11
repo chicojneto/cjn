@@ -16,7 +16,7 @@ import { ForexStatusBar } from '@/components/macro/ForexStatusBar';
 import { LiquidityIndicator } from '@/components/macro/LiquidityIndicator';
 import { TimezoneSelector } from '@/components/macro/TimezoneSelector';
 import { useTimezone } from '@/contexts/TimezoneContext';
-import { convertHHMMFromNY, formatClockInTz, formatDateInTz, formatUtcOffset } from '@/lib/timezones';
+import { convertHHMMFromNY, formatClockInTz, formatDateInTz, formatUtcOffset, nyTzLabel, nyDstNote } from '@/lib/timezones';
 
 const container = {
   hidden: { opacity: 0 },
