@@ -1,5 +1,15 @@
-// Global market sessions in BRT (UTC-3) reference
-// Each session has start/end in minutes since 00:00 BRT (can wrap across midnight)
+// Global market sessions referenced to New York time (America/New_York).
+// Each session has start/end in minutes since 00:00 NY (can wrap across midnight).
+// NY observes DST (EDT UTC-4 / EST UTC-5) — see nextNyDstTransition() in timezones.ts.
+
+import { tzOffsetMinutes } from '@/lib/timezones';
+
+const NY = 'America/New_York';
+
+/** A Date shifted so that its UTC fields equal the NY wall clock. */
+function nyShift(now: Date): Date {
+  return new Date(now.getTime() + tzOffsetMinutes(NY, now) * 60_000);
+}
 
 export type SessionId = 'asia' | 'middle_east' | 'europe' | 'americas';
 
@@ -9,9 +19,9 @@ export interface SessionDef {
   subtitle: string;
   cities: string[];
   exchanges: string[];
-  // BRT hours (24h)
-  openBRT: string;  // "HH:MM"
-  closeBRT: string; // "HH:MM"
+  // New York hours (24h)
+  openNY: string;  // "HH:MM"
+  closeNY: string; // "HH:MM"
   // x position on the world map (0-100%)
   mapX: number;
   mapY: number;
@@ -26,8 +36,8 @@ export const SESSIONS: SessionDef[] = [
     subtitle: 'Sydney, Tóquio e China continental',
     cities: ['Wellington', 'Sydney', 'Tóquio', 'Hong Kong', 'Shanghai', 'Singapore', 'Mumbai'],
     exchanges: ['JPX', 'HKEX', 'SSE', 'SGX', 'NSE', 'BSE'],
-    openBRT: '18:00',
-    closeBRT: '06:00',
+    openNY: '17:00',
+    closeNY: '05:00',
     mapX: 82,
     mapY: 48,
     accent: '165 70% 48%',
@@ -38,8 +48,8 @@ export const SESSIONS: SessionDef[] = [
     subtitle: 'Dubai, Riyadh e Golfo',
     cities: ['Dubai', 'Riyadh'],
     exchanges: ['Tadawul', 'DFM'],
-    openBRT: '02:30',
-    closeBRT: '09:00',
+    openNY: '01:30',
+    closeNY: '08:00',
     mapX: 60,
     mapY: 52,
     accent: '212 90% 60%',
@@ -50,8 +60,8 @@ export const SESSIONS: SessionDef[] = [
     subtitle: 'Londres, Frankfurt e Zurique',
     cities: ['Londres', 'Frankfurt', 'Paris', 'Zurique', 'Milão'],
     exchanges: ['LSE', 'XETRA', 'Euronext', 'SIX'],
-    openBRT: '04:00',
-    closeBRT: '13:30',
+    openNY: '03:00',
+    closeNY: '12:30',
     mapX: 50,
     mapY: 40,
     accent: '270 75% 65%',
@@ -62,8 +72,8 @@ export const SESSIONS: SessionDef[] = [
     subtitle: 'B3, NYSE, NASDAQ e Canadá',
     cities: ['New York', 'Chicago', 'Toronto', 'São Paulo'],
     exchanges: ['NYSE', 'NASDAQ', 'CME', 'TSX', 'B3'],
-    openBRT: '10:00',
-    closeBRT: '17:00',
+    openNY: '09:30',
+    closeNY: '16:00',
     mapX: 28,
     mapY: 45,
     accent: '24 90% 58%',
@@ -75,18 +85,21 @@ export function toMinutes(hhmm: string): number {
   return h * 60 + m;
 }
 
-export function nowBRTMinutes(now: Date): number {
-  // BRT = UTC-3
-  const utc = now.getUTCHours() * 60 + now.getUTCMinutes();
-  return ((utc - 180) % 1440 + 1440) % 1440;
+export function nowNYMinutes(now: Date): number {
+  const ny = nyShift(now);
+  return ny.getUTCHours() * 60 + ny.getUTCMinutes();
+}
+
+/** Weekday in NY (0 Sun .. 6 Sat). */
+export function nyWeekday(now: Date): number {
+  return nyShift(now).getUTCDay();
 }
 
 export function isSessionActive(session: SessionDef, now: Date): boolean {
-  const cur = nowBRTMinutes(now);
-  const open = toMinutes(session.openBRT);
-  const close = toMinutes(session.closeBRT);
-  // BRT-shifted weekday (0 Sun .. 6 Sat)
-  const brtDay = new Date(now.getTime() - 3 * 3600_000).getUTCDay();
+  const cur = nowNYMinutes(now);
+  const open = toMinutes(session.openNY);
+  const close = toMinutes(session.closeNY);
+  const brtDay = nyWeekday(now);
 
   if (open < close) {
     // Same-day session — closed on BRT weekend
@@ -111,9 +124,9 @@ export function isSessionActive(session: SessionDef, now: Date): boolean {
 }
 
 export function minutesUntilNextRollover(now: Date): number {
-  // Next 18:00 BRT
-  const cur = nowBRTMinutes(now);
-  const target = 18 * 60;
+  // Next 17:00 NY (weekly FX rollover)
+  const cur = nowNYMinutes(now);
+  const target = 17 * 60;
   return ((target - cur) % 1440 + 1440) % 1440;
 }
 
@@ -124,19 +137,18 @@ export function formatHMS(totalSeconds: number): string {
   return `${h}:${m}:${s}`;
 }
 
-export function brtTimeString(now: Date): string {
-  const cur = nowBRTMinutes(now);
+export function nyTimeString(now: Date): string {
+  const cur = nowNYMinutes(now);
   const h = Math.floor(cur / 60).toString().padStart(2, '0');
   const m = (cur % 60).toString().padStart(2, '0');
   const s = now.getUTCSeconds().toString().padStart(2, '0');
   return `${h}:${m}:${s}`;
 }
 
-export function brtDateString(now: Date): string {
-  // shift to BRT
-  const brtMs = now.getTime() - 3 * 60 * 60 * 1000;
-  const brtDate = new Date(brtMs);
-  return brtDate.toLocaleDateString('pt-BR', {
+export function nyDateString(now: Date): string {
+  const nyDate = nyShift(now);
+  return nyDate.toLocaleDateString('pt-BR', {
+    timeZone: 'UTC',
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -195,33 +207,32 @@ export function nextOpenAndClose(now: Date) {
 }
 
 // ──────────────────────────────────────────────────────────
-// Forex 24h status — opens Sun 18:00 BRT, closes Fri 18:00 BRT
+// Forex 24h status — opens Sun 17:00 NY, closes Fri 17:00 NY
 // ──────────────────────────────────────────────────────────
 export function forexStatus(now: Date): { isOpen: boolean; label: string; nextEventSec: number } {
-  // Use BRT-shifted Date for weekday and minutes
-  const brt = new Date(now.getTime() - 3 * 3600_000);
+  const brt = nyShift(now);
   const day = brt.getUTCDay(); // 0 Sun .. 6 Sat
   const minutes = brt.getUTCHours() * 60 + brt.getUTCMinutes();
   const sec = brt.getUTCSeconds();
 
-  // Closed window: Fri 18:00 → Sun 18:00 BRT
+  // Closed window: Fri 17:00 → Sun 17:00 NY
   let isOpen = true;
-  if (day === 5 && minutes >= 18 * 60) isOpen = false;
+  if (day === 5 && minutes >= 17 * 60) isOpen = false;
   if (day === 6) isOpen = false;
-  if (day === 0 && minutes < 18 * 60) isOpen = false;
+  if (day === 0 && minutes < 17 * 60) isOpen = false;
 
   // Compute next event time (in seconds)
   let nextEventSec = 0;
   if (isOpen) {
-    // next close: next Friday 18:00
+    // next close: next Friday 17:00 NY
     const daysUntilFri = ((5 - day) % 7 + 7) % 7;
-    const targetMin = daysUntilFri * 1440 + 18 * 60;
+    const targetMin = daysUntilFri * 1440 + 17 * 60;
     nextEventSec = (targetMin - minutes) * 60 - sec;
     if (nextEventSec <= 0) nextEventSec += 7 * 86400;
   } else {
-    // next open: next Sunday 18:00
+    // next open: next Sunday 17:00 NY
     const daysUntilSun = ((0 - day) % 7 + 7) % 7;
-    const targetMin = daysUntilSun * 1440 + 18 * 60;
+    const targetMin = daysUntilSun * 1440 + 17 * 60;
     nextEventSec = (targetMin - minutes) * 60 - sec;
     if (nextEventSec <= 0) nextEventSec += 7 * 86400;
   }
@@ -267,20 +278,20 @@ export function liquidityLevel(now: Date): { level: LiquidityLevel; score: numbe
 }
 
 // ──────────────────────────────────────────────────────────
-// Golden window: 10:00 - 13:00 BRT (London + NY overlap)
+// Golden window: 08:00 - 11:30 NY (London + NY overlap)
 // ──────────────────────────────────────────────────────────
 export function isGoldenWindow(now: Date): boolean {
-  const cur = nowBRTMinutes(now);
-  const day = new Date(now.getTime() - 3 * 3600_000).getUTCDay();
+  const cur = nowNYMinutes(now);
+  const day = nyWeekday(now);
   if (day === 0 || day === 6) return false;
-  return cur >= 10 * 60 && cur < 13 * 60;
+  return cur >= 8 * 60 && cur < 11 * 60 + 30;
 }
 
 export function timeUntilGoldenWindow(now: Date): { active: boolean; secondsToStart: number; secondsToEnd: number } {
-  const cur = nowBRTMinutes(now);
-  const sec = new Date(now.getTime() - 3 * 3600_000).getUTCSeconds();
-  const start = 10 * 60;
-  const end = 13 * 60;
+  const cur = nowNYMinutes(now);
+  const sec = now.getUTCSeconds();
+  const start = 8 * 60;
+  const end = 11 * 60 + 30;
   if (cur >= start && cur < end) {
     return { active: true, secondsToStart: 0, secondsToEnd: (end - cur) * 60 - sec };
   }
