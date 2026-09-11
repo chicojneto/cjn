@@ -99,26 +99,26 @@ export function isSessionActive(session: SessionDef, now: Date): boolean {
   const cur = nowNYMinutes(now);
   const open = toMinutes(session.openNY);
   const close = toMinutes(session.closeNY);
-  const brtDay = nyWeekday(now);
+  const nyDay = nyWeekday(now);
 
   if (open < close) {
-    // Same-day session — closed on BRT weekend
-    if (brtDay === 0 || brtDay === 6) return false;
+    // Same-day session — closed on NY weekend
+    if (nyDay === 0 || nyDay === 6) return false;
     return cur >= open && cur < close;
   }
 
-  // Wraps midnight (e.g. Asia 18:00 → 06:00 BRT).
+  // Wraps midnight (e.g. Asia 17:00 → 05:00 NY).
   // The trading day belongs to the *next* calendar day in the local region,
-  // so we must exclude the BRT evenings/mornings that map to a weekend there.
+  // so we must exclude the NY evenings/mornings that map to a weekend there.
   if (cur >= open) {
     // Evening portion → belongs to next day in Asia.
     // Exclude Fri evening (→ Sat Asia) and Sat evening (→ Sun Asia).
-    return brtDay !== 5 && brtDay !== 6;
+    return nyDay !== 5 && nyDay !== 6;
   }
   if (cur < close) {
-    // Early-morning portion → started previous evening in BRT.
+    // Early-morning portion → started previous evening in NY.
     // Exclude Sat morning (started Fri eve) and Sun morning (started Sat eve).
-    return brtDay !== 6 && brtDay !== 0;
+    return nyDay !== 6 && nyDay !== 0;
   }
   return false;
 }
