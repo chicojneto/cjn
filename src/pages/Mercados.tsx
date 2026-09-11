@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { BarChart3, RefreshCw } from 'lucide-react';
@@ -6,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { MarketTable } from '@/components/dashboard/MarketTable';
 import { DiCurvePanel } from '@/components/dashboard/DiCurvePanel';
 import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
+import { DiCurveEditor } from '@/components/settings/DiCurveEditor';
 import { supabase } from '@/integrations/supabase/client';
 
 const PANEL_ORDER = [
