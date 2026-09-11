@@ -41,7 +41,7 @@ const varColor = (v: number | null | undefined) =>
   typeof v !== 'number' || !isFinite(v) ? 'text-muted-foreground' : v > 0 ? 'text-success' : v < 0 ? 'text-destructive' : 'text-muted-foreground';
 
 const hora = (iso?: string | null) =>
-  iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '—';
+  iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York' }) + ' NY' : '—';
 
 function ErrorLine({ onRetry }: { onRetry: () => void }) {
   return (

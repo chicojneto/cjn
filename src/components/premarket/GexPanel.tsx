@@ -244,7 +244,7 @@ export function GexPanel({ preset }: { preset: 'win' | 'gold' | 'nasdaq' }) {
       )}
 
       <div className="text-[10px] tracking-widest text-muted-foreground">
-        {data.aviso}  · gerado em {new Date(data.geradoEm).toLocaleString('pt-BR')}
+        {data.aviso}  · gerado em {new Date(data.geradoEm).toLocaleString('pt-BR', { timeZone: 'America/New_York' }) + ' NY'}
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ export function ManualStamp({ updatedAt, className = '' }: { updatedAt?: string 
   return (
     <span
       className={`text-[9px] font-mono uppercase ${stale ? 'text-muted-foreground' : 'text-muted-foreground'} ${className}`}
-      title={new Date(updatedAt).toLocaleString('pt-BR')}
+      title={new Date(updatedAt).toLocaleString('pt-BR', { timeZone: 'America/New_York' }) + ' NY'}
     >
       {formatManualStamp(updatedAt)}
       {stale && ' · desatualizado'}
