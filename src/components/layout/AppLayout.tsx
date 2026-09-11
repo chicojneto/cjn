@@ -92,7 +92,12 @@ export function AppLayout({ children }: AppLayoutProps) {
           transition={{ duration: 0.2 }}
         >
           {children}
+
+          <p className="mt-8 border-t border-border pt-4 text-[13px] leading-relaxed text-muted-foreground">
+            {nyDstNote()}
+          </p>
         </motion.main>
+
       </div>
 
       {/* Mobile bottom bar */}
