@@ -43,6 +43,7 @@ const container = {
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 
 export default function Mercados() {
+  const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const { data: panels, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['markets-panels'],
     queryFn: fetchPanels,
