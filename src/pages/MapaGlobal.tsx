@@ -15,6 +15,7 @@ import { NextSessionEvents } from '@/components/macro/NextSessionEvents';
 import { ForexStatusBar } from '@/components/macro/ForexStatusBar';
 import { LiquidityIndicator } from '@/components/macro/LiquidityIndicator';
 import { TimezoneSelector } from '@/components/macro/TimezoneSelector';
+import { MarketWindowsSchedule } from '@/components/macro/MarketWindowsSchedule';
 import { useTimezone } from '@/contexts/TimezoneContext';
 import { convertHHMMFromNY, formatClockInTz, formatDateInTz, formatUtcOffset, nyTzLabel, nyDstNote } from '@/lib/timezones';
 
@@ -123,9 +124,9 @@ export default function MapaGlobal() {
         <ForexStatusBar />
       </motion.section>
 
-      {/* Next open / next close countdown */}
+      {/* Complete operational schedule */}
       <motion.section variants={item}>
-        <NextSessionEvents />
+        <MarketWindowsSchedule />
       </motion.section>
 
       {/* Liquidity + Golden Window */}

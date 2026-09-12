@@ -1,7 +1,8 @@
-import { SESSIONS, toMinutes } from '@/lib/marketSessions';
+import { toMinutes } from '@/lib/marketSessions';
 import { useEffect, useState } from 'react';
-import { useTimezone } from '@/contexts/TimezoneContext';
-import { convertHHMMFromNY, nowMinutesInTz } from '@/lib/timezones';
+import { MARKET_WINDOWS, marketWindowIsActive, windowHours, type MarketWindow } from '@/lib/marketWindows';
+import { NY_IANA, nowMinutesInTz, nyTzLabel } from '@/lib/timezones';
+import { cn } from '@/lib/utils';
 
 /**
  * 24h timeline of all market sessions, monochrome.
@@ -14,24 +15,23 @@ export function SessionsTimeline24h() {
     return () => clearInterval(id);
   }, []);
 
-  const { tz } = useTimezone();
-  const cur = nowMinutesInTz(tz.iana, now);
+  const cur = nowMinutesInTz(NY_IANA, now);
   const curPct = (cur / 1440) * 100;
   const curHHMM = `${String(Math.floor(cur / 60)).padStart(2, '0')}:${String(cur % 60).padStart(2, '0')}`;
 
   return (
-    <div className="border border-border bg-card p-4">
-      <div className="flex items-center gap-2 mb-4 text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
+    <div className="rounded-[14px] border border-border bg-card p-4">
+      <div className="mb-4 flex items-center gap-2 text-[13px] text-muted-foreground">
         <span>◴</span>
-        Linha do tempo 24h ({tz.label})
+        Linha do tempo 24h · Nova York · {nyTzLabel(now)}
       </div>
 
       {/* Legend */}
       <div className="flex flex-wrap gap-x-6 gap-y-2 mb-4">
-        {SESSIONS.map((s) => (
-          <div key={s.id} className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider">
-            <span className="inline-block w-2 h-2 border border-foreground bg-foreground/60" />
-            {s.label}
+        {(['session', 'killzone', 'overlap', 'pause'] as const).map((kind) => (
+          <div key={kind} className="flex items-center gap-2 text-[12px] text-muted-foreground">
+            <span className={cn('inline-block h-2 w-2 rounded-full', kindStyle(kind))} />
+            {kind === 'session' ? 'Sessão' : kind === 'killzone' ? 'Killzone' : kind === 'overlap' ? 'Overlap' : 'Pausa'}
           </div>
         ))}
       </div>
@@ -46,15 +46,16 @@ export function SessionsTimeline24h() {
 
         {/* Bars */}
         <div className="relative pt-3 space-y-2">
-          {SESSIONS.map((s) => {
-            const openTz = convertHHMMFromNY(s.openNY, tz.iana, now);
-            const closeTz = convertHHMMFromNY(s.closeNY, tz.iana, now);
+          {MARKET_WINDOWS.map((s) => {
+            const hours = windowHours(s, now);
             return (
               <SessionBar
                 key={s.id}
-                open={openTz}
-                close={closeTz}
-                label={s.label.split(' ')[0]}
+                open={hours.open}
+                close={hours.close}
+                label={s.label}
+                kind={s.kind}
+                active={marketWindowIsActive(s, now)}
               />
             );
           })}
@@ -74,7 +75,7 @@ export function SessionsTimeline24h() {
   );
 }
 
-function SessionBar({ open, close, label }: { open: string; close: string; label: string }) {
+function SessionBar({ open, close, label, kind, active }: { open: string; close: string; label: string; kind: MarketWindow['kind']; active: boolean }) {
   const o = toMinutes(open);
   const c = toMinutes(close);
   const segments: { left: number; width: number }[] = [];
@@ -86,15 +87,15 @@ function SessionBar({ open, close, label }: { open: string; close: string; label
     segments.push({ left: 0, width: (c / 1440) * 100 });
   }
   return (
-    <div className="relative h-7 border border-border/50 bg-muted/20">
+    <div className={cn('relative h-7 overflow-hidden rounded-md border bg-background/30', active ? 'border-primary/50' : 'border-border')}>
       {segments.map((seg, i) => (
         <div
           key={i}
-          className="absolute top-0 bottom-0 bg-foreground/70 border-x border-foreground flex items-center justify-center"
+          className={cn('absolute bottom-0 top-0 flex items-center justify-center border-x', kindStyle(kind), active && 'border-primary bg-primary/30')}
           style={{ left: `${seg.left}%`, width: `${seg.width}%` }}
         >
           {seg.width > 8 && (
-            <span className="text-[9px] font-mono uppercase tracking-wider text-background px-1 truncate">
+            <span className="truncate px-1 font-mono text-[9px] text-foreground">
               {label} {i === 0 ? open : ''} {i === segments.length - 1 ? `→ ${close}` : ''}
             </span>
           )}
@@ -102,4 +103,11 @@ function SessionBar({ open, close, label }: { open: string; close: string; label
       ))}
     </div>
   );
+}
+
+function kindStyle(kind: MarketWindow['kind']) {
+  if (kind === 'overlap') return 'border-primary/40 bg-primary/15';
+  if (kind === 'killzone') return 'border-muted-foreground/30 bg-muted-foreground/20';
+  if (kind === 'pause') return 'border-border bg-muted/40';
+  return 'border-foreground/25 bg-foreground/10';
 }
