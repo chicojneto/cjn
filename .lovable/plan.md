@@ -1,55 +1,29 @@
-
-# Plano: Reorganizar Análise de Correlações em 3 Colunas
+# Atualização do Mapa Global por horários de Nova York
 
 ## Objetivo
-Reorganizar o painel "Análise de Correlações" (SignalsPanel) para distribuir os 7 ativos em 3 colunas, facilitando a leitura visual.
+Transformar a página Sessões em um painel operacional completo baseado em Nova York, seguindo a tabela enviada e o sistema visual atual do pipsncoffee.
 
-## Distribuição Proposta
+## O que será alterado
+- Substituir a visão resumida de horários por uma agenda completa com:
+  - Sydney, Tóquio, Londres, B3 e Nova York;
+  - Asia, London, NY AM, London Close e NY PM Killzones;
+  - overlap Ásia/Londres, Londres/NY, tríplice Londres+B3+NY e London Close+B3+NY;
+  - pausa NY Lunch.
+- Exibir horários de EDT (UTC-4) e EST (UTC-5), destacando automaticamente a coluna vigente em Nova York.
+- Mostrar em cada faixa o foco operacional e a dinâmica de liquidez descritos na referência.
+- Identificar dinamicamente o que está ativo agora e o próximo evento, respeitando dias úteis e janelas que atravessam a meia-noite.
+- Atualizar a linha do tempo de 24 horas para incluir sessões, killzones e overlaps, com diferenciação visual sem sair da paleta quente existente.
+- Manter o mapa e os cards regionais, alinhando os horários principais das regiões às novas referências.
+- Usar tabela no desktop e cartões empilhados no celular, sem alargar o conteúdo além do padrão atual.
 
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│  📊 ANÁLISE DE CORRELAÇÕES                                      │
-├───────────────────┬───────────────────┬─────────────────────────┤
-│  BRASIL           │  EUA              │  FOREX                  │
-│                   │                   │                         │
-│  WIN (LONG)       │  S&P 500 (SHORT)  │  EUR/USD (NEUTRO)       │
-│  • sinal 1        │  • sinal 1        │  • sinal 1              │
-│  • sinal 2        │  • sinal 2        │  • sinal 2              │
-│                   │                   │                         │
-│  WDO (SHORT)      │  NASDAQ (SHORT)   │  GBP/USD (LONG)         │
-│  • sinal 1        │  • sinal 1        │  • sinal 1              │
-│  • sinal 2        │  • sinal 2        │  • sinal 2              │
-│                   │                   │                         │
-│  XAU/USD (LONG)   │                   │                         │
-│  • sinal 1        │                   │                         │
-│  • sinal 2        │                   │                         │
-└───────────────────┴───────────────────┴─────────────────────────┘
-```
+## Regras visuais
+- Marca âmbar somente para atividade atual/destaque principal.
+- Verde e vermelho reservados a estados de mercado quando aplicável; killzones e overlaps serão diferenciados por superfície, borda e intensidade neutra/âmbar.
+- Números e horários em JetBrains Mono; textos em sentence case; sem gradientes, brilho ou animação decorativa.
 
-## Agrupamento por Categoria
-
-| Coluna 1 - BRASIL/COMMODITIES | Coluna 2 - ÍNDICES EUA | Coluna 3 - FOREX |
-|-------------------------------|------------------------|------------------|
-| WIN                           | S&P 500                | EUR/USD          |
-| WDO                           | NASDAQ                 | GBP/USD          |
-| XAU/USD                       |                        |                  |
-
-## Alteração Técnica
-
-**Arquivo:** `src/components/dashboard/DailyChecklist.tsx`
-
-Modificar o `SignalsPanel` para usar um layout de grid com 3 colunas:
-
-1. Trocar o container `space-y-3` por `grid grid-cols-3 gap-4`
-2. Agrupar os ativos em 3 divs separadas:
-   - Coluna 1: WIN, WDO, XAU/USD
-   - Coluna 2: S&P 500, NASDAQ  
-   - Coluna 3: EUR/USD, GBP/USD
-3. Adicionar títulos de categoria para cada coluna (opcional)
-
-## Resultado Esperado
-
-- Layout mais limpo e organizado
-- Agrupamento lógico por categoria de ativo
-- Melhor aproveitamento do espaço horizontal
-- Leitura mais fácil das correlações por região/tipo
+## Detalhes técnicos
+- Criar uma fonte única de dados para todas as janelas, com horários EDT/EST, categoria, descrição e prioridade.
+- Reutilizar a detecção de horário de verão de Nova York já existente.
+- Derivar estado ativo, próximo início e conversão para o fuso de visualização a partir dessa fonte única.
+- Preservar as regras semanais existentes de fechamento/reabertura do mercado.
+- Validar em desktop e mobile, conferindo conteúdo, ausência de sobreposição e atualização do estado atual.
