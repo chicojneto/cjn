@@ -17,6 +17,7 @@ export function MarketWindowsSchedule() {
   }, []);
 
   const active = useMemo(() => activeMarketWindows(now), [now]);
+  const activeIds = useMemo(() => new Set(active.map((window) => window.id)), [active]);
   const next = useMemo(() => nextMarketWindow(now), [now]);
   const dst = isNyDst(now);
 
@@ -64,25 +65,24 @@ export function MarketWindowsSchedule() {
             </tr>
           </thead>
           <tbody>
-            {MARKET_WINDOWS.map((item) => <ScheduleRow key={item.id} item={item} now={now} />)}
+            {MARKET_WINDOWS.map((item) => <ScheduleRow key={item.id} item={item} now={now} active={activeIds.has(item.id)} />)}
           </tbody>
         </table>
       </div>
 
       <div className="space-y-2 md:hidden">
-        {MARKET_WINDOWS.map((item) => <ScheduleCard key={item.id} item={item} now={now} />)}
+        {MARKET_WINDOWS.map((item) => <ScheduleCard key={item.id} item={item} now={now} active={activeIds.has(item.id)} />)}
       </div>
     </section>
   );
 }
 
-function ScheduleRow({ item, now }: { item: MarketWindow; now: Date }) {
-  const current = activeMarketWindows(now).some((window) => window.id === item.id);
+function ScheduleRow({ item, now, active }: { item: MarketWindow; now: Date; active: boolean }) {
   return (
-    <tr className={cn('border-t border-border align-top', rowTone(item, current))}>
+    <tr className={cn('border-t border-border align-top', rowTone(item, active))}>
       <td className="px-3 py-3 text-[13px] text-muted-foreground">{item.category}</td>
       <td className="px-3 py-3 text-sm font-medium text-foreground">
-        <div className="flex items-center gap-2">{current && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}{item.label}</div>
+        <div className="flex items-center gap-2">{active && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}{item.label}</div>
       </td>
       <HourCell item={item} mode="edt" now={now} />
       <HourCell item={item} mode="est" now={now} />
@@ -102,18 +102,17 @@ function HourCell({ item, mode, now }: { item: MarketWindow; mode: 'edt' | 'est'
   );
 }
 
-function ScheduleCard({ item, now }: { item: MarketWindow; now: Date }) {
-  const current = activeMarketWindows(now).some((window) => window.id === item.id);
+function ScheduleCard({ item, now, active }: { item: MarketWindow; now: Date; active: boolean }) {
   const hours = windowHours(item, now);
   return (
-    <article className={cn('rounded-[14px] border border-border bg-card p-4', rowTone(item, current))}>
+    <article className={cn('rounded-[14px] border border-border bg-card p-4', rowTone(item, active))}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="text-[13px] text-muted-foreground">{item.category}</div>
           <h3 className="mt-0.5 text-[15px] font-medium text-foreground">{item.label}</h3>
         </div>
-        <span className={cn('rounded-full border px-2 py-1 text-[11px]', current ? 'border-primary/40 bg-primary/10 text-primary' : 'border-border text-muted-foreground')}>
-          {current ? 'Ativo' : KIND_LABEL[item.kind]}
+        <span className={cn('rounded-full border px-2 py-1 text-[11px]', active ? 'border-primary/40 bg-primary/10 text-primary' : 'border-border text-muted-foreground')}>
+          {active ? 'Ativo' : KIND_LABEL[item.kind]}
         </span>
       </div>
       <div className="mt-3 flex items-center gap-2 font-mono text-xl text-foreground">

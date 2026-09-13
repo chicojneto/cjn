@@ -99,13 +99,8 @@ export function windowHours(window: MarketWindow, at: Date) {
 
 export function marketWindowIsActive(window: MarketWindow, at: Date): boolean {
   const current = nowMinutesInTz(NY_IANA, at);
-  const day = Number(new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' })
-    .formatToParts(at).find((part) => part.type === 'weekday')?.value === 'Sun' ? 0 :
-    new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at) === 'Mon' ? 1 :
-    new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at) === 'Tue' ? 2 :
-    new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at) === 'Wed' ? 3 :
-    new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at) === 'Thu' ? 4 :
-    new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at) === 'Fri' ? 5 : 6);
+  const weekday = new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at);
+  const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(weekday);
   const { open, close } = windowHours(window, at);
   const start = toMinutes(open);
   const end = toMinutes(close);
