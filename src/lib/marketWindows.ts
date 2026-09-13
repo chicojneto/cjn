@@ -113,8 +113,18 @@ export function nextMarketWindow(at: Date): { window: MarketWindow; startsInSeco
   const seconds = at.getUTCSeconds();
   for (let minute = 1; minute <= 8 * 1440; minute += 1) {
     const candidate = new Date(at.getTime() + minute * 60_000);
-    const previous = new Date(candidate.getTime() - 60_000);
-    const opening = MARKET_WINDOWS.find((window) => !marketWindowIsActive(window, previous) && marketWindowIsActive(window, candidate));
+    const localTime = new Intl.DateTimeFormat('en-CA', {
+      timeZone: NY_IANA,
+      weekday: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).formatToParts(candidate);
+    const values = Object.fromEntries(localTime.map((part) => [part.type, part.value]));
+    const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(values.weekday);
+    if (weekday < 1 || weekday > 5) continue;
+    const hhmm = `${values.hour === '24' ? '00' : values.hour}:${values.minute}`;
+    const opening = MARKET_WINDOWS.find((window) => windowHours(window, candidate).open === hhmm);
     if (opening) return { window: opening, startsInSeconds: minute * 60 - seconds };
   }
   return null;
