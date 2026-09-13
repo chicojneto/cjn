@@ -99,13 +99,8 @@ export function windowHours(window: MarketWindow, at: Date) {
 
 export function marketWindowIsActive(window: MarketWindow, at: Date): boolean {
   const current = nowMinutesInTz(NY_IANA, at);
-  const day = Number(new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' })
-    .formatToParts(at).find((part) => part.type === 'weekday')?.value === 'Sun' ? 0 :
-    new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at) === 'Mon' ? 1 :
-    new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at) === 'Tue' ? 2 :
-    new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at) === 'Wed' ? 3 :
-    new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at) === 'Thu' ? 4 :
-    new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at) === 'Fri' ? 5 : 6);
+  const weekday = new Intl.DateTimeFormat('en-US', { timeZone: NY_IANA, weekday: 'short' }).format(at);
+  const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(weekday);
   const { open, close } = windowHours(window, at);
   const start = toMinutes(open);
   const end = toMinutes(close);
@@ -118,8 +113,22 @@ export function nextMarketWindow(at: Date): { window: MarketWindow; startsInSeco
   const seconds = at.getUTCSeconds();
   for (let minute = 1; minute <= 8 * 1440; minute += 1) {
     const candidate = new Date(at.getTime() + minute * 60_000);
-    const previous = new Date(candidate.getTime() - 60_000);
-    const opening = MARKET_WINDOWS.find((window) => !marketWindowIsActive(window, previous) && marketWindowIsActive(window, candidate));
+    const localTime = new Intl.DateTimeFormat('en-CA', {
+      timeZone: NY_IANA,
+      weekday: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).formatToParts(candidate);
+    const values = Object.fromEntries(localTime.map((part) => [part.type, part.value]));
+    const hhmm = `${values.hour === '24' ? '00' : values.hour}:${values.minute}`;
+    const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(values.weekday);
+    const opening = MARKET_WINDOWS.find((window) => {
+      const hours = windowHours(window, candidate);
+      const wrapsMidnight = toMinutes(hours.open) >= toMinutes(hours.close);
+      const validDay = wrapsMidnight ? weekday >= 0 && weekday <= 4 : weekday >= 1 && weekday <= 5;
+      return validDay && hours.open === hhmm;
+    });
     if (opening) return { window: opening, startsInSeconds: minute * 60 - seconds };
   }
   return null;
