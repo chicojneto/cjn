@@ -121,10 +121,14 @@ export function nextMarketWindow(at: Date): { window: MarketWindow; startsInSeco
       hour12: false,
     }).formatToParts(candidate);
     const values = Object.fromEntries(localTime.map((part) => [part.type, part.value]));
-    const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(values.weekday);
-    if (weekday < 1 || weekday > 5) continue;
     const hhmm = `${values.hour === '24' ? '00' : values.hour}:${values.minute}`;
-    const opening = MARKET_WINDOWS.find((window) => windowHours(window, candidate).open === hhmm);
+    const weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(values.weekday);
+    const opening = MARKET_WINDOWS.find((window) => {
+      const hours = windowHours(window, candidate);
+      const wrapsMidnight = toMinutes(hours.open) >= toMinutes(hours.close);
+      const validDay = wrapsMidnight ? weekday >= 0 && weekday <= 4 : weekday >= 1 && weekday <= 5;
+      return validDay && hours.open === hhmm;
+    });
     if (opening) return { window: opening, startsInSeconds: minute * 60 - seconds };
   }
   return null;
