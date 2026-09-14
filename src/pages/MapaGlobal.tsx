@@ -123,11 +123,6 @@ export default function MapaGlobal() {
         <ForexStatusBar />
       </motion.section>
 
-      {/* Complete operational schedule */}
-      <motion.section variants={item}>
-        <MarketWindowsSchedule />
-      </motion.section>
-
       {/* Liquidity + Golden Window */}
       <motion.section variants={item}>
         <LiquidityIndicator />
@@ -160,6 +155,11 @@ export default function MapaGlobal() {
             Base de referência: Nova York ({nyTzLabel(now)}). Horários exibidos em {tz.label} ({offset}). A regra semanal considera fechamento sexta 17:00 e reabertura domingo 17:00 (NY). {nyDstNote(now).split('. ').slice(1).join('. ')}
           </p>
         </div>
+      </motion.section>
+
+      {/* Complete operational schedule */}
+      <motion.section variants={item}>
+        <MarketWindowsSchedule />
       </motion.section>
     </motion.div>
   );
