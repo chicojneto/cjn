@@ -81,9 +81,9 @@ export default function Mercados() {
         </Button>
       </motion.div>
 
-      {/* Panels — coluna única */}
+      {/* Painéis em duas colunas no desktop */}
       {isLoading ? (
-        <div className="space-y-4">
+        <div className="grid gap-4 lg:grid-cols-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="space-y-2">
               <Skeleton className="h-8 w-full" />
@@ -94,7 +94,7 @@ export default function Mercados() {
           ))}
         </div>
       ) : (
-        <motion.div variants={item} className="space-y-4">
+        <motion.div variants={item} className="grid items-start gap-4 lg:grid-cols-2">
           {PANEL_ORDER.map((title) => {
             const quotes = panels?.[title] || [];
             if (!quotes.length) return null;
@@ -113,7 +113,7 @@ export default function Mercados() {
       )}
 
       {/* Juros */}
-      <motion.section variants={item} className="space-y-4">
+      <motion.section variants={item} className="grid items-start gap-4 lg:grid-cols-2">
         <DiCurvePanel />
         <DiCurveEditor />
       </motion.section>
