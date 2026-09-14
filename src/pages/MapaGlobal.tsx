@@ -89,7 +89,7 @@ export default function MapaGlobal() {
       </motion.section>
 
       {/* KPI Grid */}
-      <motion.section variants={item} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <motion.section variants={item} className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           icon={<Clock className="h-3.5 w-3.5" />}
           label={`Horário ${tz.label}`}
@@ -144,7 +144,7 @@ export default function MapaGlobal() {
       </motion.section>
 
       {/* Region cards */}
-      <motion.section variants={item} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <motion.section variants={item} className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {SESSIONS.map((s) => (
           <SessionRegionCard key={s.id} session={s} />
         ))}

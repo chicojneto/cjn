@@ -65,7 +65,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div className="md:pl-16">
         {/* Minimal header */}
         <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-xl">
-          <div className="mx-auto flex h-14 max-w-[720px] items-center justify-between px-4">
+          <div className="mx-auto flex h-14 max-w-[1180px] items-center justify-between px-4 sm:px-6">
             <NavLink to="/" className="flex items-center gap-2">
               <CoffeeCandleMark className="h-6 w-6 text-brand md:hidden" />
               <Wordmark className="text-[15px]" />
@@ -88,7 +88,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         </header>
 
         <motion.main
-          className="mx-auto w-full max-w-[720px] px-4 pb-24 pt-4 md:pb-10"
+          className="mx-auto w-full max-w-[1180px] min-w-0 px-4 pb-24 pt-4 sm:px-6 md:pb-10 md:pt-6"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}

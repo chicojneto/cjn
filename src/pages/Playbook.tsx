@@ -49,7 +49,7 @@ function EmptyState({ label }: { label: string }) {
 function BlockCards({ blocks, label }: { blocks: PlaybookBlock[]; label: string }) {
   if (blocks.length === 0) return <EmptyState label={label} />;
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {blocks.map((block) => (
         <Card key={block.title} className="bg-card/60 border-border/50">
           <CardHeader className="pb-3">
@@ -165,12 +165,12 @@ export default function Playbook() {
       </div>
 
       <Tabs defaultValue="protocolo" className="space-y-4">
-        <TabsList className="flex flex-wrap h-auto">
-          <TabsTrigger value="protocolo">Protocolo Matinal</TabsTrigger>
-          <TabsTrigger value="hierarquia">Hierarquia de Sinais</TabsTrigger>
-          <TabsTrigger value="gex">Camada GEX</TabsTrigger>
-          <TabsTrigger value="ativos">Configuração por ativo</TabsTrigger>
-          <TabsTrigger value="referencia">Referência</TabsTrigger>
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 md:grid-cols-5">
+          <TabsTrigger className="min-w-0" value="protocolo">Protocolo Matinal</TabsTrigger>
+          <TabsTrigger className="min-w-0" value="hierarquia">Hierarquia de Sinais</TabsTrigger>
+          <TabsTrigger className="min-w-0" value="gex">Camada GEX</TabsTrigger>
+          <TabsTrigger className="min-w-0" value="ativos">Configuração por ativo</TabsTrigger>
+          <TabsTrigger className="min-w-0 col-span-2 md:col-span-1" value="referencia">Referência</TabsTrigger>
         </TabsList>
 
         <TabsContent value="protocolo">
