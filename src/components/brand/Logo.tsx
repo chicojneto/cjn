@@ -9,6 +9,10 @@ export function CoffeeCandleMark({ className }: { className?: string }) {
       alt=""
       className={cn('h-7 w-7 rounded-full object-cover', className)}
       aria-hidden="true"
+      onError={(event) => {
+        event.currentTarget.onerror = null;
+        event.currentTarget.src = '/favicon.jpg';
+      }}
     />
   );
 }
