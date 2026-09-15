@@ -26,8 +26,8 @@ export function CoffeeCandleMark({ className }: { className?: string }) {
 
 export function Wordmark({ className }: { className?: string }) {
   return (
-    <span className={cn('lowercase tracking-tight text-foreground', className)}>
-      pips<span className="text-brand">n</span>coffee
+    <span className={cn('tracking-tight text-foreground', className)}>
+      Brew The <span className="text-brand">Market</span>
     </span>
   );
 }
