@@ -6,6 +6,7 @@ import { useGex, useRadar, type GexNivel, type GexPreset } from '@/hooks/useGexA
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { NY_IANA, nyDstNote, nyTzLabel } from '@/lib/timezones';
 import { Link } from 'react-router-dom';
 
 const ASSETS: { id: GexPreset; label: string }[] = [
@@ -40,8 +41,26 @@ const pct = (v: number | null | undefined) =>
 const varColor = (v: number | null | undefined) =>
   typeof v !== 'number' || !isFinite(v) ? 'text-muted-foreground' : v > 0 ? 'text-success' : v < 0 ? 'text-destructive' : 'text-muted-foreground';
 
-const hora = (iso?: string | null) =>
-  iso ? new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York' }) + ' NY' : '—';
+const hora = (iso?: string | null) => {
+  if (!iso) return '—';
+  const at = new Date(iso);
+  return `${at.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: NY_IANA,
+  })} NY · ${nyTzLabel(at)}`;
+};
+
+const dataNy = (at: Date) =>
+  at.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: NY_IANA });
+
+function NyTimeNote({ at = new Date() }: { at?: Date }) {
+  return (
+    <p className="border-t border-border pt-2 text-[13px] leading-relaxed text-muted-foreground">
+      {nyDstNote(at)}
+    </p>
+  );
+}
 
 function ErrorLine({ onRetry }: { onRetry: () => void }) {
   return (
@@ -74,12 +93,13 @@ function RegimeCard({ preset }: { preset: GexPreset }) {
   const cor =
     regime.viesWIN === 'alta' ? 'text-success' : regime.viesWIN === 'baixa' ? 'text-destructive' : 'text-foreground';
 
-  const hoje = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  const updatedAt = dataUpdatedAt ? new Date(dataUpdatedAt) : null;
+  const hoje = dataNy(updatedAt ?? new Date());
 
   return (
     <Card className="space-y-3 p-4">
       <div className="text-[13px] text-muted-foreground">
-        Regime do dia · {hoje} · {dataUpdatedAt ? hora(new Date(dataUpdatedAt).toISOString()) : '—'}
+        Regime do dia · {hoje} NY · {updatedAt ? hora(updatedAt.toISOString()) : '—'}
       </div>
 
       {isLoading ? (
@@ -104,6 +124,7 @@ function RegimeCard({ preset }: { preset: GexPreset }) {
       {regime.motivos.length > 0 && (
         <p className="text-[14px] text-muted-foreground">{regime.motivos.join(' · ')}</p>
       )}
+      <NyTimeNote at={updatedAt ?? new Date()} />
     </Card>
   );
 }
@@ -141,6 +162,7 @@ function RadarCard() {
               {status.text}
             </div>
           )}
+          <NyTimeNote at={data.geradoEm ? new Date(data.geradoEm) : new Date()} />
         </>
       )}
     </Card>
