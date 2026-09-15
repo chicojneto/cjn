@@ -38,8 +38,8 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Desktop icon rail */}
       <aside className="hidden md:flex fixed inset-y-0 left-0 z-40 w-16 flex-col items-center gap-1 border-r border-border bg-card py-4">
-        <NavLink to="/" className="mb-4">
-          <CoffeeCandleMark className="h-7 w-7 text-brand" />
+        <NavLink to="/" className="mb-4" aria-label="Brew The Market">
+          <CoffeeCandleMark className="h-10 w-10 border border-border" />
         </NavLink>
         {navDestinations.map((d) => (
           <Tooltip key={d.url} delayDuration={120}>
@@ -67,7 +67,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-xl">
           <div className="mx-auto flex h-14 max-w-[1180px] items-center justify-between px-4 sm:px-6">
             <NavLink to="/" className="flex items-center gap-2">
-              <CoffeeCandleMark className="h-6 w-6 text-brand md:hidden" />
+              <CoffeeCandleMark className="h-8 w-8 border border-border" />
               <Wordmark className="text-[15px]" />
             </NavLink>
             <div className="flex items-center gap-1">
