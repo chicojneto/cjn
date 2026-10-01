@@ -1,14 +1,14 @@
 import { cn } from '@/lib/utils';
-import { CupSoda } from 'lucide-react';
+import logoAsset from '@/assets/icedtea-trader-logo.png.asset.json';
 
 export function CoffeeCandleMark({ className }: { className?: string }) {
   return (
-    <span
-      className={cn('inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground', className)}
+    <img
+      src={logoAsset.url}
+      alt=""
+      className={cn('inline-block h-7 w-7 shrink-0 rounded-full object-cover', className)}
       aria-hidden="true"
-    >
-      <CupSoda className="h-[55%] w-[55%]" strokeWidth={1.8} />
-    </span>
+    />
   );
 }
 
