@@ -55,6 +55,7 @@ export function SessionsTimeline24h() {
                 close={hours.close}
                 label={s.label}
                 kind={s.kind}
+                region={s.region}
                 active={marketWindowIsActive(s, now)}
               />
             );
@@ -75,7 +76,7 @@ export function SessionsTimeline24h() {
   );
 }
 
-function SessionBar({ open, close, label, kind, active }: { open: string; close: string; label: string; kind: MarketWindow['kind']; active: boolean }) {
+function SessionBar({ open, close, label, kind, region, active }: { open: string; close: string; label: string; kind: MarketWindow['kind']; region: MarketWindow['region']; active: boolean }) {
   const o = toMinutes(open);
   const c = toMinutes(close);
   const segments: { left: number; width: number }[] = [];
@@ -87,11 +88,11 @@ function SessionBar({ open, close, label, kind, active }: { open: string; close:
     segments.push({ left: 0, width: (c / 1440) * 100 });
   }
   return (
-    <div className={cn('relative h-7 overflow-hidden rounded-md border bg-background/30', active ? 'border-primary/50' : 'border-border')}>
+    <div className={cn('relative h-7 overflow-hidden rounded-md border bg-background/30', active ? activeBorder(region) : 'border-border')}>
       {segments.map((seg, i) => (
         <div
           key={i}
-          className={cn('absolute bottom-0 top-0 flex items-center justify-center border-x', kindStyle(kind), active && 'border-primary bg-primary/30')}
+          className={cn('absolute bottom-0 top-0 flex items-center justify-center border-x', regionStyle(region), kind === 'killzone' && 'border-dashed', kind === 'pause' && 'opacity-60', active && 'opacity-100')}
           style={{ left: `${seg.left}%`, width: `${seg.width}%` }}
         >
           {seg.width > 8 && (
@@ -110,4 +111,16 @@ function kindStyle(kind: MarketWindow['kind']) {
   if (kind === 'killzone') return 'border-muted-foreground/30 bg-muted-foreground/20';
   if (kind === 'pause') return 'border-border bg-muted/40';
   return 'border-foreground/25 bg-foreground/10';
+}
+
+function regionStyle(region: MarketWindow['region']) {
+  if (region === 'asia') return 'border-region-asia/40 bg-region-asia/20';
+  if (region === 'london') return 'border-region-london/40 bg-region-london/20';
+  return 'border-region-ny/40 bg-region-ny/20';
+}
+
+function activeBorder(region: MarketWindow['region']) {
+  if (region === 'asia') return 'border-region-asia';
+  if (region === 'london') return 'border-region-london';
+  return 'border-region-ny';
 }

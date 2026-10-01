@@ -82,7 +82,7 @@ function ScheduleRow({ item, now, active }: { item: MarketWindow; now: Date; act
     <tr className={cn('border-t border-border align-top', rowTone(item, active))}>
       <td className="px-3 py-3 text-[13px] text-muted-foreground">{item.category}</td>
       <td className="px-3 py-3 text-sm font-medium text-foreground">
-        <div className="flex items-center gap-2">{active && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}{item.label}</div>
+        <div className="flex items-center gap-2"><span className={cn('h-1.5 w-1.5 shrink-0 rounded-full', regionDot(item))} />{item.label}</div>
       </td>
       <HourCell item={item} mode="edt" now={now} />
       <HourCell item={item} mode="est" now={now} />
@@ -111,7 +111,7 @@ function ScheduleCard({ item, now, active }: { item: MarketWindow; now: Date; ac
           <div className="text-[13px] text-muted-foreground">{item.category}</div>
           <h3 className="mt-0.5 text-[15px] font-medium text-foreground">{item.label}</h3>
         </div>
-        <span className={cn('rounded-full border px-2 py-1 text-[11px]', active ? 'border-primary/40 bg-primary/10 text-primary' : 'border-border text-muted-foreground')}>
+        <span className={cn('rounded-full border px-2 py-1 text-[11px]', active ? regionBadge(item) : 'border-border text-muted-foreground')}>
           {active ? 'Ativo' : KIND_LABEL[item.kind]}
         </span>
       </div>
@@ -125,9 +125,23 @@ function ScheduleCard({ item, now, active }: { item: MarketWindow; now: Date; ac
 }
 
 function rowTone(item: MarketWindow, current: boolean) {
-  if (current) return 'border-primary/40 bg-primary/10';
-  if (item.emphasis === 'triple') return 'bg-success/5';
-  if (item.kind === 'overlap') return 'bg-primary/5';
+  if (current && item.region === 'asia') return 'bg-region-asia/10';
+  if (current && item.region === 'london') return 'bg-region-london/10';
+  if (current) return 'bg-region-ny/10';
+  if (item.kind === 'overlap' && item.region === 'london') return 'bg-region-london/5';
+  if (item.kind === 'overlap') return 'bg-region-ny/5';
   if (item.kind === 'pause') return 'bg-muted/20';
   return '';
+}
+
+function regionDot(item: MarketWindow) {
+  if (item.region === 'asia') return 'bg-region-asia';
+  if (item.region === 'london') return 'bg-region-london';
+  return 'bg-region-ny';
+}
+
+function regionBadge(item: MarketWindow) {
+  if (item.region === 'asia') return 'border-region-asia/40 bg-region-asia/10 text-region-asia';
+  if (item.region === 'london') return 'border-region-london/40 bg-region-london/10 text-region-london';
+  return 'border-region-ny/40 bg-region-ny/10 text-region-ny';
 }

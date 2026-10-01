@@ -40,7 +40,7 @@ export const SESSIONS: SessionDef[] = [
     closeNY: '05:00',
     mapX: 82,
     mapY: 48,
-    accent: '165 70% 48%',
+    accent: 'var(--region-asia)',
   },
   {
     id: 'middle_east',
@@ -52,7 +52,7 @@ export const SESSIONS: SessionDef[] = [
     closeNY: '08:00',
     mapX: 60,
     mapY: 52,
-    accent: '212 90% 60%',
+    accent: 'var(--region-middle-east)',
   },
   {
     id: 'europe',
@@ -64,7 +64,7 @@ export const SESSIONS: SessionDef[] = [
     closeNY: '12:30',
     mapX: 50,
     mapY: 40,
-    accent: '270 75% 65%',
+    accent: 'var(--region-london)',
   },
   {
     id: 'americas',
@@ -76,7 +76,7 @@ export const SESSIONS: SessionDef[] = [
     closeNY: '16:00',
     mapX: 28,
     mapY: 45,
-    accent: '24 90% 58%',
+    accent: 'var(--region-new-york)',
   },
 ];
 
