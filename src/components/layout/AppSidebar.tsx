@@ -26,7 +26,7 @@ const mainNavItems = [
 const analysisNavItems = [
   { title: 'Modo TV', url: '/checklist', icon: Tv },
   { title: 'Pré-Market', url: '/pre-market', icon: Radar },
-  { title: 'Playbook', url: '/playbook', icon: NotebookPen },
+  { title: 'Referência', url: '/referencia', icon: NotebookPen },
   { title: 'Estratégias', url: '/estrategias', icon: BookOpen },
   { title: 'Long/Short', url: '/longshort', icon: TrendingUp },
 ];

@@ -9,5 +9,5 @@ export interface NavDestination {
 export const navDestinations: NavDestination[] = [
   { title: 'Manhã', url: '/manha', icon: Sunrise },
   { title: 'Mercados', url: '/mercados', icon: BarChart3 },
-  { title: 'Playbook', url: '/playbook', icon: NotebookPen },
+  { title: 'Referência', url: '/referencia', icon: NotebookPen },
 ];

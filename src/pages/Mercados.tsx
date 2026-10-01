@@ -6,9 +6,7 @@ import { BarChart3, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MarketTable } from '@/components/dashboard/MarketTable';
-import { DiCurvePanel } from '@/components/dashboard/DiCurvePanel';
 import { CorrelationsPanel } from '@/components/dashboard/CorrelationsPanel';
-import { DiCurveEditor } from '@/components/settings/DiCurveEditor';
 import { supabase } from '@/integrations/supabase/client';
 
 const PANEL_ORDER = [
@@ -107,12 +105,6 @@ export default function Mercados() {
           })}
         </motion.div>
       )}
-
-      {/* Juros */}
-      <motion.section variants={item} className="grid items-start gap-4 lg:grid-cols-2">
-        <DiCurvePanel />
-        <DiCurveEditor />
-      </motion.section>
 
       {/* Correlações */}
       <motion.section variants={item}>
