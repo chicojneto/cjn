@@ -2,81 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   Brew The Market — design system
-   Warm charcoal surfaces, amber brand, desaturated market colors.
+   IcedTea Trader — design system
+   Paper-light surfaces, restrained green, charcoal market colors.
    No gradients, no glows, no neon, no colored shadows.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @layer base {
   :root {
     /* Raw brand palette */
-    --bg: #15130F;
-    --surface: #1E1B16;
-    --surface-2: #26221C;
-    --hairline: rgba(255, 255, 255, 0.08);
-    --text: #EDE7DD;
-    --text-2: #A39B8E;
-    --text-3: #6E675C;
-    --brand-hex: #C8913A;
-    --brand-soft: rgba(200, 145, 58, 0.14);
-    --up-hex: #4FA37F;
-    --down-hex: #C9584F;
-    --up-soft: rgba(79, 163, 127, 0.14);
-    --down-soft: rgba(201, 88, 79, 0.14);
-    --warn-hex: #D9A441;
+    --bg: #F2F2F0;
+    --surface: #FAFAF8;
+    --surface-2: #E9EAE7;
+    --hairline: rgba(31, 35, 33, 0.12);
+    --text: #202321;
+    --text-2: #686F6B;
+    --text-3: #929793;
+    --brand-hex: #2F8872;
+    --brand-soft: rgba(47, 136, 114, 0.11);
+    --up-hex: #2F8872;
+    --down-hex: #202321;
+    --up-soft: rgba(47, 136, 114, 0.11);
+    --down-soft: rgba(32, 35, 33, 0.09);
+    --warn-hex: #A06A50;
 
     /* Semantic tokens (HSL for tailwind) */
-    --background: 40 17% 7%;
-    --foreground: 38 31% 90%;
+    --background: 60 7% 95%;
+    --foreground: 150 5% 13%;
 
-    --card: 38 15% 10%;
-    --card-foreground: 38 31% 90%;
+    --card: 60 17% 98%;
+    --card-foreground: 150 5% 13%;
 
-    --popover: 36 15% 13%;
-    --popover-foreground: 38 31% 90%;
+    --popover: 60 17% 98%;
+    --popover-foreground: 150 5% 13%;
 
-    --primary: 37 56% 51%;
-    --primary-foreground: 40 17% 7%;
+    --primary: 164 48% 36%;
+    --primary-foreground: 60 17% 98%;
 
-    --secondary: 36 15% 13%;
-    --secondary-foreground: 38 31% 90%;
+    --secondary: 120 7% 91%;
+    --secondary-foreground: 150 5% 13%;
 
-    --muted: 36 15% 13%;
-    --muted-foreground: 37 10% 60%;
+    --muted: 120 7% 91%;
+    --muted-foreground: 145 4% 42%;
 
-    --accent: 37 56% 51%;
-    --accent-foreground: 40 17% 7%;
+    --accent: 164 48% 36%;
+    --accent-foreground: 60 17% 98%;
 
-    --destructive: 4 53% 55%;
-    --destructive-foreground: 38 31% 90%;
+    --destructive: 150 5% 13%;
+    --destructive-foreground: 60 17% 98%;
 
-    --success: 154 35% 47%;
-    --success-foreground: 40 17% 7%;
+    --success: 164 48% 36%;
+    --success-foreground: 60 17% 98%;
 
-    --warning: 39 67% 55%;
-    --warning-foreground: 40 17% 7%;
+    --warning: 19 33% 47%;
+    --warning-foreground: 60 17% 98%;
 
-    --bullish: 154 35% 47%;
-    --bearish: 4 53% 55%;
-    --neutral: 37 9% 40%;
+    --bullish: 164 48% 36%;
+    --bearish: 150 5% 13%;
+    --neutral: 145 4% 42%;
 
-    --border: 38 12% 18%;
-    --input: 38 12% 18%;
-    --ring: 37 56% 51%;
+    --border: 135 5% 82%;
+    --input: 135 5% 82%;
+    --ring: 164 48% 36%;
 
     --radius: 0.875rem;
 
-    --sidebar-background: 40 17% 7%;
-    --sidebar-foreground: 38 31% 90%;
-    --sidebar-primary: 37 56% 51%;
-    --sidebar-primary-foreground: 40 17% 7%;
-    --sidebar-accent: 36 15% 13%;
-    --sidebar-accent-foreground: 38 31% 90%;
-    --sidebar-border: 38 12% 18%;
-    --sidebar-ring: 37 56% 51%;
+    --sidebar-background: 60 17% 98%;
+    --sidebar-foreground: 150 5% 13%;
+    --sidebar-primary: 164 48% 36%;
+    --sidebar-primary-foreground: 60 17% 98%;
+    --sidebar-accent: 120 7% 91%;
+    --sidebar-accent-foreground: 150 5% 13%;
+    --sidebar-border: 135 5% 82%;
+    --sidebar-ring: 164 48% 36%;
 
     /* Flat surfaces instead of gradients (kept for legacy references) */
     --gradient-primary: hsl(var(--primary));
@@ -105,33 +103,7 @@
   }
 
   .dark {
-    --background: 40 17% 7%;
-    --foreground: 38 31% 90%;
-    --card: 38 15% 10%;
-    --card-foreground: 38 31% 90%;
-    --popover: 36 15% 13%;
-    --popover-foreground: 38 31% 90%;
-    --primary: 37 56% 51%;
-    --primary-foreground: 40 17% 7%;
-    --secondary: 36 15% 13%;
-    --secondary-foreground: 38 31% 90%;
-    --muted: 36 15% 13%;
-    --muted-foreground: 37 10% 60%;
-    --accent: 37 56% 51%;
-    --accent-foreground: 40 17% 7%;
-    --destructive: 4 53% 55%;
-    --destructive-foreground: 38 31% 90%;
-    --border: 38 12% 18%;
-    --input: 38 12% 18%;
-    --ring: 37 56% 51%;
-    --sidebar-background: 40 17% 7%;
-    --sidebar-foreground: 38 31% 90%;
-    --sidebar-primary: 37 56% 51%;
-    --sidebar-primary-foreground: 40 17% 7%;
-    --sidebar-accent: 36 15% 13%;
-    --sidebar-accent-foreground: 38 31% 90%;
-    --sidebar-border: 38 12% 18%;
-    --sidebar-ring: 37 56% 51%;
+    color-scheme: light;
   }
 }
 
