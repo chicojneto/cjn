@@ -333,11 +333,18 @@ export function MacroScenarioCard() {
   const sentiment: 'risk-on' | 'risk-off' | 'neutral' =
     dia.regime === 'risk-on' ? 'risk-on' : dia.regime === 'risk-off' ? 'risk-off' : 'neutral';
   const titulo =
-    dia.viesWIN === 'alta'
-      ? 'Viés de ALTA para o WIN'
-      : dia.viesWIN === 'baixa'
-      ? 'Viés de BAIXA para o WIN'
-      : 'Viés NEUTRO para o WIN';
+    dia.vies === 'alta'
+      ? 'Futuros americanos em ALTA'
+      : dia.vies === 'baixa'
+      ? 'Futuros americanos em QUEDA'
+      : 'Futuros americanos SEM DIREÇÃO';
+  const pontos = [
+    ...dia.motivos,
+    ...dia.ativos.map(
+      (a) =>
+        `${a.label}: ${a.vies === 'alta' ? 'ALTA' : a.vies === 'baixa' ? 'BAIXA' : 'NEUTRO'} — ${a.motivos[a.motivos.length - 1] ?? ''}`
+    ),
+  ];
 
   const sentimentConfig = {
     'risk-on': {
@@ -398,7 +405,7 @@ export function MacroScenarioCard() {
               📋 PONTOS-CHAVE
             </div>
             <div className="space-y-1.5">
-              {dia.motivos.map((point, idx) => (
+              {pontos.map((point, idx) => (
                 <div
                   key={idx}
                   className="flex items-start gap-2"

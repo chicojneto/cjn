@@ -3,6 +3,7 @@ import { ChevronDown, RefreshCw } from 'lucide-react';
 import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
 import { useRegimeDoDia } from '@/hooks/useRegimeDoDia';
 import { useGex, useRadar, type GexNivel, type GexPreset } from '@/hooks/useGexApi';
+import type { ViesAtivo } from '@/lib/regimeDoDia';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -82,15 +83,45 @@ function Rows({ n }: { n: number }) {
   );
 }
 
+const VIES_TXT = { alta: 'Alta', baixa: 'Baixa', neutro: 'Neutro' } as const;
+const VIES_COR = { alta: 'text-success', baixa: 'text-destructive', neutro: 'text-muted-foreground' } as const;
+const REGIME_TXT = { 'risk-on': 'Risk-on', 'risk-off': 'Risk-off', neutro: 'Neutro' } as const;
+
+function AtivoLinha({ a, aberto }: { a: ViesAtivo; aberto: boolean }) {
+  // resumo: a última linha é a que explica a decisão (veto, rebaixamento ou confirmação)
+  const resumo = a.motivos[a.motivos.length - 1] ?? '';
+  return (
+    <div className="border-t border-border py-2 first:border-t-0">
+      <div className="flex items-baseline justify-between gap-3 font-mono text-[14px] tabular-nums">
+        <span className="text-foreground">{a.label}</span>
+        <span className="flex items-baseline gap-3">
+          <span className={cn('text-[13px]', varColor(a.variacao))}>{pct(a.variacao)}</span>
+          <span className={cn('w-14 text-right', VIES_COR[a.vies])}>{VIES_TXT[a.vies]}</span>
+        </span>
+      </div>
+      {aberto ? (
+        <div className="mt-1 space-y-0.5 text-[13px] text-muted-foreground">
+          {a.motivos.map((m) => <p key={m}>{m}</p>)}
+          {a.estado && <p>Estado: {a.estado}</p>}
+        </div>
+      ) : (
+        <p className="mt-0.5 text-[13px] text-muted-foreground">
+          {resumo}
+          {a.estado ? ` · ${a.estado}` : ''}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function RegimeCard({ preset }: { preset: GexPreset }) {
   const { regime, isLoading } = useRegimeDoDia();
   const { data: gex } = useGex(preset);
   const { dataUpdatedAt } = useMarketCorrelations();
+  const [aberto, setAberto] = useState(false);
 
-  const label =
-    regime.viesWIN === 'alta' ? 'Viés de alta' : regime.viesWIN === 'baixa' ? 'Viés de baixa' : 'Neutro';
-  const cor =
-    regime.viesWIN === 'alta' ? 'text-success' : regime.viesWIN === 'baixa' ? 'text-destructive' : 'text-foreground';
+  const label = regime.vies === 'alta' ? 'Futuros em alta' : regime.vies === 'baixa' ? 'Futuros em queda' : 'Futuros sem direção';
+  const cor = regime.vies === 'alta' ? 'text-success' : regime.vies === 'baixa' ? 'text-destructive' : 'text-foreground';
 
   const updatedAt = dataUpdatedAt ? new Date(dataUpdatedAt) : null;
   const hoje = dataNy(updatedAt ?? new Date());
@@ -106,7 +137,16 @@ function RegimeCard({ preset }: { preset: GexPreset }) {
       ) : (
         <div className="flex flex-wrap items-center gap-3">
           <div className={cn('text-[22px] leading-tight', cor)}>{label}</div>
-          {gex && (
+          <span
+            className="rounded-lg px-2.5 py-1 font-mono text-[13px]"
+            style={{
+              background: regime.regime === 'risk-on' ? 'var(--up-soft)' : regime.regime === 'risk-off' ? 'var(--down-soft)' : 'var(--surface-2)',
+              color: regime.regime === 'risk-on' ? 'var(--up-hex)' : regime.regime === 'risk-off' ? 'var(--down-hex)' : 'var(--text-2)',
+            }}
+          >
+            {REGIME_TXT[regime.regime]}
+          </span>
+          {gex?.regime && (
             <span
               className="rounded-lg px-2.5 py-1 font-mono text-[13px]"
               style={{
@@ -122,6 +162,19 @@ function RegimeCard({ preset }: { preset: GexPreset }) {
 
       {regime.motivos.length > 0 && (
         <p className="text-[14px] text-muted-foreground">{regime.motivos.join(' · ')}</p>
+      )}
+
+      {regime.ativos.length > 0 && (
+        <div>
+          {regime.ativos.map((a) => <AtivoLinha key={a.id} a={a} aberto={aberto} />)}
+          <button
+            onClick={() => setAberto((v) => !v)}
+            className="mt-1 flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', aberto && 'rotate-180')} />
+            {aberto ? 'Ocultar motivos' : 'Ver todos os motivos (70/20/10)'}
+          </button>
+        </div>
       )}
       <NyTimeNote at={updatedAt ?? new Date()} />
     </Card>

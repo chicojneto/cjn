@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, Activity, Globe, AlertTriangle, Clock } from 'lucide-react';
 import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
 import { useRegimeDoDia } from '@/hooks/useRegimeDoDia';
-import type { ViesWIN } from '@/lib/regimeDoDia';
+import type { Regime } from '@/lib/regimeDoDia';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -57,15 +57,15 @@ function PulseIndicator({ label, value, change, changeValue = 0, alertLevel, com
   );
 }
 
-function WinBiasBadge({ vies }: { vies: ViesWIN }) {
+function RegimeBadge({ regime }: { regime: Regime }) {
   const config = {
-    alta: {
-      label: 'ALTA',
+    'risk-on': {
+      label: 'RISK-ON',
       color: 'text-success bg-success/10 border-success/30',
       icon: TrendingUp,
     },
-    baixa: {
-      label: 'BAIXA',
+    'risk-off': {
+      label: 'RISK-OFF',
       color: 'text-destructive bg-destructive/10 border-destructive/30',
       icon: TrendingDown,
     },
@@ -76,7 +76,7 @@ function WinBiasBadge({ vies }: { vies: ViesWIN }) {
     },
   } as const;
 
-  const { label, color, icon: Icon } = config[vies];
+  const { label, color, icon: Icon } = config[regime];
 
   return (
     <div className={cn(
@@ -84,7 +84,7 @@ function WinBiasBadge({ vies }: { vies: ViesWIN }) {
       color
     )}>
       <Icon className="h-3.5 w-3.5" />
-      WIN {label}
+      REGIME {label}
     </div>
   );
 }
@@ -216,8 +216,8 @@ export function MacroPulseBar() {
         
         <div className="h-6 w-px bg-border/50 mx-1" />
         
-        {/* Viés WIN (fonte única: calcularRegimeDoDia) */}
-        <WinBiasBadge vies={regime.viesWIN} />
+        {/* Regime do dia (fonte única: calcularRegimeDoDia) */}
+        <RegimeBadge regime={regime.regime} />
         
         <div className="h-6 w-px bg-border/50 mx-1" />
         
