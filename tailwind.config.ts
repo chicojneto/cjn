@@ -77,18 +77,18 @@ export default {
         bearish: "hsl(var(--bearish))",
         neutral: "hsl(var(--neutral))",
         brand: {
-          DEFAULT: "#C8913A",
-          soft: "rgba(200,145,58,0.14)",
+          DEFAULT: "var(--brand-hex)",
+          soft: "var(--brand-soft)",
         },
         up: {
-          DEFAULT: "#4FA37F",
-          soft: "rgba(79,163,127,0.14)",
+          DEFAULT: "var(--up-hex)",
+          soft: "var(--up-soft)",
         },
         down: {
-          DEFAULT: "#C9584F",
-          soft: "rgba(201,88,79,0.14)",
+          DEFAULT: "var(--down-hex)",
+          soft: "var(--down-soft)",
         },
-        warn: "#D9A441",
+        warn: "var(--warn-hex)",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

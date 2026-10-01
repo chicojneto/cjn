@@ -1,1 +1,1 @@
-- [ ] Renomear o site para IcedTea Trader e adaptar as cores com base no print do TradingView (aguardando imagem).
+- [x] Renomear o site para IcedTea Trader e adaptar as cores ao visual claro do TradingView enviado.
