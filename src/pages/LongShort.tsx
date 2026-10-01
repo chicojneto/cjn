@@ -1,25 +1,14 @@
 import { motion } from 'framer-motion';
+import { pageContainer as container, pageItem as item, usePageEntrance } from '@/lib/motion';
 import { LongShortTips } from '@/components/dashboard/LongShortTips';
 import { TrendingUp } from 'lucide-react';
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-};
-
 export default function LongShort() {
+  const entrance = usePageEntrance();
   return (
     <motion.div
       variants={container}
-      initial="hidden"
+      initial={entrance}
       animate="show"
       className="space-y-6"
     >

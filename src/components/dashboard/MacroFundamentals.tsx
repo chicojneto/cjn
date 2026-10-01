@@ -239,7 +239,7 @@ export function MacroFundamentals() {
                 <div 
                   key={index}
                   className={cn(
-                    'p-3 rounded-lg border transition-all',
+                    'p-3 rounded-lg border transition-colors duration-150',
                     point.startsWith('→') 
                       ? 'bg-primary/10 border-primary/30 pl-6' 
                       : 'bg-secondary/30 border-border/30'

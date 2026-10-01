@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { pageContainer as container, pageItem as item, usePageEntrance } from '@/lib/motion';
 import { Globe2, Clock, Activity, Layers, RefreshCw } from 'lucide-react';
 import {
   SESSIONS,
@@ -18,16 +19,8 @@ import { MarketWindowsSchedule } from '@/components/macro/MarketWindowsSchedule'
 import { useTimezone } from '@/contexts/TimezoneContext';
 import { convertHHMMFromNY, formatClockInTz, formatDateInTz, formatUtcOffset, nyTzLabel, nyDstNote } from '@/lib/timezones';
 
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.06 } },
-};
-const item = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
-};
-
 export default function MapaGlobal() {
+  const entrance = usePageEntrance();
   const [now, setNow] = useState(new Date());
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
@@ -48,7 +41,7 @@ export default function MapaGlobal() {
   return (
     <motion.div
       variants={container}
-      initial="hidden"
+      initial={entrance}
       animate="show"
       className="space-y-6"
     >
@@ -164,7 +157,6 @@ export default function MapaGlobal() {
     </motion.div>
   );
 }
-
 
 function KpiCard({
   icon,

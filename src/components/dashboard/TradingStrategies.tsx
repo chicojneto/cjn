@@ -329,7 +329,7 @@ export function TradingStrategies() {
                   <div
                     key={index}
                     className={cn(
-                      'p-3 rounded-lg border transition-all',
+                      'p-3 rounded-lg border transition-colors duration-150',
                       isArrow
                         ? 'bg-primary/10 border-primary/30 pl-6'
                         : step.startsWith('[RISCO]')

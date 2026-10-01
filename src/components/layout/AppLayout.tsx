@@ -1,5 +1,4 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Search, Bell } from 'lucide-react';
 import { CoffeeCandleMark, Wordmark } from '@/components/brand/Logo';
@@ -42,12 +41,12 @@ export function AppLayout({ children }: AppLayoutProps) {
           <CoffeeCandleMark className="h-10 w-10 border border-border" />
         </NavLink>
         {navDestinations.map((d) => (
-          <Tooltip key={d.url} delayDuration={120}>
+          <Tooltip key={d.url}>
             <TooltipTrigger asChild>
               <NavLink
                 to={d.url}
                 className={cn(
-                  'flex h-11 w-11 items-center justify-center rounded-xl transition-colors duration-150',
+                  'flex h-11 w-11 items-center justify-center rounded-xl transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.95]',
                   isActive(d.url)
                     ? 'bg-primary/15 text-primary'
                     : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
@@ -87,18 +86,13 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
         </header>
 
-        <motion.main
-          className="mx-auto w-full max-w-[1180px] min-w-0 px-4 pb-24 pt-4 sm:px-6 md:pb-10 md:pt-6"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-        >
+        <main className="mx-auto w-full max-w-[1180px] min-w-0 px-4 pb-24 pt-4 sm:px-6 md:pb-10 md:pt-6">
           {children}
 
           <p className="mt-8 border-t border-border pt-4 text-[13px] leading-relaxed text-muted-foreground">
             {nyDstNote()}
           </p>
-        </motion.main>
+        </main>
 
       </div>
 
@@ -110,7 +104,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               key={d.url}
               to={d.url}
               className={cn(
-                'flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] transition-colors duration-150',
+                'flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] transition-[color,transform] duration-150 ease-out active:scale-[0.95] [-webkit-tap-highlight-color:transparent]',
                 isActive(d.url) ? 'text-primary' : 'text-muted-foreground'
               )}
             >

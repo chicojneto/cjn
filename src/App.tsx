@@ -17,13 +17,16 @@ import MapaGlobal from "./pages/MapaGlobal";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 import { TimezoneProvider } from "./contexts/TimezoneContext";
+import { MotionConfig } from "framer-motion";
+import { defaultTransition } from "@/lib/motion";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TimezoneProvider>
-      <TooltipProvider>
+      <MotionConfig reducedMotion="user" transition={defaultTransition}>
+      <TooltipProvider delayDuration={200} skipDelayDuration={400}>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -98,6 +101,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
       </TooltipProvider>
+      </MotionConfig>
     </TimezoneProvider>
   </QueryClientProvider>
 );

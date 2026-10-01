@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, Globe, Clock } from 'lucide-react';
 import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -92,16 +91,7 @@ function MarketSection({
       </CardHeader>
       <CardContent className="p-2 space-y-1">
         {markets.length > 0 ? (
-          markets.map((market, idx) => (
-            <motion.div
-              key={market.symbol}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.05 }}
-            >
-              <MarketItem {...market} />
-            </motion.div>
-          ))
+          markets.map((market) => <MarketItem key={market.symbol} {...market} />)
         ) : (
           <div className="py-4 text-center text-xs text-muted-foreground">
             Dados não disponíveis
@@ -254,11 +244,7 @@ export function GlobalMarketsPanel() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-    >
+    <div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         <MarketSection 
           title="Ásia / Pacífico" 
@@ -289,6 +275,6 @@ export function GlobalMarketsPanel() {
           isLoading={isLoading}
         />
       </div>
-    </motion.div>
+    </div>
   );
 }

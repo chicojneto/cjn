@@ -1,28 +1,17 @@
 import { motion } from 'framer-motion';
+import { pageContainer as container, pageItem as item, usePageEntrance } from '@/lib/motion';
 import { Settings, Bell, Palette, Clock, Shield } from 'lucide-react';
 import { ModernCard, ModernCardHeader, ModernCardTitle, ModernCardContent } from '@/components/ui/modern-card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { DiCurveEditor } from '@/components/settings/DiCurveEditor';
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-};
-
 export default function Configuracoes() {
+  const entrance = usePageEntrance();
   return (
     <motion.div
       variants={container}
-      initial="hidden"
+      initial={entrance}
       animate="show"
       className="space-y-6 max-w-3xl"
     >

@@ -4,6 +4,10 @@ export default {
   darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
+  future: {
+    // hover: styles only on devices with a real pointer (no sticky hover after a tap on iPhone)
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
     container: {
       center: true,
@@ -101,6 +105,11 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      transitionTimingFunction: {
+        "out-strong": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "in-out-strong": "cubic-bezier(0.77, 0, 0.175, 1)",
+        drawer: "cubic-bezier(0.32, 0.72, 0, 1)",
+      },
       boxShadow: {
         'glow': 'none',
         'glow-accent': 'none',
@@ -136,30 +145,15 @@ export default {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
-        "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 5px hsl(var(--primary) / 0.3)" },
-          "50%": { boxShadow: "0 0 20px hsl(var(--primary) / 0.6)" },
-        },
-        "float": {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-5px)" },
-        },
-        "shimmer": {
-          from: { backgroundPosition: "-200% 0" },
-          to: { backgroundPosition: "200% 0" },
-        },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.3s ease-out",
-        "fade-in-up": "fade-in-up 0.4s ease-out",
-        "slide-in-right": "slide-in-right 0.3s ease-out",
-        "slide-in-left": "slide-in-left 0.3s ease-out",
-        "scale-in": "scale-in 0.2s ease-out",
-        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
-        "float": "float 3s ease-in-out infinite",
-        "shimmer": "shimmer 2s linear infinite",
+        "accordion-down": "accordion-down 0.2s cubic-bezier(0.23, 1, 0.32, 1)",
+        "accordion-up": "accordion-up 0.15s cubic-bezier(0.23, 1, 0.32, 1)",
+        "fade-in": "fade-in 0.2s cubic-bezier(0.23, 1, 0.32, 1)",
+        "fade-in-up": "fade-in-up 0.25s cubic-bezier(0.23, 1, 0.32, 1)",
+        "slide-in-right": "slide-in-right 0.2s cubic-bezier(0.23, 1, 0.32, 1)",
+        "slide-in-left": "slide-in-left 0.2s cubic-bezier(0.23, 1, 0.32, 1)",
+        "scale-in": "scale-in 0.2s cubic-bezier(0.23, 1, 0.32, 1)",
       },
     },
   },
