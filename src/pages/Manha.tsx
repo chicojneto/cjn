@@ -10,9 +10,8 @@ import { NY_IANA, nyDstNote, nyTzLabel } from '@/lib/timezones';
 import { Link } from 'react-router-dom';
 
 const ASSETS: { id: GexPreset; label: string }[] = [
-  { id: 'win', label: 'WIN' },
+  { id: 'nasdaq', label: 'NASDAQ' },
   { id: 'gold', label: 'XAU' },
-  { id: 'nasdaq', label: 'NAS' },
 ];
 
 const RADAR_ROWS: { sym: string; label: string }[] = [
@@ -307,7 +306,7 @@ function MercadosAgora() {
 
 export default function Manha() {
   const [preset, setPreset] = useState<GexPreset>(
-    () => (localStorage.getItem('manha:ativo') as GexPreset) || 'win'
+    () => localStorage.getItem('manha:ativo') === 'gold' ? 'gold' : 'nasdaq'
   );
 
   useEffect(() => {
