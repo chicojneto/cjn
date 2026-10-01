@@ -23,20 +23,25 @@ export function WorldMapDots() {
   );
 
   return (
-    <div className="relative w-full aspect-[2/1] border border-border bg-card overflow-hidden">
+    <div className="relative min-h-[260px] w-full aspect-[2/1] overflow-hidden rounded-[14px] border border-border bg-card">
       <svg
         viewBox="0 0 200 100"
         className="absolute inset-0 w-full h-full"
         preserveAspectRatio="xMidYMid meet"
       >
+        <RegionHeading x={37} y={12} label="Américas" session={sessionById.americas} />
+        <RegionHeading x={98} y={12} label="Europa" session={sessionById.europe} />
+        <RegionHeading x={120} y={25} label="Oriente Médio" session={sessionById.middle_east} />
+        <RegionHeading x={153} y={10} label="Ásia-Pacífico" session={sessionById.asia} />
+
         {dots.map((d, i) => {
           const sess = d.session ? sessionById[d.session] : null;
           const isActive = d.session ? activeIds.has(d.session) : false;
           if (sess) {
-            const color = `hsl(${sess.accent} / ${isActive ? 0.85 : 0.45})`;
-            return <circle key={i} cx={d.x} cy={d.y} r={isActive ? 0.55 : 0.45} fill={color} />;
+            const color = `hsl(${sess.accent} / ${isActive ? 0.96 : 0.72})`;
+            return <circle key={i} cx={d.x} cy={d.y} r={isActive ? 0.62 : 0.5} fill={color} />;
           }
-          return <circle key={i} cx={d.x} cy={d.y} r={0.4} className="fill-foreground/15" />;
+          return <circle key={i} cx={d.x} cy={d.y} r={0.44} className="fill-foreground/25" />;
         })}
 
         {SESSIONS.map((s) => {
@@ -45,33 +50,38 @@ export function WorldMapDots() {
         })}
       </svg>
 
-      {/* Legend */}
-      <div className="absolute top-2 right-2 flex flex-wrap gap-1.5 max-w-[60%] justify-end">
-        {SESSIONS.map((s) => {
-          const active = activeIds.has(s.id);
-          return (
-            <span
-              key={s.id}
-              className="inline-flex items-center gap-1 px-1.5 py-0.5 border bg-background/80 backdrop-blur text-[8px] font-mono uppercase tracking-wider"
-              style={{
-                borderColor: `hsl(${s.accent} / ${active ? 0.6 : 0.3})`,
-                color: active ? `hsl(${s.accent})` : 'hsl(var(--muted-foreground))',
-              }}
-            >
-              <span
-                className="inline-block w-1.5 h-1.5 rounded-full"
-                style={{ backgroundColor: `hsl(${s.accent} / ${active ? 1 : 0.4})` }}
-              />
-              {s.label.split(' ')[0]}
-            </span>
-          );
-        })}
-      </div>
-
-      <div className="absolute bottom-2 left-2 px-2 py-1 border border-border bg-background/80 backdrop-blur text-[9px] font-mono uppercase tracking-widest text-muted-foreground">
+      <div className="absolute bottom-2 left-2 rounded-md border border-border bg-background/90 px-2 py-1 text-[9px] font-mono text-muted-foreground">
         ◴ Linha em Nova York (EST/EDT)
       </div>
     </div>
+  );
+}
+
+function RegionHeading({ x, y, label, session }: { x: number; y: number; label: string; session?: SessionDef }) {
+  if (!session) return null;
+  const color = `hsl(${session.accent})`;
+  const lineWidth = Math.max(13, label.length * 2.25);
+
+  return (
+    <g aria-label={label}>
+      <text
+        x={x}
+        y={y}
+        textAnchor="middle"
+        className="font-sans text-[4px] font-semibold"
+        fill={color}
+      >
+        {label}
+      </text>
+      <line
+        x1={x - lineWidth / 2}
+        x2={x + lineWidth / 2}
+        y1={y + 2}
+        y2={y + 2}
+        stroke={color}
+        strokeWidth={0.65}
+      />
+    </g>
   );
 }
 
@@ -83,31 +93,24 @@ function SessionMarker({ session, active }: { session: SessionDef; active: boole
   return (
     <g>
       {active && (
-        <circle cx={cx} cy={cy} r={4} fill={colorSoft} className="" />
+        <circle cx={cx} cy={cy} r={4.4} fill={colorSoft} />
       )}
-      <circle cx={cx} cy={cy} r={1.6} fill={active ? color : 'hsl(var(--muted-foreground) / 0.5)'} />
+      <circle cx={cx} cy={cy} r={1.7} fill={color} opacity={active ? 1 : 0.72} />
       <circle
         cx={cx}
         cy={cy}
         r={2.6}
         fill="none"
-        stroke={active ? color : 'hsl(var(--muted-foreground) / 0.4)'}
-        strokeWidth={0.4}
+        stroke={color}
+        strokeOpacity={active ? 1 : 0.62}
+        strokeWidth={active ? 0.65 : 0.45}
       />
       <text
         x={cx}
-        y={cy - 4}
+        y={cy + 6.2}
         textAnchor="middle"
-        className="text-[3px] font-mono uppercase tracking-wider"
-        fill={active ? color : 'hsl(var(--muted-foreground))'}
-      >
-        {session.label.split(' ')[0]}
-      </text>
-      <text
-        x={cx}
-        y={cy + 6}
-        textAnchor="middle"
-        className="fill-muted-foreground text-[2.5px] font-mono"
+        className="text-[2.6px] font-mono"
+        fill="hsl(var(--foreground) / 0.78)"
       >
         {session.openNY} – {session.closeNY}
       </text>
