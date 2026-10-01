@@ -213,17 +213,22 @@ function GexCard({ preset }: { preset: GexPreset }) {
           </div>
 
           <div className="text-[13px] text-muted-foreground">
-            <span
-              style={{
-                color:
-                  data.saude?.veredito === 'SEGURO' ? 'var(--up-hex)'
-                    : data.saude?.veredito === 'QUESTIONAVEL' ? 'var(--brand-hex)' : 'var(--down-hex)',
-              }}
-            >
-              {data.saude?.veredito === 'SEGURO' ? 'Mapa seguro'
-                : data.saude?.veredito === 'QUESTIONAVEL' ? 'Mapa questionável' : 'Mapa inseguro'}
-            </span>
-            {' · '}snapshot Cboe {data.snapshot ? data.snapshot.slice(8, 10) + '/' + data.snapshot.slice(5, 7) : '—'} · offset{' '}
+            {data.saude && (
+              <>
+                <span
+                  style={{
+                    color:
+                      data.saude.veredito === 'SEGURO' ? 'var(--up-hex)'
+                        : data.saude.veredito === 'QUESTIONAVEL' ? 'var(--brand-hex)' : 'var(--down-hex)',
+                  }}
+                >
+                  {data.saude.veredito === 'SEGURO' ? 'Mapa seguro'
+                    : data.saude.veredito === 'QUESTIONAVEL' ? 'Mapa questionável' : 'Mapa inseguro'}
+                </span>
+                {' · '}
+              </>
+            )}
+            snapshot Cboe {data.snapshot ? data.snapshot.slice(8, 10) + '/' + data.snapshot.slice(5, 7) : '—'} · offset{' '}
             {offset != null ? `${offset > 0 ? '+' : ''}${num(offset)}` : '—'}
           </div>
 

@@ -115,6 +115,17 @@ export function GexPanel({ preset }: { preset: GexPreset }) {
   }
 
   const positivo = data.regime === 'positivo';
+  if (data.versao !== 'v5' || !data.saude) {
+    // painel publicado antes da função: a resposta antiga não tem os campos do v5
+    return (
+      <div className="flex flex-wrap items-center justify-between gap-2 border px-4 py-3 text-xs" style={{ ...BOX, borderColor: ACCENT, color: ACCENT }}>
+        <span>A função gex-api ainda está na versão antiga. Falta fazer o deploy dela no Lovable para o mapa v5 aparecer.</span>
+        <button onClick={() => refetch()} className="flex items-center gap-1 tracking-widest">
+          <RefreshCw className="h-3 w-3" /> Tentar de novo
+        </button>
+      </div>
+    );
+  }
   const winNum = parseFloat(winClose.replace(',', '.'));
   const offset = data.refSpot != null && isFinite(winNum) ? winNum - data.refSpot : null;
   const conv = (n: GexNivel | null | undefined) => (n?.ref != null && offset != null ? Math.round(n.ref + offset) : null);
