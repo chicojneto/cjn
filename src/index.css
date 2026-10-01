@@ -25,6 +25,10 @@
     --up-soft: rgba(47, 136, 114, 0.11);
     --down-soft: rgba(32, 35, 33, 0.09);
     --warn-hex: #A06A50;
+    --region-asia: 276 42% 47%;
+    --region-london: 337 58% 38%;
+    --region-new-york: 25 72% 46%;
+    --region-middle-east: 210 55% 45%;
 
     /* Semantic tokens (HSL for tailwind) */
     --background: 60 7% 95%;

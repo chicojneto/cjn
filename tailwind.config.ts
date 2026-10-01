@@ -89,6 +89,12 @@ export default {
           soft: "var(--down-soft)",
         },
         warn: "var(--warn-hex)",
+        region: {
+          asia: "hsl(var(--region-asia))",
+          london: "hsl(var(--region-london))",
+          ny: "hsl(var(--region-new-york))",
+          "middle-east": "hsl(var(--region-middle-east))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
