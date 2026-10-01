@@ -1,1 +1,2 @@
 - [x] Renomear o site para IcedTea Trader e adaptar as cores ao visual claro do TradingView enviado.
+- [x] Remover a Curva DI de Mercados e substituir Playbook pela página Referência.

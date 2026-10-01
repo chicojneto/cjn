@@ -10,7 +10,7 @@ import Mercados from "./pages/Mercados";
 import Calendario from "./pages/Calendario";
 import CheckList from "./pages/CheckList";
 import Estrategias from "./pages/Estrategias";
-import Playbook from "./pages/Playbook";
+import Referencia from "./pages/Referencia";
 import PreMarket from "./pages/PreMarket";
 import LongShort from "./pages/LongShort";
 import MapaGlobal from "./pages/MapaGlobal";
@@ -71,9 +71,9 @@ const App = () => (
               <PreMarket />
             </AppLayout>
           } />
-          <Route path="/playbook" element={
+          <Route path="/referencia" element={
             <AppLayout>
-              <Playbook />
+              <Referencia />
             </AppLayout>
           } />
           <Route path="/estrategias" element={

@@ -21,7 +21,7 @@ const mainNavItems = [
 const analysisNavItems = [
   { title: 'Check List', url: '/checklist', icon: ClipboardCheck },
   { title: 'Pré-Market', url: '/pre-market', icon: Radar },
-  { title: 'Playbook', url: '/playbook', icon: NotebookPen },
+  { title: 'Referência', url: '/referencia', icon: NotebookPen },
   { title: 'Estratégias', url: '/estrategias', icon: BookOpen },
   { title: 'Long/Short', url: '/longshort', icon: TrendingUp },
 ];
