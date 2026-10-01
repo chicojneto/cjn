@@ -44,6 +44,7 @@ interface BrazilRatesData {
 interface CorrelationAnalysis {
   dxy: MarketData | null;
   vix: MarketData | null;
+  gvz: MarketData | null;
   us10y: MarketData | null;
   us2y: MarketData | null;
   gold: MarketData | null;
@@ -89,6 +90,7 @@ interface CorrelationAnalysis {
 const SYMBOLS: Record<string, { yahoo: string; name: string }> = {
   dxy: { yahoo: 'DX-Y.NYB', name: 'DXY (Índice Dólar)' },
   vix: { yahoo: '^VIX', name: 'VIX (Volatilidade)' },
+  gvz: { yahoo: '^GVZ', name: 'GVZ (Volatilidade do Ouro)' },
   us10y: { yahoo: '^TNX', name: 'Treasury 10Y' },
   us2y: { yahoo: '^IRX', name: 'Treasury 2Y' },
   gold: { yahoo: 'GC=F', name: 'Ouro (XAU/USD)' },
@@ -443,6 +445,7 @@ function analyzeCorrelations(data: Record<string, MarketData | null>, brazilRate
   return {
     dxy: data.dxy,
     vix: data.vix,
+    gvz: data.gvz,
     us10y: data.us10y,
     us2y: data.us2y,
     gold: data.gold,

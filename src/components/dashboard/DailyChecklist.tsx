@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useDiCurve, analyzeManualCurve, DI_FIELDS } from '@/hooks/useDiCurve';
 import { ManualStamp } from '@/components/shared/ManualStamp';
 import { useRegimeDoDia } from '@/hooks/useRegimeDoDia';
-import { viesToBias } from '@/lib/regimeDoDia';
+import { viesToBias, type ViesAtivo } from '@/lib/regimeDoDia';
 
 interface MarketIndicator {
   label: string;
@@ -214,37 +214,8 @@ function BrazilRatesPanel({ brazilRates }: { brazilRates: BrazilRatesData }) {
   );
 }
 
-function SignalsPanel({ 
-  winSignals, 
-  wdoSignals, 
-  goldSignals,
-  sp500Signals,
-  nasdaqSignals,
-  eurUsdSignals,
-  gbpUsdSignals,
-  winBias,
-  wdoBias,
-  goldBias,
-  sp500Bias,
-  nasdaqBias,
-  eurUsdBias,
-  gbpUsdBias,
-}: { 
-  winSignals: string[]; 
-  wdoSignals: string[]; 
-  goldSignals: string[];
-  sp500Signals: string[];
-  nasdaqSignals: string[];
-  eurUsdSignals: string[];
-  gbpUsdSignals: string[];
-  winBias: 'bullish' | 'bearish' | 'neutral';
-  wdoBias: 'bullish' | 'bearish' | 'neutral';
-  goldBias: 'bullish' | 'bearish' | 'neutral';
-  sp500Bias: 'bullish' | 'bearish' | 'neutral';
-  nasdaqBias: 'bullish' | 'bearish' | 'neutral';
-  eurUsdBias: 'bullish' | 'bearish' | 'neutral';
-  gbpUsdBias: 'bullish' | 'bearish' | 'neutral';
-}) {
+/** Painel de sinais: os seis ativos do Regime do dia (fonte única: calcularRegimeDoDia). */
+function SignalsPanel({ ativos }: { ativos: ViesAtivo[] }) {
   const getColor = (bias: 'bullish' | 'bearish' | 'neutral') => {
     return bias === 'bullish' ? 'text-success' : bias === 'bearish' ? 'text-destructive' : 'text-warning';
   };
@@ -253,61 +224,53 @@ function SignalsPanel({
     return bias === 'bullish' ? 'LONG' : bias === 'bearish' ? 'SHORT' : 'NEUTRO';
   };
 
-  const AssetBlock = ({ 
-    title, 
-    signals, 
-    bias 
-  }: { 
-    title: string; 
-    signals: string[]; 
-    bias: 'bullish' | 'bearish' | 'neutral';
-  }) => {
-    if (signals.length === 0) return null;
+  const AssetBlock = ({ a }: { a: ViesAtivo | undefined }) => {
+    if (!a) return null;
+    const bias = viesToBias(a.vies);
+    const linhas = a.estado ? [...a.motivos, `Estado: ${a.estado}`] : a.motivos;
     return (
       <div className="mb-3">
         <h5 className={`text-[10px] font-bold mb-1 font-mono ${getColor(bias)}`}>
-          {title} ({getBiasLabel(bias)}):
+          {a.label} ({getBiasLabel(bias)}):
         </h5>
-        {signals.map((signal, idx) => (
+        {linhas.map((signal, idx) => (
           <p key={idx} className={`text-[11px] leading-relaxed ${getColor(bias)}`}>• {signal}</p>
         ))}
       </div>
     );
   };
 
+  const por = (id: ViesAtivo['id']) => ativos.find((x) => x.id === id);
+
   return (
     <div className="border border-border/50 bg-card/30 h-full flex flex-col">
       <div className="px-3 py-2 border-b bg-warning/20 text-warning border-warning/50">
-        <h4 className="text-xs font-bold uppercase tracking-wider">📊 ANÁLISE DE CORRELAÇÕES</h4>
+        <h4 className="text-xs font-bold uppercase tracking-wider">📊 REGIME DO DIA POR ATIVO (70/20/10)</h4>
       </div>
       <div className="flex-1 overflow-auto p-2">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Coluna 1: Brasil / Commodities */}
-          <div>
-            <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2 pb-1 border-b border-border/30">
-              🇧🇷 BRASIL / COMMODITIES
-            </div>
-            <AssetBlock title="WIN" signals={winSignals} bias={winBias} />
-            <AssetBlock title="WDO" signals={wdoSignals} bias={wdoBias} />
-            <AssetBlock title="XAU/USD" signals={goldSignals} bias={goldBias} />
-          </div>
-
-          {/* Coluna 2: Índices EUA */}
           <div>
             <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2 pb-1 border-b border-border/30">
               🇺🇸 ÍNDICES EUA
             </div>
-            <AssetBlock title="S&P 500" signals={sp500Signals} bias={sp500Bias} />
-            <AssetBlock title="NASDAQ" signals={nasdaqSignals} bias={nasdaqBias} />
+            <AssetBlock a={por('nasdaq')} />
+            <AssetBlock a={por('sp500')} />
+            <AssetBlock a={por('dow')} />
           </div>
 
-          {/* Coluna 3: Forex */}
+          <div>
+            <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2 pb-1 border-b border-border/30">
+              🥇 OURO
+            </div>
+            <AssetBlock a={por('xau')} />
+          </div>
+
           <div>
             <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2 pb-1 border-b border-border/30">
               💱 FOREX
             </div>
-            <AssetBlock title="EUR/USD" signals={eurUsdSignals} bias={eurUsdBias} />
-            <AssetBlock title="GBP/USD" signals={gbpUsdSignals} bias={gbpUsdBias} />
+            <AssetBlock a={por('eurusd')} />
+            <AssetBlock a={por('usdjpy')} />
           </div>
         </div>
       </div>
@@ -320,7 +283,6 @@ const AUTO_REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
 export function DailyChecklist() {
   const { data, isLoading, error, refetch, isFetching } = useMarketCorrelations();
   const { regime: dia } = useRegimeDoDia();
-  const winBiasDia = viesToBias(dia.viesWIN);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [countdown, setCountdown] = useState(15 * 60); // 15 minutes in seconds
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -491,13 +453,9 @@ export function DailyChecklist() {
             <div className="flex items-center gap-2">
               {/* Bias Summary in Header */}
               <div className="hidden lg:flex items-center gap-1 flex-wrap">
-                <BiasIndicator bias={winBiasDia} label="WIN" />
-                <BiasIndicator bias={data.wdoBias} label="WDO" />
-                <BiasIndicator bias={data.goldBias} label="OURO" />
-                <BiasIndicator bias={data.sp500Bias || 'neutral'} label="S&P" />
-                <BiasIndicator bias={data.nasdaqBias || 'neutral'} label="NDX" />
-                <BiasIndicator bias={data.eurUsdBias || 'neutral'} label="EUR" />
-                <BiasIndicator bias={data.gbpUsdBias || 'neutral'} label="GBP" />
+                {dia.ativos.map((a) => (
+                  <BiasIndicator key={a.id} bias={viesToBias(a.vies)} label={a.label} />
+                ))}
               </div>
               <Button 
                 variant="ghost" 
@@ -528,13 +486,9 @@ export function DailyChecklist() {
         <CardContent className={`p-2 ${isFullscreen ? 'flex-1 overflow-auto' : ''}`}>
           {/* Mobile Bias */}
           <div className="lg:hidden flex flex-wrap gap-1 mb-2">
-            <BiasIndicator bias={winBiasDia} label="WIN" />
-            <BiasIndicator bias={data.wdoBias} label="WDO" />
-            <BiasIndicator bias={data.goldBias} label="OURO" />
-            <BiasIndicator bias={data.sp500Bias || 'neutral'} label="S&P" />
-            <BiasIndicator bias={data.nasdaqBias || 'neutral'} label="NDX" />
-            <BiasIndicator bias={data.eurUsdBias || 'neutral'} label="EUR" />
-            <BiasIndicator bias={data.gbpUsdBias || 'neutral'} label="GBP" />
+            {dia.ativos.map((a) => (
+              <BiasIndicator key={a.id} bias={viesToBias(a.vies)} label={a.label} />
+            ))}
           </div>
 
           {/* Main Grid - Bloomberg Style */}
@@ -591,22 +545,7 @@ export function DailyChecklist() {
             )}
             
             <div className={`${isFullscreen ? 'xl:flex-1' : 'lg:flex-1'} min-w-0`}>
-              <SignalsPanel 
-                winSignals={dia.motivos}
-                wdoSignals={data.wdoSignals}
-                goldSignals={data.goldSignals}
-                sp500Signals={data.sp500Signals || []}
-                nasdaqSignals={data.nasdaqSignals || []}
-                eurUsdSignals={data.eurUsdSignals || []}
-                gbpUsdSignals={data.gbpUsdSignals || []}
-                winBias={winBiasDia}
-                wdoBias={data.wdoBias}
-                goldBias={data.goldBias}
-                sp500Bias={data.sp500Bias || 'neutral'}
-                nasdaqBias={data.nasdaqBias || 'neutral'}
-                eurUsdBias={data.eurUsdBias || 'neutral'}
-                gbpUsdBias={data.gbpUsdBias || 'neutral'}
-              />
+              <SignalsPanel ativos={dia.ativos} />
             </div>
           </div>
 

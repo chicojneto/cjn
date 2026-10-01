@@ -125,6 +125,6 @@ export function classifyYahoo(yahooSymbol: string): AssetClass {
   if (s.endsWith('=F')) return 'commodity';
   if (['^TNX', '^IRX', '^TYX', '^MOVE'].includes(s) || s.startsWith('DI1') || s.includes('=.EC')) return 'rate';
   if (s === 'DX-Y.NYB' ) return 'currency';
-  if (s === '^VIX') return 'rate';
+  if (s === '^VIX' || s === '^GVZ') return 'rate';
   return 'index';
 }

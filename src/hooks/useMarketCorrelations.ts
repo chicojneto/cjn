@@ -39,6 +39,7 @@ export interface BrazilRatesData {
 export interface CorrelationAnalysis {
   dxy: MarketData | null;
   vix: MarketData | null;
+  gvz?: MarketData | null;
   us10y: MarketData | null;
   us2y: MarketData | null;
   gold: MarketData | null;
