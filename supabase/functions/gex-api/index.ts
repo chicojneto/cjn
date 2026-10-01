@@ -1,28 +1,25 @@
 // ============================================================================
 // Supabase Edge Function: gex-api
 // Endpoints:
-//   GET /gex-api?fn=gex&preset=win|gold|nasdaq&dias=75
-//   GET /gex-api?fn=radar
+//   GET /gex-api?fn=gex&preset=win|gold|nasdaq[&dias=30][&niveis=6][&ref=NNNN]
+//   GET /gex-api?fn=radar[&gatilho=0.35]
+//
+// fn=gex roda o gex_map v5 (ver gex_v5.ts): cadeia da Cboe (OI real, D-1),
+// gamma da Cboe com fallback Black-Scholes, flip = zero do gamma agregado,
+// walls por GEX e por OI, gamma levels, sensibilidade do flip e health checks.
+// Quando um health check bloqueante falha, responde 422 com { erro, codigo }
+// (2 = cobertura de OI, 3 = modo estrito Nasdaq, 4 = IV da Cboe), em vez de
+// devolver um mapa ruim com cara de bom.
 // ============================================================================
 
-const R = 0.045;
+import { calcularGex, GexAbortado, PRESETS, type CboeContrato } from "./gex_v5.ts";
+
 const UA = { headers: { "User-Agent": "Mozilla/5.0 (Macintosh) AppleWebKit/537.36" } };
-
-const PRESETS: Record<string, { und: string; ref: string; refNome: string }> = {
-  win: { und: "EWZ", ref: "^BVSP", refNome: "IBOV" },
-  gold: { und: "GLD", ref: "GC=F", refNome: "XAU/USD" },
-  nasdaq: { und: "QQQ", ref: "NQ=F", refNome: "NQ/US100" },
-};
-
+const CBOE = (t: string) => `https://cdn.cboe.com/api/global/delayed_quotes/options/${t}.json`;
 const RADAR = ["6L=F", "EWZ", "ES=F", "NQ=F", "DX-Y.NYB", "GC=F"];
+const CACHE_MS = 5 * 60 * 1000;
 
-function bsGamma(spot: number, strike: number, t: number, iv: number): number {
-  if (t <= 0 || !iv || iv <= 0) return 0;
-  const d1 = (Math.log(spot / strike) + (R + 0.5 * iv * iv) * t) / (iv * Math.sqrt(t));
-  return Math.exp(-0.5 * d1 * d1) / (Math.sqrt(2 * Math.PI) * spot * iv * Math.sqrt(t));
-}
-
-// Yahoo exige cookie + crumb nas rotas v7 (options). Camada de transporte apenas.
+// ── Yahoo (só referência, volume e radar) ───────────────────────────────────
 let auth: { cookie: string; crumb: string } | null = null;
 async function yahooAuth() {
   if (auth) return auth;
@@ -49,95 +46,68 @@ async function yahooJson(url: string) {
   return await r.json();
 }
 
-async function quote(sym: string): Promise<{ last: number; prev: number }> {
+async function chart(sym: string, range: string) {
   const j = await yahooJson(
-    `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=5d&interval=1d`);
+    `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=${range}&interval=1d`);
   const res = j.chart.result[0];
-  const closes: number[] = res.indicators.quote[0].close.filter((x: number) => x != null);
-  return { last: res.meta.regularMarketPrice ?? closes[closes.length - 1], prev: closes[closes.length - 2] };
-}
-
-async function gex(preset: string, dias: number) {
-  const cfg = PRESETS[preset];
-  if (!cfg) throw new Error("preset inválido");
-
-  const base = `https://query2.finance.yahoo.com/v7/finance/options/${cfg.und}`;
-  const first = await yahooJson(base);
-  const root = first.optionChain.result[0];
-  const spot: number = root.quote.regularMarketPrice;
-  const now = Date.now() / 1000;
-  const exps: number[] = root.expirationDates.filter(
-    (e: number) => e > now && (e - now) / 86400 <= dias);
-
-  const porStrike = new Map<number, { gex: number; oiC: number; oiP: number }>();
-  let net = 0;
-
-  for (const exp of exps) {
-    const j = exp === root.expirationDates[0] && first.optionChain.result[0].options?.length
-      ? first : await yahooJson(`${base}?date=${exp}`);
-    const opt = j.optionChain.result[0].options[0];
-    const t = Math.max((exp - now) / 86400, 0.5) / 365;
-
-    for (const [tipo, lista] of [["call", opt.calls], ["put", opt.puts]] as const) {
-      for (const o of lista ?? []) {
-        const oi = o.openInterest ?? 0;
-        if (oi <= 0) continue;
-        const g = bsGamma(spot, o.strike, t, o.impliedVolatility);
-        const dg = g * spot * spot * 0.01 * 100 * oi * (tipo === "call" ? 1 : -1);
-        const cur = porStrike.get(o.strike) ?? { gex: 0, oiC: 0, oiP: 0 };
-        cur.gex += dg;
-        if (tipo === "call") cur.oiC += oi; else cur.oiP += oi;
-        porStrike.set(o.strike, cur);
-        net += dg;
-      }
-    }
-  }
-
-  const strikes = [...porStrike.entries()].sort((a, b) => a[0] - b[0]);
-
-  let callWall = 0, cwMax = -Infinity, putWall = 0, pwMin = Infinity;
-  for (const [k, v] of strikes) {
-    if (v.oiC > 0 && v.gex > cwMax) { cwMax = v.gex; callWall = k; }
-    if (v.oiP > 0 && v.gex < pwMin) { pwMin = v.gex; putWall = k; }
-  }
-
-  // flip: transição de sinal do GEX suavizado (janela 3) na banda ±12% do spot
-  const band = strikes.filter(([k]) => k >= spot * 0.88 && k <= spot * 1.12);
-  let flip: number | null = null;
-  const smooth = band.map((_, i) =>
-    band.slice(Math.max(0, i - 1), i + 2).reduce((s, [, v]) => s + v.gex, 0));
-  const trans: number[] = [];
-  for (let i = 1; i < band.length; i++)
-    if (smooth[i - 1] < 0 && smooth[i] >= 0) trans.push(band[i][0]);
-  if (trans.length) flip = trans.reduce((a, b) =>
-    Math.abs(a - spot) < Math.abs(b - spot) ? a : b);
-
-  let refSpot: number | null = null;
-  try { refSpot = (await quote(cfg.ref)).last; } catch (_) { /* segue sem ref */ }
-  const conv = (k: number) => refSpot ? Math.round((k / spot) * refSpot) : null;
-
-  const tabela = strikes
-    .filter(([, v]) => v.oiC + v.oiP >= 500)
-    .sort((a, b) => Math.abs(b[1].gex) - Math.abs(a[1].gex))
-    .slice(0, 12)
-    .sort((a, b) => a[0] - b[0])
-    .map(([k, v]) => ({
-      strike: k, ref: conv(k), oiCall: v.oiC, oiPut: v.oiP,
-      gexM: +(v.gex / 1e6).toFixed(1),
-    }));
-
+  const q = res.indicators.quote[0];
   return {
-    preset, und: cfg.und, refNome: cfg.refNome, spot, refSpot,
-    gexLiquidoM: +(net / 1e6).toFixed(1),
-    regime: net > 0 ? "positivo" : "negativo",
-    callWall: { strike: callWall, ref: conv(callWall) },
-    putWall: { strike: putWall, ref: conv(putWall) },
-    flip: flip ? { strike: flip, ref: conv(flip) } : null,
-    tabela, geradoEm: new Date().toISOString(),
-    aviso: "OI de D-1 · convenção naive · proxy (EWZ/GLD/QQQ)",
+    meta: res.meta,
+    closes: (q.close as (number | null)[]).filter((x): x is number => x != null),
+    volumes: ((q.volume ?? []) as (number | null)[]).filter((x): x is number => x != null),
   };
 }
 
+async function quote(sym: string): Promise<{ last: number; prev: number }> {
+  const c = await chart(sym, "5d");
+  return { last: c.meta.regularMarketPrice ?? c.closes[c.closes.length - 1], prev: c.closes[c.closes.length - 2] };
+}
+
+// ── GEX v5 ───────────────────────────────────────────────────────────────────
+const cache = new Map<string, { em: number; body: unknown }>();
+
+async function gex(preset: string, dias: number, niveis: number, refManual: number | null) {
+  const cfg = PRESETS[preset];
+  if (!cfg) throw new Error("preset inválido");
+
+  const chave = `${preset}|${dias}|${niveis}|${refManual ?? ""}`;
+  const hit = cache.get(chave);
+  if (hit && Date.now() - hit.em < CACHE_MS) return hit.body;
+
+  const r = await fetch(CBOE(cfg.und), { headers: { "User-Agent": "Mozilla/5.0" } });
+  if (!r.ok) throw new Error(`Falha ao buscar a cadeia da Cboe para ${cfg.und}: HTTP ${r.status}`);
+  const j = await r.json();
+  const spot = Number(j.data.current_price);
+  const contratos = j.data.options as CboeContrato[];
+  const snapshot = String(j.timestamp ?? "");
+
+  // referência: fechamento mais recente (= history(period="5d").Close[-1] do yfinance)
+  let ref = refManual;
+  if (ref == null) {
+    try {
+      const c = await chart(cfg.ref, "5d");
+      ref = c.closes.length ? c.closes[c.closes.length - 1] : null;
+    } catch (_) { ref = null; }
+  }
+  // ADV20 do subjacente, para a força das paredes
+  let adv20: number | null = null;
+  try {
+    const c = await chart(cfg.und, "2mo");
+    const v = c.volumes.slice(-20);
+    adv20 = c.volumes.length >= 5 ? v.reduce((s, x) => s + x, 0) / v.length : null;
+  } catch (_) { adv20 = null; }
+
+  const mapa = calcularGex({ preset, spot, contratos, snapshot, ref, adv20, dias, niveis });
+  const body = {
+    ...mapa,
+    geradoEm: new Date().toISOString(),
+    aviso: "OI da Cboe (D-1) · convenção naive · proxy (EWZ/GLD/QQQ)",
+  };
+  cache.set(chave, { em: Date.now(), body });
+  return body;
+}
+
+// ── Radar 6L (inalterado) ───────────────────────────────────────────────────
 async function radar(gatilho = 0.35) {
   const out: Record<string, number | null> = {};
   await Promise.all(RADAR.map(async (s) => {
@@ -159,21 +129,26 @@ async function radar(gatilho = 0.35) {
 Deno.serve(async (req) => {
   const cors = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "authorization, content-type",
+    "Access-Control-Allow-Headers": "authorization, content-type, apikey, x-client-info",
   };
+  const json = (b: unknown, status = 200) =>
+    new Response(JSON.stringify(b), { status, headers: { ...cors, "Content-Type": "application/json" } });
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   try {
     const u = new URL(req.url);
     const fn = u.searchParams.get("fn") ?? "gex";
-    const body = fn === "radar"
-      ? await radar(Number(u.searchParams.get("gatilho") ?? 0.35))
-      : await gex(u.searchParams.get("preset") ?? "win",
-                  Number(u.searchParams.get("dias") ?? 75));
-    return new Response(JSON.stringify(body),
-      { headers: { ...cors, "Content-Type": "application/json" } });
+    if (fn === "radar") return json(await radar(Number(u.searchParams.get("gatilho") ?? 0.35)));
+    const refParam = u.searchParams.get("ref");
+    return json(await gex(
+      u.searchParams.get("preset") ?? "win",
+      Number(u.searchParams.get("dias") ?? 30),
+      Number(u.searchParams.get("niveis") ?? 6),
+      refParam ? Number(refParam) : null,
+    ));
   } catch (e) {
-    return new Response(JSON.stringify({ erro: String(e) }),
-      { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
+    if (e instanceof GexAbortado)
+      return json({ erro: e.message, codigo: e.codigo, ...e.extra, geradoEm: new Date().toISOString() }, 422);
+    return json({ erro: String(e) }, 500);
   }
 });
