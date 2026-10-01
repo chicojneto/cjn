@@ -31,7 +31,7 @@ export function WorldMapDots() {
       >
         <RegionHeading x={37} y={12} label="Américas" session={sessionById.americas} />
         <RegionHeading x={98} y={12} label="Europa" session={sessionById.europe} />
-        <RegionHeading x={120} y={25} label="Oriente Médio" session={sessionById.middle_east} />
+        <RegionHeading x={121} y={19} label="Oriente Médio" session={sessionById.middle_east} compact />
         <RegionHeading x={153} y={10} label="Ásia-Pacífico" session={sessionById.asia} />
 
         {dots.map((d, i) => {
@@ -57,7 +57,7 @@ export function WorldMapDots() {
   );
 }
 
-function RegionHeading({ x, y, label, session }: { x: number; y: number; label: string; session?: SessionDef }) {
+function RegionHeading({ x, y, label, session, compact = false }: { x: number; y: number; label: string; session?: SessionDef; compact?: boolean }) {
   if (!session) return null;
   const color = `hsl(${session.accent})`;
   const lineWidth = Math.max(13, label.length * 2.25);
@@ -68,7 +68,7 @@ function RegionHeading({ x, y, label, session }: { x: number; y: number; label: 
         x={x}
         y={y}
         textAnchor="middle"
-        className="font-sans text-[4px] font-semibold"
+        className={compact ? 'font-sans text-[3.4px] font-semibold' : 'font-sans text-[4px] font-semibold'}
         fill={color}
       >
         {label}
