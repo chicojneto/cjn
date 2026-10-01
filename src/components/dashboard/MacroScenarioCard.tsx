@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, AlertCircle, CheckCircle, AlertTriangle, Info, Zap } from 'lucide-react';
 import { useMarketCorrelations } from '@/hooks/useMarketCorrelations';
 import { useRegimeDoDia } from '@/hooks/useRegimeDoDia';
@@ -365,11 +364,7 @@ export function MacroScenarioCard() {
   const SentimentIcon = sentimentStyle.icon;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
+    <div>
       <div className="border border-border/50 bg-background">
         {/* Terminal-style header */}
         <div className="py-2 px-3 border-b border-warning/50 bg-warning/20">
@@ -404,18 +399,15 @@ export function MacroScenarioCard() {
             </div>
             <div className="space-y-1.5">
               {dia.motivos.map((point, idx) => (
-                <motion.div
+                <div
                   key={idx}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.05 }}
                   className="flex items-start gap-2"
                 >
                   <span className="text-warning mt-0.5 text-xs">•</span>
                   <p className="text-xs text-foreground/90 leading-relaxed font-mono">
                     {point}
                   </p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -427,11 +419,8 @@ export function MacroScenarioCard() {
             </div>
             <div className="flex flex-wrap gap-1.5">
               {scenario.signals.map((signal, idx) => (
-                <motion.div
+                <div
                   key={signal.label}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 + idx * 0.03 }}
                   className={cn(
                     "flex items-center gap-1.5 px-2 py-1 border",
                     getStatusColor(signal.status)
@@ -440,12 +429,12 @@ export function MacroScenarioCard() {
                   {getStatusIcon(signal.status)}
                   <span className="text-[10px] font-mono font-bold">{signal.label}</span>
                   <span className="text-[10px] font-mono opacity-80">{signal.description}</span>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

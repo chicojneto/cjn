@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 interface MarketQuote {
   symbol: string;
@@ -57,12 +56,7 @@ export function MarketTable({
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="glass-card overflow-hidden"
-    >
+    <div className="glass-card overflow-hidden">
       {/* Header */}
       <div className="px-3 py-2.5 border-b border-border/30 bg-muted/20">
         <h3 className="text-xs font-semibold text-foreground tracking-wide">{title}</h3>
@@ -75,14 +69,11 @@ export function MarketTable({
         tall ? "max-h-[760px]" : compact ? "max-h-[280px]" : "max-h-[350px]",
       )}>
         {quotes.map((quote, idx) => (
-          <motion.div
+          <div
             key={`${quote.symbol}-${idx}`}
-            initial={{ opacity: 0, x: -5 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.2, delay: idx * 0.02 }}
             onClick={() => onSelect?.(quote.symbol)}
             className={cn(
-              "flex items-center justify-between px-3 py-2 transition-all duration-200 bg-card",
+              "flex items-center justify-between px-3 py-2 transition-colors duration-150 bg-card",
               columns === 2 && "border-b border-border/10",
               onSelect && "cursor-pointer",
               selectedSymbol === quote.symbol 
@@ -121,9 +112,9 @@ export function MarketTable({
                 </span>
               )}
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }

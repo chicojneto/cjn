@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { pageContainer as container, pageItem as item, usePageEntrance } from '@/lib/motion';
 import { TradingStrategies } from '@/components/dashboard/TradingStrategies';
 import { MacroFundamentals } from '@/components/dashboard/MacroFundamentals';
 import { BookOpen, Lightbulb } from 'lucide-react';
@@ -6,24 +7,12 @@ import { UpdatedStamp } from '@/components/shared/UpdatedStamp';
 
 const GOLDEN_TIP_DATE = '2026-08-05';
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-};
-
 export default function Estrategias() {
+  const entrance = usePageEntrance();
   return (
     <motion.div
       variants={container}
-      initial="hidden"
+      initial={entrance}
       animate="show"
       className="space-y-6"
     >
@@ -62,8 +51,6 @@ export default function Estrategias() {
           </div>
         </div>
       </motion.div>
-
-
 
       {/* Strategies Grid */}
       <motion.section variants={item}>

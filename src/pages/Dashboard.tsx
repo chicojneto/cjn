@@ -1,22 +1,10 @@
 import { motion } from 'framer-motion';
+import { pageContainer as container, pageItem as item, usePageEntrance } from '@/lib/motion';
 import { MacroScenarioCard } from '@/components/dashboard/MacroScenarioCard';
 import { GlobalMarketsPanel } from '@/components/dashboard/GlobalMarketsPanel';
 import { useEventAlerts } from '@/hooks/useEventAlerts';
 import { DailyChecklist } from '@/components/dashboard/DailyChecklist';
 import { useMemo, useState, useEffect } from 'react';
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 }
-  }
-};
-
-const item = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
-};
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -108,12 +96,13 @@ function MarketStatusBar() {
 }
 
 export default function Dashboard() {
+  const entrance = usePageEntrance();
   useEventAlerts(true);
 
   return (
     <motion.div
       variants={container}
-      initial="hidden"
+      initial={entrance}
       animate="show"
       className="space-y-8"
     >

@@ -36,7 +36,7 @@ export function SessionRegionCard({ session }: Props) {
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl border bg-card transition-all hover:-translate-y-0.5 hover:shadow-elevated"
+      className="relative overflow-hidden rounded-2xl border bg-card"
       style={{ borderColor: accentBorder }}
     >
       {/* Background illustration */}

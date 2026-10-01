@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { pageContainer as container, pageItem as item, usePageEntrance } from '@/lib/motion';
 import { BarChart3, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,13 +37,8 @@ async function fetchPanels(): Promise<Record<string, any[]>> {
   return data?.panels || {};
 }
 
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.05 } },
-};
-const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
-
 export default function Mercados() {
+  const entrance = usePageEntrance();
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const { data: panels, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['markets-panels'],
@@ -55,7 +51,7 @@ export default function Mercados() {
   });
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+    <motion.div variants={container} initial={entrance} animate="show" className="space-y-6">
       {/* Header */}
       <motion.div variants={item} className="flex items-center justify-between">
         <div className="flex items-center gap-3">

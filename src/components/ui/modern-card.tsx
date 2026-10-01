@@ -1,10 +1,9 @@
 import * as React from "react";
-import { motion, HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const cardVariants = cva(
-  "rounded-xl border transition-all duration-300",
+  "rounded-xl border transition-[border-color,background-color] duration-200 ease-out",
   {
     variants: {
       variant: {
@@ -15,7 +14,7 @@ const cardVariants = cva(
         glow: "bg-card/60 border-primary/30  backdrop-blur-sm",
       },
       interactive: {
-        true: "hover:border-primary/40 hover:shadow-soft hover:-translate-y-0.5 cursor-pointer",
+        true: "hover:border-primary/40 cursor-pointer transition-[border-color,background-color,transform] duration-150 active:scale-[0.99]",
         false: "",
       },
     },
@@ -27,7 +26,7 @@ const cardVariants = cva(
 );
 
 interface ModernCardProps
-  extends Omit<HTMLMotionProps<"div">, "onDrag" | "onDragStart" | "onDragEnd">,
+  extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof cardVariants> {
   children: React.ReactNode;
 }
@@ -35,16 +34,13 @@ interface ModernCardProps
 const ModernCard = React.forwardRef<HTMLDivElement, ModernCardProps>(
   ({ className, variant, interactive, children, ...props }, ref) => {
     return (
-      <motion.div
+      <div
         ref={ref}
         className={cn(cardVariants({ variant, interactive, className }))}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
         {...props}
       >
         {children}
-      </motion.div>
+      </div>
     );
   }
 );
