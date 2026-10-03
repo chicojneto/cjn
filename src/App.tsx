@@ -7,6 +7,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Manha from "./pages/Manha";
 import Mercados from "./pages/Mercados";
+import Noticias from "./pages/Noticias";
 import Calendario from "./pages/Calendario";
 import CheckList from "./pages/CheckList";
 import Estrategias from "./pages/Estrategias";
@@ -54,6 +55,11 @@ const App = () => (
           <Route path="/mercados" element={
             <AppLayout>
               <Mercados />
+            </AppLayout>
+          } />
+          <Route path="/noticias" element={
+            <AppLayout>
+              <Noticias />
             </AppLayout>
           } />
           <Route path="/calendario" element={

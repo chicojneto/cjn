@@ -8,6 +8,13 @@
       "when": 1789214660080,
       "tag": "0000_restrict_di_curve_manual_writes",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791024535614,
+      "tag": "0001_create_automatic_news",
+      "breakpoints": true
     }
   ]
 }
