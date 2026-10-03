@@ -113,7 +113,8 @@ Deno.serve(async (req) => {
     settled.forEach((result, index) => {
       if (result.status === "fulfilled") candidates.push(...result.value);
       else {
-        const message = `${FEEDS[index].source}: ${String(result.reason)}`;
+        const feed = FEEDS[index];
+        const message = `${feed?.source ?? "Feed desconhecido"}: ${String(result.reason)}`;
         feedErrors.push(message);
         console.error("Falha no feed", message);
       }
