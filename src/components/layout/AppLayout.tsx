@@ -37,7 +37,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Desktop icon rail */}
       <aside className="hidden md:flex fixed inset-y-0 left-0 z-40 w-16 flex-col items-center gap-1 border-r border-border bg-card py-4">
-        <NavLink to="/" className="mb-4" aria-label="IcedTea Trader">
+        <NavLink to="/" className="mb-4" aria-label="BrewBias">
           <CoffeeCandleMark className="h-10 w-10 border border-border" />
         </NavLink>
         {navDestinations.map((d) => (
