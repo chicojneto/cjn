@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.gex-api]
 verify_jwt = false
+
+[functions.coletar-noticias]
+verify_jwt = false
