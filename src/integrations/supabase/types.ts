@@ -399,6 +399,81 @@ export type Database = {
           },
         ]
       }
+      news_collector_state: {
+        Row: {
+          id: boolean
+          last_finished_at: string | null
+          last_started_at: string | null
+          last_success_at: string | null
+          locked_until: string | null
+          pause_reason: string | null
+          processed_count: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          last_finished_at?: string | null
+          last_started_at?: string | null
+          last_success_at?: string | null
+          locked_until?: string | null
+          pause_reason?: string | null
+          processed_count?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          last_finished_at?: string | null
+          last_started_at?: string | null
+          last_success_at?: string | null
+          locked_until?: string | null
+          pause_reason?: string | null
+          processed_count?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      noticias: {
+        Row: {
+          ativos: string[]
+          criado_em: string
+          fonte: string
+          id: string
+          publicado_em: string
+          relevancia: number
+          resumo: string
+          titulo_original: string
+          titulo_pt: string
+          url: string
+        }
+        Insert: {
+          ativos?: string[]
+          criado_em?: string
+          fonte: string
+          id?: string
+          publicado_em: string
+          relevancia: number
+          resumo: string
+          titulo_original: string
+          titulo_pt: string
+          url: string
+        }
+        Update: {
+          ativos?: string[]
+          criado_em?: string
+          fonte?: string
+          id?: string
+          publicado_em?: string
+          relevancia?: number
+          resumo?: string
+          titulo_original?: string
+          titulo_pt?: string
+          url?: string
+        }
+        Relationships: []
+      }
       system_config: {
         Row: {
           key: string
@@ -422,7 +497,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      acquire_news_collector: {
+        Args: { _force_resume?: boolean }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
