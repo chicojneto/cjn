@@ -1,3 +1,3 @@
-- [x] Renomear o site para IcedTea Trader e adaptar as cores ao visual claro do TradingView enviado.
+- [x] Renomear o site para BrewBias e manter as cores do visual claro aprovado.
 - [x] Remover a Curva DI de Mercados e substituir Playbook pela página Referência.
 - [x] Aplicar a nova logo em todos os pontos de identidade visual do site e atualizar o favicon.
