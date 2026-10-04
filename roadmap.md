@@ -2,4 +2,4 @@
 - [x] Remover a Curva DI de Mercados e substituir Playbook pela página Referência.
 - [x] Aplicar a nova logo em todos os pontos de identidade visual do site e atualizar o favicon.
 
-- [ ] Criar Notícias automáticas: banco seguro, coletor com IA, agendamento, carga inicial e página /noticias.
+- [x] Criar Notícias automáticas: banco seguro, coletor com IA, agendamento, carga inicial e página /noticias.
