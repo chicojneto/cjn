@@ -90,7 +90,9 @@ export function AppLayout({ children }: AppLayoutProps) {
           {children}
 
           <p className="mt-8 border-t border-border pt-4 text-[13px] leading-relaxed text-muted-foreground">
-            {nyDstNote()}
+            {pathname.startsWith('/noticias')
+              ? 'Na página Notícias, os horários seguem America/Sao_Paulo.'
+              : nyDstNote()}
           </p>
         </main>
 
