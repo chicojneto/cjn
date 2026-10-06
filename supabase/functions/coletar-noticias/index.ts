@@ -76,10 +76,20 @@ async function readFeed(feed: typeof FEEDS[number], parser: XMLParser, cutoff: n
   });
 }
 
-function statusOf(error: unknown) {
-  if (!error || typeof error !== "object") return null;
-  const value = (error as { statusCode?: unknown; status?: unknown }).statusCode ?? (error as { status?: unknown }).status;
-  return typeof value === "number" ? value : null;
+function statusOf(error: unknown): number | null {
+  let current: unknown = error;
+  for (let depth = 0; current && typeof current === "object" && depth < 6; depth += 1) {
+    const value = (current as { statusCode?: unknown; status?: unknown }).statusCode ??
+      (current as { status?: unknown }).status;
+    if (typeof value === "number") return value;
+    const message = (current as { message?: unknown }).message;
+    if (typeof message === "string") {
+      if (/payment_required|not enough credits|402/.test(message)) return 402;
+      if (/forbidden|\b403\b/.test(message)) return 403;
+    }
+    current = (current as { cause?: unknown }).cause;
+  }
+  return null;
 }
 
 Deno.serve(async (req) => {
