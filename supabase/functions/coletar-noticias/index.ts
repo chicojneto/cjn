@@ -170,6 +170,10 @@ Deno.serve(async (req) => {
       }
     }
 
+    if (pending.length > 0 && saved === 0 && discarded === 0 && !pausedReason) {
+      pausedReason = "A IA falhou para todos os itens (provável falta de créditos de IA)";
+    }
+
     await db.from("noticias").delete().lt("publicado_em", new Date(Date.now() - 7 * ONE_DAY_MS).toISOString());
     await db.from("news_collector_state").update({
       status: pausedReason ? "paused" : "ready",
